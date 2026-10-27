@@ -1049,3 +1049,303 @@ footer {
     font-size: 0.78rem;
   }
 }
+
+/* ==========================================
+   AGENDA SEMANAL - MODELO COMPACTO
+   ========================================== */
+
+/* Painel direito */
+
+.hero .hero-agenda {
+  padding: 20px;
+  border-radius: 16px;
+  background: linear-gradient(
+    145deg,
+    #211331,
+    #120c20
+  );
+}
+
+.hero .hero-agenda-cabecalho {
+  margin-bottom: 10px;
+}
+
+.hero .hero-agenda-cabecalho h2 {
+  font-size: 1.25rem;
+}
+
+/* Período da semana */
+
+.semana-periodo {
+  margin: 0 0 12px;
+  color: var(--suave);
+  font-size: 0.75rem !important;
+  text-align: right;
+  max-width: none !important;
+}
+
+/* Sete colunas */
+
+.semana-grade {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  align-items: stretch;
+  width: 100%;
+}
+
+/* Cada dia */
+
+.semana-dia {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 5px;
+  border: 1px solid #583574;
+  border-radius: 9px;
+  background: #180f29;
+}
+
+.semana-dia-hoje {
+  border-color: #c66dff;
+  background: #29133e;
+  box-shadow: 0 0 0 1px #b66cff55;
+}
+
+.semana-dia-cabecalho {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 45px;
+  padding: 5px 2px;
+  gap: 1px;
+}
+
+.semana-dia-nome {
+  color: #c9b2e0;
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.semana-dia-numero {
+  color: #fff;
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.semana-dia-etiqueta {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #b66cff;
+  color: #fff;
+  font-size: 0.55rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* Eventos */
+
+.semana-dia-eventos {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.semana-evento {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #48315e;
+  border-radius: 7px;
+  background: #241535;
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    border-color 0.2s;
+}
+
+.semana-evento:hover {
+  transform: translateY(-2px);
+  border-color: var(--roxo);
+}
+
+.semana-evento-imagem,
+.semana-evento-sem-imagem {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: linear-gradient(
+    135deg,
+    #63328d,
+    #211331
+  );
+}
+
+.semana-evento-sem-imagem {
+  display: grid;
+  place-items: center;
+  color: #d5a6ff;
+  font-size: 1.2rem;
+}
+
+.semana-evento-conteudo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  padding: 6px 5px;
+  width: 100%;
+  min-width: 0;
+  flex: 1;
+}
+
+.semana-evento-categoria {
+  display: inline-block;
+  max-width: 100%;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background: #8b43d3;
+  color: white;
+  font-size: 0.52rem;
+  font-weight: 800;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.semana-evento-trabalho .semana-evento-categoria {
+  background: #7189aa;
+}
+
+.semana-evento-podcast .semana-evento-categoria {
+  background: #b94d89;
+}
+
+.semana-evento-jogos .semana-evento-categoria {
+  background: #338b66;
+}
+
+.semana-evento-titulo {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  width: 100%;
+  font-size: 0.65rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.semana-evento-rodape {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 3px;
+  width: 100%;
+  margin-top: auto;
+  color: #e6d3f7;
+  font-size: 0.59rem;
+}
+
+.semana-evento-canal {
+  overflow-wrap: anywhere;
+  font-size: 0.54rem;
+}
+
+.semana-evento-alterado {
+  opacity: 0.75;
+}
+
+.semana-evento-situacao {
+  color: #ffc0cb;
+  font-size: 0.58rem;
+  font-weight: 800;
+}
+
+.semana-sem-eventos {
+  margin: auto 0 !important;
+  padding: 12px 2px;
+  color: #9f8bb7 !important;
+  text-align: center;
+  font-size: 0.62rem !important;
+}
+
+/* Indicadores de disponibilidade */
+
+.semana-disponibilidade {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 9px;
+  padding-top: 8px;
+  border-top: 1px solid #49335f;
+}
+
+.semana-disponibilidade-turno {
+  display: grid;
+  place-items: center;
+  width: 19px;
+  height: 19px;
+  border-radius: 5px;
+  color: #1b1226;
+  font-size: 0.57rem;
+  font-weight: 800;
+  cursor: help;
+}
+
+.semana-turno-livre {
+  background: #a8e8c5;
+}
+
+.semana-turno-ocupado {
+  background: #f2a7b3;
+}
+
+.semana-turno-parcial {
+  background: #ffe19b;
+}
+
+/* Responsividade */
+
+@media (max-width: 1200px) {
+  .semana-grade {
+    grid-template-columns: repeat(7, minmax(95px, 1fr));
+    overflow-x: auto;
+    padding: 12px 2px 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero .hero-agenda {
+    padding: 14px;
+  }
+
+  .semana-grade {
+    grid-template-columns: repeat(7, 115px);
+    overflow-x: auto;
+    gap: 8px;
+  }
+
+  .semana-evento-titulo {
+    font-size: 0.75rem;
+  }
+
+  .semana-evento-categoria {
+    font-size: 0.6rem;
+  }
+}
