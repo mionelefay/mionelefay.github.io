@@ -91,7 +91,7 @@
     .campanha-bloco h2 {
       color: #e8c7ff;
       font-size: 1.6rem;
-      margin: 0 0 20px;
+      margin: 0 0 24px;
     }
 
     .campanha-bloco h3 {
@@ -99,30 +99,114 @@
       margin: 24px 0 10px;
     }
 
+    /* ==========================================
+       PERSONAGEM: DUAS COLUNAS NO TOPO
+    ========================================== */
+
     .personagem-layout {
       display: grid;
-      grid-template-columns: minmax(180px, 280px) 1fr;
-      gap: 30px;
-      align-items: start;
+      grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr);
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .personagem-identidade {
+      background: #291b3e;
+      border: 1px solid #50346e;
+      border-radius: 14px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .personagem-nome {
+      font-size: clamp(1.6rem, 3vw, 2.3rem);
+      line-height: 1.2;
+      color: #f0d7ff;
+      margin: 0 0 20px;
+      overflow-wrap: anywhere;
+    }
+
+    .personagem-detalhes {
+      display: grid;
+      gap: 14px;
+      color: #d9c7e9;
+    }
+
+    .personagem-detalhes p {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    .personagem-imagem-container {
+      background: #291b3e;
+      border: 1px solid #50346e;
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+      min-height: 260px;
     }
 
     .personagem-imagem {
       display: block;
       width: 100%;
+      max-height: 450px;
+      object-fit: contain;
+      border-radius: 10px;
+    }
+
+    .personagem-imagem-container:has(
+      .personagem-imagem[hidden]
+    ) {
+      display: none;
+    }
+
+    .personagem-layout:has(
+      .personagem-imagem[hidden]
+    ) {
+      grid-template-columns: 1fr;
+    }
+
+    /* ==========================================
+       PERSONAGEM: HISTÓRIA ABAIXO
+    ========================================== */
+
+    .personagem-historia-container {
+      margin-top: 24px;
+      background: #291b3e;
+      border: 1px solid #50346e;
       border-radius: 14px;
-      border: 1px solid #68458a;
+      padding: 30px;
     }
 
-    .personagem-nome {
-      font-size: 1.9rem;
-      color: #f0d7ff;
-      margin: 0 0 12px;
+    .personagem-historia-container h3 {
+      font-size: 1.4rem;
+      margin: 0 0 18px;
     }
 
-    .personagem-detalhes {
-      color: #d9c7e9;
-      margin-bottom: 20px;
+    .personagem-apresentacao {
+      font-size: 1.05rem;
+      line-height: 1.9;
+      margin: 0 0 28px;
     }
+
+    .personagem-historia-container
+    .campanha-texto {
+      max-width: 100%;
+      line-height: 1.9;
+    }
+
+    /* ==========================================
+       LINKS E BOTÕES
+    ========================================== */
 
     .campanha-links {
       display: flex;
@@ -148,13 +232,16 @@
       line-height: 1.6;
     }
 
+    /* ==========================================
+       RESPONSIVIDADE
+    ========================================== */
+
     @media (max-width: 720px) {
       .pagina-campanha {
         padding: 28px 16px 60px;
       }
 
-      .campanha-hero,
-      .personagem-layout {
+      .campanha-hero {
         grid-template-columns: 1fr;
       }
 
@@ -163,13 +250,31 @@
         margin: 0 auto;
       }
 
-      .personagem-imagem {
-        max-width: 300px;
-        margin: 0 auto;
-      }
-
       .campanha-bloco {
         padding: 22px 18px;
+      }
+
+      .personagem-layout {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .personagem-identidade {
+        padding: 22px;
+      }
+
+      .personagem-imagem-container {
+        min-height: 0;
+        padding: 12px;
+      }
+
+      .personagem-imagem {
+        max-height: 420px;
+      }
+
+      .personagem-historia-container {
+        padding: 22px 18px;
+        margin-top: 16px;
       }
 
       .campanha-links {
@@ -215,7 +320,9 @@
 
     <div id="campanha-conteudo" hidden>
 
-      <!-- APRESENTAÇÃO DA CAMPANHA -->
+      <!-- ==========================================
+           APRESENTAÇÃO DA CAMPANHA
+      ========================================== -->
 
       <section class="campanha-hero">
 
@@ -260,7 +367,9 @@
 
       </section>
 
-      <!-- MINHA PERSONAGEM -->
+      <!-- ==========================================
+           MINHA PERSONAGEM
+      ========================================== -->
 
       <section
         id="secao-personagem"
@@ -269,15 +378,13 @@
 
         <h2>🧙 Minha Personagem</h2>
 
+        <!-- PARTE SUPERIOR: DADOS E IMAGEM -->
+
         <div class="personagem-layout">
 
-          <img
-            id="personagem-imagem"
-            class="personagem-imagem"
-            alt="Ilustração da personagem"
-            hidden>
+          <!-- COLUNA ESQUERDA -->
 
-          <div>
+          <div class="personagem-identidade">
 
             <h3
               id="personagem-nome"
@@ -285,41 +392,66 @@
               hidden>
             </h3>
 
-            <p
-              id="personagem-detalhes"
-              class="personagem-detalhes"
-              hidden>
-            </p>
+            <div class="personagem-detalhes">
 
-            <p
-              id="personagem-apresentacao"
-              class="campanha-texto"
-              hidden>
-            </p>
+              <p id="personagem-raca" hidden></p>
 
-            <div id="personagem-historia" hidden>
-
-              <h3>📖 História da Personagem</h3>
-
-              <p
-                id="personagem-resumo"
-                class="campanha-texto">
-              </p>
+              <p id="personagem-classe" hidden></p>
 
             </div>
 
-            <div
-              id="personagem-links"
-              class="campanha-links">
-            </div>
+          </div>
 
+          <!-- COLUNA DIREITA -->
+
+          <div class="personagem-imagem-container">
+
+            <img
+              id="personagem-imagem"
+              class="personagem-imagem"
+              alt="Ilustração da personagem"
+              hidden>
+
+          </div>
+
+        </div>
+
+        <!-- PARTE INFERIOR: HISTÓRIA -->
+
+        <div
+          id="personagem-historia-container"
+          class="personagem-historia-container"
+          hidden>
+
+          <p
+            id="personagem-apresentacao"
+            class="campanha-texto personagem-apresentacao"
+            hidden>
+          </p>
+
+          <div id="personagem-historia" hidden>
+
+            <h3>📖 História da Personagem</h3>
+
+            <p
+              id="personagem-resumo"
+              class="campanha-texto">
+            </p>
+
+          </div>
+
+          <div
+            id="personagem-links"
+            class="campanha-links">
           </div>
 
         </div>
 
       </section>
 
-      <!-- UNIVERSO E MATERIAIS -->
+      <!-- ==========================================
+           UNIVERSO E MATERIAIS
+      ========================================== -->
 
       <section
         id="secao-universo"
@@ -373,6 +505,10 @@
   <script>
     "use strict";
 
+    // ==========================================
+    // CONEXÃO COM O SUPABASE
+    // ==========================================
+
     const SUPABASE_URL =
       "https://gevkvjuaurcxokudlblc.supabase.co";
 
@@ -416,6 +552,7 @@
 
       try {
         const endereco = new URL(url);
+
         return (
           endereco.protocol === "https:" ||
           endereco.protocol === "http:"
@@ -443,6 +580,10 @@
       return true;
     }
 
+    // ==========================================
+    // PREENCHER DADOS DA CAMPANHA
+    // ==========================================
+
     function preencherCampanha(campanha) {
       const detalhes = campanha.detalhes || {};
       const personagem = detalhes.personagem || {};
@@ -450,7 +591,9 @@
 
       const papel = detalhes.papel || "";
 
+      // ========================================
       // APRESENTAÇÃO PRINCIPAL
+      // ========================================
 
       mostrarTexto(
         "campanha-titulo",
@@ -501,17 +644,38 @@
         (campanha.titulo || "Campanha") +
         " | Mione Le Fay";
 
+      // ========================================
       // MINHA PERSONAGEM
+      // ========================================
 
       const mostrarPersonagem =
         papel === "jogadora" ||
         papel === "ambos";
 
       if (mostrarPersonagem) {
+
+        // COLUNA ESQUERDA: IDENTIDADE
+
         const temNome = mostrarTexto(
           "personagem-nome",
           personagem.nome
         );
+
+        const temRaca = mostrarTexto(
+          "personagem-raca",
+          personagem.raca
+            ? "🧬 Raça ou espécie: " + personagem.raca
+            : ""
+        );
+
+        const temClasse = mostrarTexto(
+          "personagem-classe",
+          personagem.classe
+            ? "⚔️ Classe ou profissão: " + personagem.classe
+            : ""
+        );
+
+        // COLUNA DIREITA: IMAGEM
 
         const temImagem = mostrarImagem(
           "personagem-imagem",
@@ -520,20 +684,7 @@
           (personagem.nome || "personagem")
         );
 
-        const dados = [];
-
-        if (personagem.raca) {
-          dados.push("🧬 " + personagem.raca);
-        }
-
-        if (personagem.classe) {
-          dados.push("⚔️ " + personagem.classe);
-        }
-
-        const temDetalhes = mostrarTexto(
-          "personagem-detalhes",
-          dados.join(" • ")
-        );
+        // PARTE INFERIOR: HISTÓRIA
 
         const temApresentacao = mostrarTexto(
           "personagem-apresentacao",
@@ -554,17 +705,27 @@
           "📖 Ler história completa"
         );
 
+        elemento("personagem-historia-container").hidden =
+          !(
+            temApresentacao ||
+            temResumo ||
+            temPdf
+          );
+
         elemento("secao-personagem").hidden = !(
           temNome ||
+          temRaca ||
+          temClasse ||
           temImagem ||
-          temDetalhes ||
           temApresentacao ||
           temResumo ||
           temPdf
         );
       }
 
+      // ========================================
       // UNIVERSO E MATERIAIS
+      // ========================================
 
       const mostrarUniverso =
         papel === "narradora" ||
@@ -615,11 +776,17 @@
         );
       }
 
+      // ========================================
       // EXIBIR PÁGINA
+      // ========================================
 
       elemento("campanha-carregando").hidden = true;
       elemento("campanha-conteudo").hidden = false;
     }
+
+    // ==========================================
+    // CARREGAR CAMPANHA DO SUPABASE
+    // ==========================================
 
     async function carregarCampanha() {
       const parametros = new URLSearchParams(
