@@ -1602,3 +1602,426 @@ async function iniciarPainel() {
 }
 
 iniciarPainel();
+
+
+/* ==========================================
+   GERENCIAR 2.0
+   Filtros, busca e paginação
+========================================== */
+
+const ITENS_POR_PAGINA = 20;
+const LOTE_CONSULTA = 500;
+
+let paginaGerenciar = 1;
+
+/* Carrega todos os compromissos em lotes,
+   evitando o limite padrão de registros
+   retornados pelo Supabase. */
+
+async function carregarEventos() {
+  await exigirAdministrador();
+  exigirBancoPreparado();
+
+  const todos = [];
+  let inicio = 0;
+
+  while (true) {
+    const { data, error } = await supabaseClient
+      .from("eventos")
+      .select("*")
+      .order("data", { ascending: true })
+      .order("hora", { ascending: true })
+      .order("id", { ascending: true })
+      .range(inicio, inicio + LOTE_CONSULTA - 1);
+
+    if (error) throw error;
+
+    const lote = data || [];
+    todos.push(...lote);
+
+    if (lote.length < LOTE_CONSULTA) {
+      break;
+    }
+
+    inicio += LOTE_CONSULTA;
+  }
+
+  eventos = todos;
+  renderizarEventos();
+}
+
+/* Preenche o filtro de campanhas com
+   as campanhas cadastradas no Supabase. */
+
+function atualizarCampanhasGerenciar() {
+  const seletor = campo("gerenciar-campanha");
+  if (!seletor) return;
+
+  const selecionada = seletor.value;
+
+  seletor.replaceChildren(
+    new Option("Todas as campanhas", "todas")
+  );
+
+  campanhas.forEach(campanha => {
+    seletor.add(
+      new Option(campanha.titulo, String(campanha.id))
+    );
+  });
+
+  const existe = Array.from(seletor.options)
+    .some(opcao => opcao.value === selecionada);
+
+  seletor.value = existe ? selecionada : "todas";
+
+  const categoria = valor("gerenciar-categoria");
+
+  const categoriaRPG =
+    categoria === "rpg-proprio" ||
+    categoria === "rpg-externo";
+
+  seletor.disabled = !categoriaRPG;
+
+  if (!categoriaRPG) {
+    seletor.value = "todas";
+  }
+}
+
+/* Retorna os compromissos que correspondem
+   a todos os filtros selecionados. */
+
+function filtrarEventosGerenciar() {
+  const status = valor("gerenciar-filtro");
+  const categoria = valor("gerenciar-categoria");
+  const periodo = valor("gerenciar-periodo");
+  const campanhaId = valor("gerenciar-campanha");
+
+  const busca = valor("gerenciar-busca")
+    .toLocaleLowerCase("pt-BR");
+
+  const hoje = hojeISO();
+
+  return eventos.filter(evento => {
+    const campanha = evento.campanha_id
+      ? encontrarCampanha(evento.campanha_id)
+      : null;
+
+    const titulo = String(
+      evento.titulo || campanha?.titulo || ""
+    ).toLocaleLowerCase("pt-BR");
+
+    const nomeCampanha = String(
+      campanha?.titulo || ""
+    ).toLocaleLowerCase("pt-BR");
+
+    const categoriaEvento =
+      evento.categoria || campanha?.categoria || "";
+
+    if (
+      status !== "todos" &&
+      evento.status !== status
+    ) {
+      return false;
+    }
+
+    if (
+      categoria !== "todos" &&
+      categoriaEvento !== categoria
+    ) {
+      return false;
+    }
+
+    if (
+      periodo === "futuros" &&
+      evento.data < hoje
+    ) {
+      return false;
+    }
+
+    if (
+      periodo === "passados" &&
+      evento.data >= hoje
+    ) {
+      return false;
+    }
+
+    if (
+      !campo("gerenciar-campanha").disabled &&
+      campanhaId !== "todas" &&
+      String(evento.campanha_id) !== campanhaId
+    ) {
+      return false;
+    }
+
+    if (
+      busca &&
+      !titulo.includes(busca) &&
+      !nomeCampanha.includes(busca)
+    ) {
+      return false;
+    }
+
+    return true;
+  });
+}
+
+/* Atualiza a lista exibida, mostrando
+   somente 20 compromissos por página. */
+
+function renderizarEventos() {
+  atualizarCampanhasGerenciar();
+
+  const lista = campo("lista-eventos");
+  lista.replaceChildren();
+
+  const filtrados = filtrarEventosGerenciar();
+
+  const total = filtrados.length;
+  const totalPaginas = Math.max(
+    1,
+    Math.ceil(total / ITENS_POR_PAGINA)
+  );
+
+  paginaGerenciar = Math.min(
+    Math.max(1, paginaGerenciar),
+    totalPaginas
+  );
+
+  const periodo = valor("gerenciar-periodo");
+
+  const ordenados = [...filtrados].sort((a, b) => {
+    const chaveA =
+      `${a.data || ""} ${formatarHora(a.hora)}`;
+    const chaveB =
+      `${b.data || ""} ${formatarHora(b.hora)}`;
+
+    const comparacao = chaveA.localeCompare(chaveB);
+
+    return periodo === "passados"
+      ? -comparacao
+      : comparacao;
+  });
+
+  const inicio =
+    (paginaGerenciar - 1) * ITENS_POR_PAGINA;
+
+  const exibidos = ordenados.slice(
+    inicio,
+    inicio + ITENS_POR_PAGINA
+  );
+
+  const resumo = campo("gerenciar-resumo");
+
+  if (total === 0) {
+    resumo.textContent =
+      "Nenhum compromisso corresponde aos filtros.";
+
+    lista.append(
+      criarElemento(
+        "p",
+        "Nenhum compromisso encontrado. " +
+        "Experimente alterar ou limpar os filtros."
+      )
+    );
+  } else {
+    const primeiro = inicio + 1;
+    const ultimo = Math.min(
+      inicio + ITENS_POR_PAGINA,
+      total
+    );
+
+    resumo.textContent =
+      `Exibindo ${primeiro} a ${ultimo} ` +
+      `de ${total} compromisso(s).`;
+  }
+
+  exibidos.forEach(evento => {
+    const campanha = evento.campanha_id
+      ? encontrarCampanha(evento.campanha_id)
+      : null;
+
+    const titulo =
+      evento.titulo ||
+      campanha?.titulo ||
+      "Sem título";
+
+    const item = criarElemento(
+      "article",
+      undefined,
+      "admin-item"
+    );
+
+    item.append(
+      criarElemento("h4", titulo),
+
+      criarElemento(
+        "p",
+        `${formatarData(evento.data)} • ` +
+        formatarHora(evento.hora)
+      ),
+
+      criarElemento(
+        "p",
+        CATEGORIAS[
+          evento.categoria || campanha?.categoria
+        ] || evento.categoria || "Sem categoria"
+      ),
+
+      criarElemento(
+        "p",
+        evento.status === "publicada"
+          ? "🟢 Publicado"
+          : "📝 Rascunho"
+      )
+    );
+
+    if (campanha) {
+      item.append(
+        criarElemento(
+          "p",
+          `Campanha: ${campanha.titulo}`
+        )
+      );
+    }
+
+    const acoes = criarElemento(
+      "div",
+      undefined,
+      "admin-acoes"
+    );
+
+    acoes.append(
+      criarBotao(
+        "✏️ Editar",
+        () => editarEvento(evento.id)
+      ),
+
+      criarBotao(
+        evento.status === "publicada"
+          ? "📥 Despublicar"
+          : "📤 Publicar",
+        () => alternarPublicacao(evento.id)
+      ),
+
+      criarBotao(
+        "🗑️ Excluir",
+        () => excluirEvento(evento.id),
+        "admin-perigo"
+      )
+    );
+
+    item.append(acoes);
+    lista.append(item);
+  });
+
+  const paginacao = campo("gerenciar-paginacao");
+
+  paginacao.hidden = totalPaginas <= 1;
+
+  campo("gerenciar-pagina-atual").textContent =
+    `Página ${paginaGerenciar} de ${totalPaginas}`;
+
+  campo("gerenciar-anterior").disabled =
+    paginaGerenciar <= 1;
+
+  campo("gerenciar-proxima").disabled =
+    paginaGerenciar >= totalPaginas;
+}
+
+/* Reinicia a paginação sempre que
+   um filtro for alterado. */
+
+function filtrosGerenciarAlterados() {
+  paginaGerenciar = 1;
+  renderizarEventos();
+}
+
+[
+  "gerenciar-categoria",
+  "gerenciar-periodo",
+  "gerenciar-campanha"
+].forEach(id => {
+  campo(id).addEventListener(
+    "change",
+    filtrosGerenciarAlterados
+  );
+});
+
+/* O filtro de status já tem um evento
+   no código original. Acrescentamos apenas
+   o reinício da página. */
+
+campo("gerenciar-filtro").addEventListener(
+  "change",
+  () => {
+    paginaGerenciar = 1;
+    renderizarEventos();
+  }
+);
+
+/* Busca enquanto você digita. */
+
+campo("gerenciar-busca").addEventListener(
+  "input",
+  filtrosGerenciarAlterados
+);
+
+/* Limpar filtros. */
+
+campo("limpar-filtros").addEventListener(
+  "click",
+  () => {
+    campo("gerenciar-filtro").value = "todos";
+    campo("gerenciar-categoria").value = "todos";
+    campo("gerenciar-periodo").value = "futuros";
+    campo("gerenciar-campanha").value = "todas";
+    campo("gerenciar-busca").value = "";
+
+    paginaGerenciar = 1;
+
+    renderizarEventos();
+
+    mensagem(
+      "gerenciar-mensagem",
+      "Filtros limpos."
+    );
+  }
+);
+
+/* Navegação entre páginas. */
+
+campo("gerenciar-anterior").addEventListener(
+  "click",
+  () => {
+    if (paginaGerenciar > 1) {
+      paginaGerenciar--;
+      renderizarEventos();
+    }
+  }
+);
+
+campo("gerenciar-proxima").addEventListener(
+  "click",
+  () => {
+    const total = filtrarEventosGerenciar().length;
+    const totalPaginas = Math.max(
+      1,
+      Math.ceil(total / ITENS_POR_PAGINA)
+    );
+
+    if (paginaGerenciar < totalPaginas) {
+      paginaGerenciar++;
+      renderizarEventos();
+    }
+  }
+);
+
+/* Atualiza o filtro de campanhas quando
+   a biblioteca for recarregada. */
+
+const carregarCampanhasOriginal = carregarCampanhas;
+
+carregarCampanhas = async function() {
+  await carregarCampanhasOriginal();
+  atualizarCampanhasGerenciar();
+};
