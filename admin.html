@@ -825,6 +825,85 @@
                 placeholder="https://..."
               >
             </label>
+            
+<div
+  id="campanha-secao-personagem"
+  class="admin-campo-inteiro"
+  hidden
+>
+  <hr class="admin-divisor">
+
+  <h3>🧙 Minha Personagem</h3>
+
+  <p class="admin-ajuda">
+    Informações sobre sua personagem nesta campanha.
+    O resumo aparecerá no site, enquanto a história
+    completa poderá ser acessada por um link externo.
+  </p>
+
+  <div class="admin-form">
+
+    <label for="campanha-personagem-nome">
+      Nome da personagem
+      <input
+        type="text"
+        id="campanha-personagem-nome"
+      >
+    </label>
+
+    <label for="campanha-personagem-imagem">
+      URL da imagem da personagem
+      <input
+        type="url"
+        id="campanha-personagem-imagem"
+        placeholder="https://..."
+      >
+    </label>
+
+    <label for="campanha-personagem-raca">
+      Raça ou espécie
+      <input
+        type="text"
+        id="campanha-personagem-raca"
+      >
+    </label>
+
+    <label for="campanha-personagem-classe">
+      Classe ou profissão
+      <input
+        type="text"
+        id="campanha-personagem-classe"
+      >
+    </label>
+
+    <label for="campanha-personagem-apresentacao">
+      Apresentação da personagem
+      <textarea
+        id="campanha-personagem-apresentacao"
+        rows="3"
+      ></textarea>
+    </label>
+
+    <label for="campanha-personagem-resumo">
+      Resumo da história
+      <textarea
+        id="campanha-personagem-resumo"
+        rows="6"
+      ></textarea>
+    </label>
+
+    <label for="campanha-personagem-pdf">
+      Link da história completa (PDF externo)
+      <input
+        type="url"
+        id="campanha-personagem-pdf"
+        placeholder="https://..."
+      >
+    </label>
+
+  </div>
+</div>
+
 
             <button type="submit" id="salvar-campanha">
               💾 Salvar campanha
