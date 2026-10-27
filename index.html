@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#100b1d">
+  <title>Mione Le Fay | Agenda de Lives</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="topo">
+    <a class="logo" href="#inicio">✦ MIONE LE FAY</a>
+    <nav aria-label="Menu principal">
+      <a href="#inicio">Início</a>
+      <a href="#agenda">Agenda</a>
+      <a href="#campanhas">Campanhas</a>
+      <a href="#redes">Redes sociais</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <p class="destaque">🎮 RPG • GAMEPLAY • PODCASTS</p>
+      <h1>Seu próximo encontro com a Mione começa aqui.</h1>
+      <p>
+        Confira minhas lives, participações em outros
+        canais e novos vídeos. Tudo em um só lugar!
+      </p>
+      <a class="botao" href="#agenda">Explorar agenda</a>
+    </section>
+
+    <section class="secao" id="agenda">
+      <div class="cabecalho-secao">
+        <div>
+          <p class="destaque">PROGRAMAÇÃO</p>
+          <h2>📅 Agenda de Lives</h2>
+          <p>Um mural de post-its para não perder nada!</p>
+        </div>
+        <div class="navegacao-mes">
+          <button id="mes-anterior" aria-label="Mês anterior">❮</button>
+          <h3 id="mes-atual"></h3>
+          <button id="mes-proximo" aria-label="Próximo mês">❯</button>
+        </div>
+      </div>
+
+      <div class="filtros" id="filtros">
+        <button class="filtro ativo" data-categoria="todas">Todas</button>
+        <button class="filtro" data-categoria="rpg-proprio">🎲 RPG no meu canal</button>
+        <button class="filtro" data-categoria="rpg-externo">🧙 RPG em outros canais</button>
+        <button class="filtro" data-categoria="podcast">🎙️ Podcasts</button>
+        <button class="filtro" data-categoria="jogos">🎮 Jogos</button>
+        <button class="filtro" data-categoria="video">🎬 Vídeos</button>
+      </div>
+
+      <div class="calendario" id="calendario"></div>
+    </section>
+
+    <section class="secao" id="campanhas">
+      <p class="destaque">AVENTURAS E PROGRAMAS</p>
+      <h2>✨ Campanhas em destaque</h2>
+      <div class="grade-campanhas">
+        <article class="campanha">
+          <h3>Labirinto: Ecos da Infância</h3>
+          <p>Uma aventura de mistério, amizade e fantasia.</p>
+        </article>
+        <article class="campanha">
+          <h3>Máscaras de Nyarlathotep</h3>
+          <p>Investigação e horror em Call of Cthulhu.</p>
+        </article>
+        <article class="campanha">
+          <h3>Fofocas de Arton</h3>
+          <p>Histórias, curiosidades e segredos de Arton.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="secao" id="redes">
+      <p class="destaque">ENCONTRE A MIONE</p>
+      <h2>💜 Redes sociais</h2>
+      <div class="redes">
+        <a class="botao" href="https://www.youtube.com/@MioneLeFay" target="_blank" rel="noopener noreferrer">YouTube</a>
+        <a class="botao" href="https://www.twitch.tv/" target="_blank" rel="noopener noreferrer">Twitch</a>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal oculto" id="modal" role="dialog"
+       aria-modal="true" aria-labelledby="modal-titulo">
+    <div class="modal-conteudo">
+      <button id="fechar-modal" class="fechar" aria-label="Fechar">✕</button>
+      <img id="modal-imagem" alt="Arte da transmissão" hidden>
+      <p id="modal-categoria" class="destaque"></p>
+      <h2 id="modal-titulo"></h2>
+      <p id="modal-canal"></p>
+      <p id="modal-data"></p>
+      <p id="modal-sinopse"></p>
+      <a id="modal-link" class="botao" target="_blank"
+         rel="noopener noreferrer">Assistir transmissão</a>
+    </div>
+  </div>
+
+  <footer>
+    <p>💜 Mione Le Fay • RPG, jogos e muitas histórias</p>
+  </footer>
+</body>
+</html>
