@@ -931,6 +931,7 @@ function renderizarCampanhas() {
         "Nenhuma campanha cadastrada no momento."
       )
     );
+    atualizarSetasCampanhas();
     return;
   }
 
@@ -978,13 +979,40 @@ function renderizarCampanhas() {
     }
 
     if (campanha.sinopse) {
-      card.append(
-        criarElemento(
-          "p",
-          campanha.sinopse,
-          "campanha-sinopse"
-        )
+      const sinopse = criarElemento(
+        "p",
+        campanha.sinopse,
+        "campanha-sinopse"
       );
+
+      card.append(sinopse);
+
+      const botaoLerMais = criarElemento(
+        "button",
+        "Ler mais",
+        "campanha-ler-mais"
+      );
+
+      botaoLerMais.type = "button";
+      botaoLerMais.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+
+      botaoLerMais.addEventListener("click", () => {
+        const expandida =
+          sinopse.classList.toggle("expandida");
+
+        botaoLerMais.textContent =
+          expandida ? "Ler menos" : "Ler mais";
+
+        botaoLerMais.setAttribute(
+          "aria-expanded",
+          String(expandida)
+        );
+      });
+
+      card.append(botaoLerMais);
     }
 
     if (
@@ -1006,7 +1034,79 @@ function renderizarCampanhas() {
 
     lista.append(card);
   });
+
+  atualizarSetasCampanhas();
 }
+
+
+// ==========================================
+// NAVEGAÇÃO DO CARROSSEL DE CAMPANHAS
+// ==========================================
+
+function atualizarSetasCampanhas() {
+  const lista = document.getElementById("lista-campanhas");
+  const anterior = document.getElementById("campanhas-anterior");
+  const proximo = document.getElementById("campanhas-proximo");
+
+  if (!lista || !anterior || !proximo) return;
+
+  const limite = Math.max(
+    0,
+    lista.scrollWidth - lista.clientWidth
+  );
+
+  anterior.disabled = lista.scrollLeft <= 2;
+  proximo.disabled = lista.scrollLeft >= limite - 2;
+}
+
+function navegarCampanhas(direcao) {
+  const lista = document.getElementById("lista-campanhas");
+
+  if (!lista) return;
+
+  const primeiroCard = lista.querySelector(".campanha");
+
+  if (!primeiroCard) return;
+
+  const estilos = getComputedStyle(lista);
+  const espacamento = parseFloat(estilos.columnGap) || 0;
+
+  const distancia =
+    primeiroCard.getBoundingClientRect().width +
+    espacamento;
+
+  lista.scrollBy({
+    left: direcao * distancia,
+    behavior: window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches ? "auto" : "smooth"
+  });
+}
+
+document
+  .getElementById("campanhas-anterior")
+  ?.addEventListener("click", () => {
+    navegarCampanhas(-1);
+  });
+
+document
+  .getElementById("campanhas-proximo")
+  ?.addEventListener("click", () => {
+    navegarCampanhas(1);
+  });
+
+document
+  .getElementById("lista-campanhas")
+  ?.addEventListener(
+    "scroll",
+    atualizarSetasCampanhas,
+    { passive: true }
+  );
+
+window.addEventListener(
+  "resize",
+  atualizarSetasCampanhas
+);
 
 // ==========================================
 // CARREGAR CAMPANHAS E COMPROMISSOS
