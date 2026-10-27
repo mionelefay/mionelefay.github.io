@@ -897,7 +897,7 @@ async function carregarAgenda() {
         .select(
           "id, titulo, categoria, data, hora, canal, " +
           "sinopse, imagem, link, narrador, turno, " +
-          "bloqueia_turno, campanha_id"
+          "bloqueia_turno, campanha_id, campanha_snapshot"
         )
         .eq("status", "publicada")
         .order("data", { ascending: true })
