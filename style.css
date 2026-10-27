@@ -784,3 +784,268 @@ footer {
     max-height: 320px;
   }
 }
+
+
+/* ==========================================
+   HERO COM ILUSTRAÇÃO E AGENDA SEMANAL
+   ========================================== */
+
+.hero {
+  padding: 60px 5%;
+}
+
+.hero-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 36px;
+  align-items: start;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+.hero-apresentacao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+
+.hero-texto {
+  width: 100%;
+}
+
+.hero-texto h1 {
+  font-size: clamp(2rem, 3.5vw, 3.7rem);
+  line-height: 1.15;
+  margin: 15px 0;
+}
+
+.hero-texto p:not(.destaque) {
+  max-width: 550px;
+  color: var(--suave);
+}
+
+.hero-mione {
+  display: block;
+  width: 100%;
+  max-width: 370px;
+  height: auto;
+  object-fit: contain;
+  margin: 25px auto 0;
+}
+
+/* ==========================================
+   PAINEL DA AGENDA SEMANAL
+   ========================================== */
+
+.hero-agenda {
+  min-width: 0;
+  padding: 24px;
+  background: rgba(23, 17, 38, 0.95);
+  border: 1px solid var(--borda);
+  border-radius: 22px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+.hero-agenda-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.hero-agenda-cabecalho h2 {
+  font-size: 1.65rem;
+  margin: 5px 0;
+}
+
+.hero-agenda-link {
+  color: #d5a6ff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.hero-agenda-link:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================
+   DIAS DA SEMANA
+   ========================================== */
+
+.agenda-semanal {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.agenda-semanal-dia {
+  min-width: 0;
+  padding: 13px;
+  background: #100c1e;
+  border: 1px solid #342546;
+  border-radius: 13px;
+}
+
+.agenda-semanal-dia-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.agenda-semanal-dia-cabecalho strong {
+  font-size: 0.9rem;
+  color: #f2e7ff;
+}
+
+.agenda-semanal-hoje {
+  border-color: #c48aff;
+  background: #201332;
+  box-shadow: inset 0 0 0 1px #c48aff33;
+}
+
+.agenda-semanal-etiqueta-hoje {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #b66cff;
+  color: #160a24;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+/* ==========================================
+   TURNOS DENTRO DA AGENDA SEMANAL
+   ========================================== */
+
+.agenda-semanal-turnos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.agenda-semanal .calendario-turno {
+  min-width: 0;
+  padding: 7px;
+}
+
+.agenda-semanal .turno-nome {
+  font-size: 0.7rem;
+}
+
+.agenda-semanal .turno-eventos {
+  gap: 6px;
+}
+
+.agenda-semanal .turno-eventos .postit {
+  padding: 7px;
+  overflow-wrap: anywhere;
+}
+
+.agenda-semanal .turno-eventos .postit strong {
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.agenda-semanal .turno-eventos .postit small {
+  font-size: 0.64rem;
+}
+
+.agenda-semanal .postit-disponibilidade {
+  font-size: 0.67rem;
+}
+
+/* ==========================================
+   TELAS INTERMEDIÁRIAS
+   ========================================== */
+
+@media (max-width: 1200px) {
+  .hero-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: 22px;
+  }
+
+  .hero-agenda {
+    padding: 17px;
+  }
+
+  .agenda-semanal-turnos {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================
+   TABLETS E CELULARES
+   ========================================== */
+
+@media (max-width: 850px) {
+  .hero {
+    padding: 45px 5%;
+  }
+
+  .hero-layout {
+    grid-template-columns: 1fr;
+    gap: 35px;
+  }
+
+  .hero-apresentacao {
+    text-align: center;
+  }
+
+  .hero-texto h1 {
+    font-size: clamp(2rem, 7vw, 3rem);
+  }
+
+  .hero-mione {
+    max-width: 290px;
+    margin-top: 20px;
+  }
+
+  .hero-agenda {
+    width: 100%;
+  }
+
+  .agenda-semanal-turnos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    padding: 35px 4%;
+  }
+
+  .hero-mione {
+    max-width: 245px;
+  }
+
+  .hero-agenda {
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .hero-agenda-cabecalho h2 {
+    font-size: 1.4rem;
+  }
+
+  .agenda-semanal-dia {
+    padding: 10px;
+  }
+
+  .agenda-semanal-turnos {
+    grid-template-columns: 1fr;
+  }
+
+  .agenda-semanal .calendario-turno {
+    padding: 8px;
+  }
+
+  .agenda-semanal .turno-eventos .postit strong {
+    font-size: 0.78rem;
+  }
+}
