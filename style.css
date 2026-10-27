@@ -979,6 +979,36 @@ button.postit:hover {
   overflow: hidden;
 }
 
+
+.campanha-sinopse.expandida {
+  display: block;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  overflow: visible;
+}
+
+.campanha-ler-mais {
+  align-self: flex-start;
+  margin: -8px 24px 20px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #ddb8ff;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.campanha-ler-mais:hover {
+  text-decoration: underline;
+}
+
+.campanha-ler-mais:focus-visible {
+  outline: 2px solid #ddb8ff;
+  outline-offset: 4px;
+}
+
 .campanha-link {
   align-self: flex-start;
   margin: auto 24px 24px;
