@@ -520,7 +520,14 @@ function renderizarCampanhas() {
 // SALVAR CAMPANHA
 // ==========================================
 
+
 function dadosFormularioCampanha() {
+  const campanhaAtual = campanhaEmEdicao !== null
+    ? encontrarCampanha(campanhaEmEdicao)
+    : null;
+
+  const detalhesAtuais = campanhaAtual?.detalhes || {};
+
   return {
     titulo: valor("campanha-titulo"),
     categoria: valor("campanha-categoria"),
@@ -528,7 +535,11 @@ function dadosFormularioCampanha() {
     canal: valor("campanha-canal"),
     sinopse: valor("campanha-sinopse"),
     imagem: valor("campanha-imagem"),
-    link: valor("campanha-link")
+    link: valor("campanha-link"),
+    detalhes: {
+      ...detalhesAtuais,
+      papel: valor("campanha-papel")
+    }
   };
 }
 
