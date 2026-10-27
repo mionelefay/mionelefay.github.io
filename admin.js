@@ -2,12 +2,17 @@
 "use strict";
 
 // ==========================================
-// CONFIGURAÇÃO DO SUPABASE
+// SUPABASE
 // ==========================================
 
-const SUPABASE_URL = "https://gevkvjuaurcxokudlblc.supabase.co";
-const SUPABASE_KEY = "sb_publishable_4mIXjg7273CgkxJzNGILow_0GyQ6yTd";
-const ADMIN_UID = "5f0cd47a-7c6f-4fc5-99d8-449534c393e8";
+const SUPABASE_URL =
+  "https://gevkvjuaurcxokudlblc.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_4mIXjg7273CgkxJzNGILow_0GyQ6yTd";
+
+const ADMIN_UID =
+  "5f0cd47a-7c6f-4fc5-99d8-449534c393e8";
 
 const supabaseClient = supabase.createClient(
   SUPABASE_URL,
@@ -15,7 +20,7 @@ const supabaseClient = supabase.createClient(
 );
 
 // ==========================================
-// CATEGORIAS E TURNOS
+// CONFIGURAÇÕES
 // ==========================================
 
 const TURNOS = {
@@ -36,8 +41,15 @@ const CATEGORIAS = {
   livre: "🟢 Livre"
 };
 
+let campanhas = [];
+let eventos = [];
+let eventoEmEdicao = null;
+let campanhaEmEdicao = null;
+let datasRecorrencia = [];
+let bancoPreparado = false;
+
 // ==========================================
-// ELEMENTOS E ESTADO
+// ELEMENTOS E AUXILIARES
 // ==========================================
 
 function campo(id) {
@@ -48,118 +60,8 @@ function valor(id) {
   return campo(id).value.trim();
 }
 
-const formulario = campo("login-form");
-const campoEmail = campo("admin-email");
-const campoSenha = campo("admin-senha");
-const botaoEntrar = campo("entrar");
-const mensagem = campo("admin-mensagem");
-const areaAdmin = campo("area-admin");
-const botaoSair = campo("sair");
-
-const formularioEvento = campo("evento-form");
-const botaoSalvarEvento = campo("salvar-evento");
-const mensagemEvento = campo("evento-mensagem");
-
-const formularioCampanha = campo("campanha-form");
-const mensagemCampanha = campo("campanha-mensagem");
-const listaCampanhas = campo("lista-campanhas");
-
-const formularioRecorrencia = campo("recorrencia-form");
-const mensagemRecorrencia = campo("recorrencia-mensagem");
-
-const mensagemGerenciar = campo("gerenciar-mensagem");
-const listaEventos = campo("lista-eventos");
-
-let campanhas = [];
-let eventos = [];
-let eventoEmEdicao = null;
-let campanhaEmEdicao = null;
-let datasRecorrencia = [];
-let bancoPreparado = false;
-
-// ==========================================
-// FUNÇÕES AUXILIARES
-// ==========================================
-
-function mostrarMensagem(texto) {
-  mensagem.textContent = texto;
-  mensagem.hidden = !texto;
-}
-
-function mostrarLogin() {
-  formulario.hidden = false;
-  areaAdmin.hidden = true;
-}
-
-function mostrarPainel() {
-  formulario.hidden = true;
-  areaAdmin.hidden = false;
-}
-
-function formatarData(data) {
-  if (!data) return "";
-  const partes = data.split("-");
-  return `${partes[2]}/${partes[1]}/${partes[0]}`;
-}
-
-function formatarHora(hora) {
-  return hora ? hora.slice(0, 5) : "";
-}
-
-function obterTurno(hora) {
-  if (hora >= "06:00" && hora < "12:00") {
-    return "manha";
-  }
-
-  if (hora >= "12:00" && hora < "18:00") {
-    return "tarde";
-  }
-
-  return "noite";
-}
-
-function dataLocal(dataTexto) {
-  const [ano, mes, dia] = dataTexto.split("-").map(Number);
-  return new Date(ano, mes - 1, dia);
-}
-
-function dataISO(data) {
-  const ano = data.getFullYear();
-  const mes = String(data.getMonth() + 1).padStart(2, "0");
-  const dia = String(data.getDate()).padStart(2, "0");
-
-  return `${ano}-${mes}-${dia}`;
-}
-
-function hojeISO() {
-  return dataISO(new Date());
-}
-
-function adicionarDias(dataTexto, dias) {
-  const data = dataLocal(dataTexto);
-  data.setDate(data.getDate() + dias);
-  return dataISO(data);
-}
-
-function adicionarMeses(dataTexto, meses) {
-  const original = dataLocal(dataTexto);
-  const diaOriginal = original.getDate();
-
-  const destino = new Date(
-    original.getFullYear(),
-    original.getMonth() + meses,
-    1
-  );
-
-  const ultimoDia = new Date(
-    destino.getFullYear(),
-    destino.getMonth() + 1,
-    0
-  ).getDate();
-
-  destino.setDate(Math.min(diaOriginal, ultimoDia));
-
-  return dataISO(destino);
+function mensagem(id, texto) {
+  campo(id).textContent = texto;
 }
 
 function criarElemento(tag, texto, classe) {
@@ -183,13 +85,81 @@ function criarBotao(texto, acao, classe = "") {
   return botao;
 }
 
-function limparElemento(elemento) {
-  elemento.replaceChildren();
+function formatarData(data) {
+  if (!data) return "";
+
+  const [ano, mes, dia] = data.split("-");
+  return `${dia}/${mes}/${ano}`;
+}
+
+function formatarHora(hora) {
+  return hora ? String(hora).slice(0, 5) : "";
+}
+
+function obterTurno(hora) {
+  if (hora >= "06:00" && hora < "12:00") {
+    return "manha";
+  }
+
+  if (hora >= "12:00" && hora < "18:00") {
+    return "tarde";
+  }
+
+  return "noite";
+}
+
+function dataLocal(texto) {
+  const [ano, mes, dia] = texto.split("-").map(Number);
+  return new Date(ano, mes - 1, dia);
+}
+
+function dataISO(data) {
+  return [
+    data.getFullYear(),
+    String(data.getMonth() + 1).padStart(2, "0"),
+    String(data.getDate()).padStart(2, "0")
+  ].join("-");
+}
+
+function hojeISO() {
+  return dataISO(new Date());
+}
+
+function adicionarDias(texto, quantidade) {
+  const data = dataLocal(texto);
+  data.setDate(data.getDate() + quantidade);
+  return dataISO(data);
+}
+
+function adicionarMeses(texto, quantidade) {
+  const original = dataLocal(texto);
+  const diaOriginal = original.getDate();
+
+  const destino = new Date(
+    original.getFullYear(),
+    original.getMonth() + quantidade,
+    1
+  );
+
+  const ultimoDia = new Date(
+    destino.getFullYear(),
+    destino.getMonth() + 1,
+    0
+  ).getDate();
+
+  destino.setDate(Math.min(diaOriginal, ultimoDia));
+  return dataISO(destino);
 }
 
 function encontrarCampanha(id) {
   return campanhas.find(
-    campanha => campanha.id === Number(id)
+    item => Number(item.id) === Number(id)
+  );
+}
+
+function encontrarEvento(id) {
+  return eventos.find(
+    item => String(item.id) === String(id)
   );
 }
 
@@ -199,6 +169,71 @@ function exigirBancoPreparado() {
       "A estrutura do Supabase não está disponível."
     );
   }
+}
+
+// ==========================================
+// SNAPSHOT HISTÓRICO
+// ==========================================
+
+// Esta função registra os dados da campanha
+// associados à sessão.
+//
+// O snapshot permite preservar as informações
+// depois que a campanha for atualizada.
+
+function criarSnapshotCampanha(campanha, dados = {}) {
+  if (!campanha) return null;
+
+  return {
+    titulo: dados.titulo ?? campanha.titulo ?? "",
+    categoria:
+      dados.categoria ?? campanha.categoria ?? "",
+    canal: dados.canal ?? campanha.canal ?? "",
+    narrador:
+      dados.narrador ?? campanha.narrador ?? "",
+    sinopse:
+      dados.sinopse ?? campanha.sinopse ?? "",
+    imagem:
+      dados.imagem ?? campanha.imagem ?? "",
+    link: dados.link ?? campanha.link ?? ""
+  };
+}
+
+// Quando uma sessão já tem um snapshot,
+// ele não deve ser substituído por uma
+// simples atualização do compromisso.
+
+function snapshotParaEvento(
+  campanha,
+  dados,
+  anterior = null
+) {
+  if (!campanha) return null;
+
+  const mesmaCampanha =
+    anterior &&
+    Number(anterior.campanha_id) ===
+      Number(campanha.id);
+
+  if (
+    mesmaCampanha &&
+    anterior.campanha_snapshot
+  ) {
+    return anterior.campanha_snapshot;
+  }
+
+  return criarSnapshotCampanha(campanha, {
+    titulo: dados.titulo,
+    categoria: dados.categoria,
+    canal: dados.canal ?? campanha.canal ?? "",
+    narrador:
+      dados.narrador ?? campanha.narrador ?? "",
+    sinopse:
+      dados.sinopse ?? campanha.sinopse ?? "",
+    imagem:
+      dados.imagem ?? campanha.imagem ?? "",
+    link: dados.link || campanha.link || ""
+  });
 }
 
 // ==========================================
@@ -215,72 +250,88 @@ async function verificarAdministrador() {
 }
 
 async function exigirAdministrador() {
-  const autorizado = await verificarAdministrador();
-
-  if (!autorizado) {
+  if (!(await verificarAdministrador())) {
     mostrarLogin();
-    throw new Error("Sessão administrativa não autorizada.");
+    throw new Error(
+      "Sessão administrativa não autorizada."
+    );
   }
 }
 
-// A proteção real dos dados é feita pelas
-// políticas RLS configuradas no Supabase.
+// As políticas RLS do Supabase continuam
+// responsáveis pela proteção dos dados.
 
 // ==========================================
-// NAVEGAÇÃO ENTRE ABAS
+// LOGIN E PAINEL
 // ==========================================
 
-function abrirAba(id) {
-  document.querySelectorAll(".admin-secao").forEach(
-    secao => {
-      secao.hidden = secao.id !== id;
-    }
-  );
-
-  document.querySelectorAll(
-    ".admin-abas button[data-aba]"
-  ).forEach(botao => {
-    const ativa = botao.dataset.aba === id;
-
-    botao.classList.toggle("ativo", ativa);
-    botao.setAttribute("aria-selected", String(ativa));
-  });
+function mostrarLogin() {
+  campo("login-form").hidden = false;
+  campo("area-admin").hidden = true;
 }
 
-document.querySelectorAll(
-  ".admin-abas button[data-aba]"
-).forEach(botao => {
-  botao.addEventListener("click", () => {
-    abrirAba(botao.dataset.aba);
-  });
-});
+function mostrarPainel() {
+  campo("login-form").hidden = true;
+  campo("area-admin").hidden = false;
+}
 
-// ==========================================
-// VERIFICAÇÃO DO BANCO
-// ==========================================
+function mostrarMensagemLogin(texto) {
+  const elemento = campo("admin-mensagem");
+  elemento.textContent = texto;
+  elemento.hidden = !texto;
+}
+
+function abrirAba(id) {
+  document
+    .querySelectorAll(".admin-secao")
+    .forEach(secao => {
+      secao.hidden = secao.id !== id;
+    });
+
+  document
+    .querySelectorAll(".admin-abas button[data-aba]")
+    .forEach(botao => {
+      const ativa = botao.dataset.aba === id;
+
+      botao.classList.toggle("ativo", ativa);
+      botao.setAttribute(
+        "aria-selected",
+        String(ativa)
+      );
+    });
+}
+
+document
+  .querySelectorAll(".admin-abas button[data-aba]")
+  .forEach(botao => {
+    botao.addEventListener("click", () => {
+      abrirAba(botao.dataset.aba);
+    });
+  });
 
 async function verificarEstruturaBanco() {
   bancoPreparado = false;
 
-  const consultaCampanhas = await supabaseClient
+  const respostaCampanhas = await supabaseClient
     .from("campanhas")
     .select("id")
     .limit(1);
 
-  if (consultaCampanhas.error) {
-    console.error(consultaCampanhas.error.message);
+  if (respostaCampanhas.error) {
+    console.error(respostaCampanhas.error.message);
     return false;
   }
 
-  const consultaEventos = await supabaseClient
+  const respostaEventos = await supabaseClient
     .from("eventos")
     .select(
-      "id, campanha_id, turno, bloqueia_turno, narrador"
+      "id, campanha_id, turno, bloqueia_turno, " +
+      "narrador, campanha_snapshot"
     )
     .limit(1);
 
-  if (consultaEventos.error) {
-    console.error(consultaEventos.error.message);
+  if (respostaEventos.error) {
+    console.error(respostaEventos.error.message);
     return false;
   }
 
@@ -293,65 +344,71 @@ function atualizarEstadoBanco() {
     ? ""
     : "⚠️ Não foi possível verificar o Supabase.";
 
-  mensagemEvento.textContent = texto;
-  mensagemCampanha.textContent = texto;
-  mensagemRecorrencia.textContent = texto;
-  mensagemGerenciar.textContent = texto;
+  [
+    "evento-mensagem",
+    "campanha-mensagem",
+    "recorrencia-mensagem",
+    "gerenciar-mensagem"
+  ].forEach(id => mensagem(id, texto));
 
   [
-    botaoSalvarEvento,
-    campo("salvar-campanha"),
-    campo("previsualizar-recorrencia"),
-    campo("salvar-recorrencia")
-  ].forEach(botao => {
-    botao.disabled = !bancoPreparado;
+    "salvar-evento",
+    "salvar-campanha",
+    "previsualizar-recorrencia",
+    "salvar-recorrencia"
+  ].forEach(id => {
+    campo(id).disabled = !bancoPreparado;
   });
 }
 
-// ==========================================
-// LOGIN
-// ==========================================
+campo("login-form").addEventListener(
+  "submit",
+  async evento => {
+    evento.preventDefault();
 
-formulario.addEventListener("submit", async evento => {
-  evento.preventDefault();
-
-  botaoEntrar.disabled = true;
-  mostrarMensagem("Verificando credenciais...");
-
-  try {
-    const { error } =
-      await supabaseClient.auth.signInWithPassword({
-        email: campoEmail.value.trim(),
-        password: campoSenha.value
-      });
-
-    if (error) throw error;
-
-    campoSenha.value = "";
-
-    await exigirAdministrador();
-
-    mostrarPainel();
-    mostrarMensagem("Login realizado com sucesso! 💜");
-
-    await carregarPainel();
-
-  } catch (erro) {
-    mostrarLogin();
-
-    mostrarMensagem(
-      "Não foi possível entrar ou a conta não possui acesso."
+    campo("entrar").disabled = true;
+    mostrarMensagemLogin(
+      "Verificando credenciais..."
     );
 
-    console.error("Erro de login:", erro.message);
+    try {
+      const { error } =
+        await supabaseClient.auth.signInWithPassword({
+          email: valor("admin-email"),
+          password: campo("admin-senha").value
+        });
 
-  } finally {
-    botaoEntrar.disabled = false;
+      if (error) throw error;
+
+      campo("admin-senha").value = "";
+
+      await exigirAdministrador();
+
+      mostrarPainel();
+      mostrarMensagemLogin(
+        "Login realizado com sucesso! 💜"
+      );
+
+      await carregarPainel();
+
+    } catch (erro) {
+      mostrarLogin();
+
+      mostrarMensagemLogin(
+        "Não foi possível entrar ou a conta " +
+        "não possui acesso."
+      );
+
+      console.error("Erro de login:", erro.message);
+
+    } finally {
+      campo("entrar").disabled = false;
+    }
   }
-});
+);
 
 // ==========================================
-// CARREGAMENTO DAS CAMPANHAS
+// CARREGAR CAMPANHAS
 // ==========================================
 
 async function carregarCampanhas() {
@@ -372,12 +429,11 @@ async function carregarCampanhas() {
 }
 
 function preencherSeletoresCampanhas() {
-  const seletores = [
-    campo("evento-campanha"),
-    campo("recorrencia-campanha")
-  ];
-
-  seletores.forEach(seletor => {
+  [
+    "evento-campanha",
+    "recorrencia-campanha"
+  ].forEach(id => {
+    const seletor = campo(id);
     const anterior = seletor.value;
 
     while (seletor.options.length > 1) {
@@ -399,11 +455,15 @@ function preencherSeletoresCampanhas() {
 }
 
 function renderizarCampanhas() {
-  limparElemento(listaCampanhas);
+  const lista = campo("lista-campanhas");
+  lista.replaceChildren();
 
   if (!campanhas.length) {
-    listaCampanhas.append(
-      criarElemento("p", "Nenhuma campanha cadastrada.")
+    lista.append(
+      criarElemento(
+        "p",
+        "Nenhuma campanha cadastrada."
+      )
     );
     return;
   }
@@ -420,7 +480,7 @@ function renderizarCampanhas() {
       criarElemento(
         "p",
         CATEGORIAS[campanha.categoria] ||
-        campanha.categoria
+          campanha.categoria
       )
     );
 
@@ -452,12 +512,12 @@ function renderizarCampanhas() {
     );
 
     item.append(acoes);
-    listaCampanhas.append(item);
+    lista.append(item);
   });
 }
 
 // ==========================================
-// CADASTRO E EDIÇÃO DE CAMPANHAS
+// SALVAR CAMPANHA
 // ==========================================
 
 function dadosFormularioCampanha() {
@@ -472,7 +532,7 @@ function dadosFormularioCampanha() {
   };
 }
 
-formularioCampanha.addEventListener(
+campo("campanha-form").addEventListener(
   "submit",
   async evento => {
     evento.preventDefault();
@@ -480,7 +540,10 @@ formularioCampanha.addEventListener(
     const botao = campo("salvar-campanha");
     botao.disabled = true;
 
-    mensagemCampanha.textContent = "Salvando campanha...";
+    mensagem(
+      "campanha-mensagem",
+      "Salvando campanha..."
+    );
 
     try {
       await exigirAdministrador();
@@ -488,37 +551,38 @@ formularioCampanha.addEventListener(
 
       const dados = dadosFormularioCampanha();
 
-      let consulta;
+      let resposta;
 
       if (campanhaEmEdicao !== null) {
-        consulta = await supabaseClient
+        resposta = await supabaseClient
           .from("campanhas")
           .update(dados)
           .eq("id", campanhaEmEdicao);
       } else {
-        consulta = await supabaseClient
+        resposta = await supabaseClient
           .from("campanhas")
           .insert([dados]);
       }
 
-      if (consulta.error) throw consulta.error;
+      if (resposta.error) throw resposta.error;
 
       cancelarEdicaoCampanha();
 
       await carregarCampanhas();
       await carregarEventos();
 
-      mensagemCampanha.textContent =
-        "💜 Campanha salva com sucesso!";
+      mensagem(
+        "campanha-mensagem",
+        "💜 Campanha salva com sucesso!"
+      );
 
     } catch (erro) {
-      mensagemCampanha.textContent =
-        "Não foi possível salvar a campanha.";
-
-      console.error(
-        "Erro ao salvar campanha:",
-        erro.message
+      mensagem(
+        "campanha-mensagem",
+        "Não foi possível salvar a campanha."
       );
+
+      console.error(erro.message);
 
     } finally {
       botao.disabled = !bancoPreparado;
@@ -528,40 +592,32 @@ formularioCampanha.addEventListener(
 
 function editarCampanha(id) {
   const campanha = encontrarCampanha(id);
-
   if (!campanha) return;
 
   campanhaEmEdicao = id;
 
-  campo("campanha-titulo").value =
-    campanha.titulo || "";
-
-  campo("campanha-categoria").value =
-    campanha.categoria || "";
-
-  campo("campanha-narrador").value =
-    campanha.narrador || "";
-
-  campo("campanha-canal").value =
-    campanha.canal || "";
-
-  campo("campanha-sinopse").value =
-    campanha.sinopse || "";
-
-  campo("campanha-imagem").value =
-    campanha.imagem || "";
-
-  campo("campanha-link").value =
-    campanha.link || "";
+  [
+    "titulo",
+    "categoria",
+    "narrador",
+    "canal",
+    "sinopse",
+    "imagem",
+    "link"
+  ].forEach(chave => {
+    campo(`campanha-${chave}`).value =
+      campanha[chave] || "";
+  });
 
   campo("salvar-campanha").textContent =
     "💾 Atualizar campanha";
 
-  campo("cancelar-edicao-campanha").hidden = false;
+  campo("cancelar-edicao-campanha").hidden =
+    false;
 
   abrirAba("aba-campanhas");
 
-  formularioCampanha.scrollIntoView({
+  campo("campanha-form").scrollIntoView({
     behavior: "smooth",
     block: "start"
   });
@@ -569,28 +625,29 @@ function editarCampanha(id) {
 
 function cancelarEdicaoCampanha() {
   campanhaEmEdicao = null;
-  formularioCampanha.reset();
+  campo("campanha-form").reset();
 
   campo("salvar-campanha").textContent =
     "💾 Salvar campanha";
 
-  campo("cancelar-edicao-campanha").hidden = true;
+  campo("cancelar-edicao-campanha").hidden =
+    true;
 }
 
-campo("cancelar-edicao-campanha").addEventListener(
-  "click",
-  cancelarEdicaoCampanha
-);
+campo("cancelar-edicao-campanha")
+  .addEventListener(
+    "click",
+    cancelarEdicaoCampanha
+  );
 
 async function excluirCampanha(id) {
   const campanha = encontrarCampanha(id);
-
   if (!campanha) return;
 
-  // A verificação definitiva também é feita
-  // pela chave estrangeira no Supabase.
-  const { count, error: erroConsulta } =
-    await supabaseClient
+  try {
+    await exigirAdministrador();
+
+    const { count, error } = await supabaseClient
       .from("eventos")
       .select("id", {
         count: "exact",
@@ -598,74 +655,64 @@ async function excluirCampanha(id) {
       })
       .eq("campanha_id", id);
 
-  if (erroConsulta) {
-    mensagemCampanha.textContent =
-      "Não foi possível verificar as sessões vinculadas.";
-    return;
-  }
+    if (error) throw error;
 
-  if (count > 0) {
-    alert(
-      "Esta campanha possui sessões vinculadas. " +
-      "Remova ou desvincule as sessões antes de excluí-la."
-    );
-    return;
-  }
+    if (count > 0) {
+      alert(
+        "Esta campanha possui sessões vinculadas. " +
+        "Remova ou desvincule as sessões " +
+        "antes de excluí-la."
+      );
+      return;
+    }
 
-  if (!confirm(
-    `Excluir a campanha "${campanha.titulo}"?`
-  )) {
-    return;
-  }
+    if (!confirm(
+      `Excluir a campanha "${campanha.titulo}"?`
+    )) {
+      return;
+    }
 
-  try {
-    await exigirAdministrador();
-
-    const { error } = await supabaseClient
+    const resposta = await supabaseClient
       .from("campanhas")
       .delete()
       .eq("id", id);
 
-    if (error) throw error;
+    if (resposta.error) throw resposta.error;
 
     await carregarCampanhas();
 
-    mensagemCampanha.textContent =
-      "Campanha excluída.";
+    mensagem(
+      "campanha-mensagem",
+      "Campanha excluída."
+    );
 
   } catch (erro) {
-    mensagemCampanha.textContent =
-      "Não foi possível excluir a campanha.";
+    mensagem(
+      "campanha-mensagem",
+      "Não foi possível excluir a campanha."
+    );
 
     console.error(erro.message);
   }
 }
 
 // ==========================================
-// PREENCHIMENTO AUTOMÁTICO
+// PREENCHIMENTO AUTOMÁTICO DA CAMPANHA
 // ==========================================
 
 function preencherDadosCampanha(campanha) {
-  campo("evento-titulo").value =
-    campanha.titulo || "";
-
-  campo("evento-categoria").value =
-    campanha.categoria || "";
-
-  campo("evento-canal").value =
-    campanha.canal || "";
-
-  campo("evento-narrador").value =
-    campanha.narrador || "";
-
-  campo("evento-sinopse").value =
-    campanha.sinopse || "";
-
-  campo("evento-imagem").value =
-    campanha.imagem || "";
-
-  campo("evento-link").value =
-    campanha.link || "";
+  [
+    "titulo",
+    "categoria",
+    "canal",
+    "narrador",
+    "sinopse",
+    "imagem",
+    "link"
+  ].forEach(chave => {
+    campo(`evento-${chave}`).value =
+      campanha[chave] || "";
+  });
 }
 
 campo("evento-campanha").addEventListener(
@@ -693,19 +740,18 @@ function dadosFormularioEvento() {
     : null;
 
   if (campanhaId && !campanha) {
-    throw new Error("A campanha selecionada não existe.");
+    throw new Error(
+      "A campanha selecionada não existe."
+    );
   }
 
   const hora = valor("evento-hora");
-  const data = valor("evento-data");
-
-  const titulo = valor("evento-titulo");
   const linkInformado = valor("evento-link");
 
   const dados = {
-    titulo,
+    titulo: valor("evento-titulo"),
     categoria: valor("evento-categoria"),
-    data,
+    data: valor("evento-data"),
     hora,
     turno:
       valor("evento-turno") || obterTurno(hora),
@@ -713,26 +759,26 @@ function dadosFormularioEvento() {
       campo("evento-bloqueia-turno").checked,
     status: valor("evento-status"),
     campanha_id: campanha ? campanha.id : null,
-
-    // Guardamos uma cópia dos dados no evento.
-    // Isso permite preservar informações
-    // históricas das sessões anteriores.
     canal: valor("evento-canal") || null,
     narrador: valor("evento-narrador") || null,
     sinopse: valor("evento-sinopse") || null,
     imagem: valor("evento-imagem") || null,
-
-    // Se o link for igual ao da campanha,
-    // usamos null para permitir que o link
-    // principal seja atualizado futuramente.
-    //
-    // Se for diferente, guardamos o link
-    // exclusivo desta sessão.
-    link: campanha &&
+    link:
+      campanha &&
       linkInformado === (campanha.link || "")
         ? null
         : (linkInformado || null)
   };
+
+  const anterior = eventoEmEdicao !== null
+    ? encontrarEvento(eventoEmEdicao)
+    : null;
+
+  dados.campanha_snapshot = snapshotParaEvento(
+    campanha,
+    dados,
+    anterior
+  );
 
   return dados;
 }
@@ -741,14 +787,18 @@ function dadosFormularioEvento() {
 // SALVAR COMPROMISSO
 // ==========================================
 
-formularioEvento.addEventListener(
+campo("evento-form").addEventListener(
   "submit",
   async evento => {
     evento.preventDefault();
 
-    botaoSalvarEvento.disabled = true;
-    mensagemEvento.textContent =
-      "Salvando compromisso...";
+    const botao = campo("salvar-evento");
+    botao.disabled = true;
+
+    mensagem(
+      "evento-mensagem",
+      "Salvando compromisso..."
+    );
 
     try {
       await exigirAdministrador();
@@ -756,53 +806,50 @@ formularioEvento.addEventListener(
 
       const dados = dadosFormularioEvento();
 
-      let consulta;
+      let resposta;
 
       if (eventoEmEdicao !== null) {
-        consulta = await supabaseClient
+        resposta = await supabaseClient
           .from("eventos")
           .update(dados)
           .eq("id", eventoEmEdicao);
       } else {
-        consulta = await supabaseClient
+        resposta = await supabaseClient
           .from("eventos")
           .insert([dados]);
       }
 
-      if (consulta.error) throw consulta.error;
+      if (resposta.error) throw resposta.error;
 
       cancelarEdicaoEvento();
-
       await carregarEventos();
 
-      mensagemEvento.textContent =
-        "💜 Compromisso salvo com sucesso!";
-
-    } catch (erro) {
-      mensagemEvento.textContent =
-        "Não foi possível salvar o compromisso: " +
-        erro.message;
-
-      console.error(
-        "Erro ao salvar compromisso:",
-        erro.message
+      mensagem(
+        "evento-mensagem",
+        "💜 Compromisso salvo com sucesso!"
       );
 
+    } catch (erro) {
+      mensagem(
+        "evento-mensagem",
+        "Não foi possível salvar o compromisso: " +
+          erro.message
+      );
+
+      console.error(erro.message);
+
     } finally {
-      botaoSalvarEvento.disabled = !bancoPreparado;
+      botao.disabled = !bancoPreparado;
     }
   }
 );
 
 // ==========================================
-// EDIÇÃO DE COMPROMISSOS
+// EDITAR COMPROMISSO
 // ==========================================
 
 function editarEvento(id) {
-  const evento = eventos.find(
-    item => item.id === id
-  );
-
+  const evento = encontrarEvento(id);
   if (!evento) return;
 
   eventoEmEdicao = id;
@@ -810,6 +857,27 @@ function editarEvento(id) {
   const campanha = evento.campanha_id
     ? encontrarCampanha(evento.campanha_id)
     : null;
+
+  const passada = evento.data < hojeISO();
+
+  const snapshot = evento.campanha_snapshot;
+
+  function informacao(chave) {
+    if (passada) {
+      return (
+        snapshot?.[chave] ??
+        evento[chave] ??
+        campanha?.[chave] ??
+        ""
+      );
+    }
+
+    return (
+      campanha?.[chave] ||
+      evento[chave] ||
+      ""
+    );
+  }
 
   campo("evento-campanha").value =
     evento.campanha_id || "";
@@ -832,34 +900,25 @@ function editarEvento(id) {
   campo("evento-bloqueia-turno").checked =
     evento.bloqueia_turno !== false;
 
-  // Sessões passadas mostram seus dados
-  // registrados. Sessões futuras podem
-  // aproveitar os dados atuais da campanha.
-  const passada = evento.data < hojeISO();
+  [
+    "canal",
+    "narrador",
+    "sinopse",
+    "imagem"
+  ].forEach(chave => {
+    campo(`evento-${chave}`).value =
+      informacao(chave);
+  });
 
-  function informacao(chave) {
-    if (passada) {
-      return evento[chave] || campanha?.[chave] || "";
-    }
-
-    return campanha?.[chave] || evento[chave] || "";
-  }
-
-  campo("evento-canal").value =
-    informacao("canal");
-
-  campo("evento-narrador").value =
-    informacao("narrador");
-
-  campo("evento-sinopse").value =
-    informacao("sinopse");
-
-  campo("evento-imagem").value =
-    informacao("imagem");
-
-  // O link exclusivo tem prioridade.
   campo("evento-link").value =
-    evento.link || campanha?.link || "";
+    evento.link ||
+    (
+      passada
+        ? snapshot?.link
+        : campanha?.link
+    ) ||
+    campanha?.link ||
+    "";
 
   campo("evento-status").value =
     evento.status || "agendada";
@@ -867,11 +926,12 @@ function editarEvento(id) {
   campo("salvar-evento").textContent =
     "💾 Atualizar compromisso";
 
-  campo("cancelar-edicao-evento").hidden = false;
+  campo("cancelar-edicao-evento").hidden =
+    false;
 
   abrirAba("aba-eventos");
 
-  formularioEvento.scrollIntoView({
+  campo("evento-form").scrollIntoView({
     behavior: "smooth",
     block: "start"
   });
@@ -879,18 +939,20 @@ function editarEvento(id) {
 
 function cancelarEdicaoEvento() {
   eventoEmEdicao = null;
-  formularioEvento.reset();
+  campo("evento-form").reset();
 
   campo("salvar-evento").textContent =
     "💾 Salvar compromisso";
 
-  campo("cancelar-edicao-evento").hidden = true;
+  campo("cancelar-edicao-evento").hidden =
+    true;
 }
 
-campo("cancelar-edicao-evento").addEventListener(
-  "click",
-  cancelarEdicaoEvento
-);
+campo("cancelar-edicao-evento")
+  .addEventListener(
+    "click",
+    cancelarEdicaoEvento
+  );
 
 // ==========================================
 // CARREGAR COMPROMISSOS
@@ -909,16 +971,16 @@ async function carregarEventos() {
   if (error) throw error;
 
   eventos = data || [];
-
   renderizarEventos();
 }
 
 // ==========================================
-// LISTAGEM E GERENCIAMENTO
+// GERENCIAR COMPROMISSOS
 // ==========================================
 
 function renderizarEventos() {
-  limparElemento(listaEventos);
+  const lista = campo("lista-eventos");
+  lista.replaceChildren();
 
   const filtro = valor("gerenciar-filtro");
 
@@ -928,7 +990,7 @@ function renderizarEventos() {
   });
 
   if (!filtrados.length) {
-    listaEventos.append(
+    lista.append(
       criarElemento(
         "p",
         "Nenhum compromisso encontrado."
@@ -958,12 +1020,12 @@ function renderizarEventos() {
       criarElemento(
         "p",
         `${formatarData(evento.data)} • ` +
-        formatarHora(evento.hora)
+          formatarHora(evento.hora)
       ),
       criarElemento(
         "p",
         CATEGORIAS[evento.categoria] ||
-        evento.categoria
+          evento.categoria
       ),
       criarElemento(
         "p",
@@ -1007,7 +1069,7 @@ function renderizarEventos() {
     );
 
     item.append(acoes);
-    listaEventos.append(item);
+    lista.append(item);
   });
 }
 
@@ -1021,12 +1083,17 @@ campo("atualizar-eventos").addEventListener(
   async () => {
     try {
       await carregarEventos();
-      mensagemGerenciar.textContent =
-        "Lista atualizada.";
+
+      mensagem(
+        "gerenciar-mensagem",
+        "Lista atualizada."
+      );
 
     } catch (erro) {
-      mensagemGerenciar.textContent =
-        "Não foi possível atualizar a lista.";
+      mensagem(
+        "gerenciar-mensagem",
+        "Não foi possível atualizar a lista."
+      );
 
       console.error(erro.message);
     }
@@ -1038,10 +1105,7 @@ campo("atualizar-eventos").addEventListener(
 // ==========================================
 
 async function alternarPublicacao(id) {
-  const evento = eventos.find(
-    item => item.id === id
-  );
-
+  const evento = encontrarEvento(id);
   if (!evento) return;
 
   const novoStatus =
@@ -1061,12 +1125,16 @@ async function alternarPublicacao(id) {
 
     await carregarEventos();
 
-    mensagemGerenciar.textContent =
-      "Situação atualizada com sucesso!";
+    mensagem(
+      "gerenciar-mensagem",
+      "Situação atualizada com sucesso!"
+    );
 
   } catch (erro) {
-    mensagemGerenciar.textContent =
-      "Não foi possível alterar a publicação.";
+    mensagem(
+      "gerenciar-mensagem",
+      "Não foi possível alterar a publicação."
+    );
 
     console.error(erro.message);
   }
@@ -1077,10 +1145,7 @@ async function alternarPublicacao(id) {
 // ==========================================
 
 async function excluirEvento(id) {
-  const evento = eventos.find(
-    item => item.id === id
-  );
-
+  const evento = encontrarEvento(id);
   if (!evento) return;
 
   if (!confirm(
@@ -1101,28 +1166,34 @@ async function excluirEvento(id) {
 
     await carregarEventos();
 
-    mensagemGerenciar.textContent =
-      "Compromisso excluído.";
+    mensagem(
+      "gerenciar-mensagem",
+      "Compromisso excluído."
+    );
 
   } catch (erro) {
-    mensagemGerenciar.textContent =
-      "Não foi possível excluir o compromisso.";
+    mensagem(
+      "gerenciar-mensagem",
+      "Não foi possível excluir o compromisso."
+    );
 
     console.error(erro.message);
   }
 }
 
 // ==========================================
-// GERAR DATAS RECORRENTES
+// RECORRÊNCIA
 // ==========================================
 
 function gerarDatasRecorrencia() {
   const inicio = valor("recorrencia-inicio");
+
   const quantidade = Number(
     valor("recorrencia-quantidade")
   );
 
-  const frequencia = valor("recorrencia-frequencia");
+  const frequencia =
+    valor("recorrencia-frequencia");
 
   if (
     !inicio ||
@@ -1141,7 +1212,9 @@ function gerarDatasRecorrencia() {
     "quinzenal",
     "mensal"
   ].includes(frequencia)) {
-    throw new Error("Selecione uma frequência válida.");
+    throw new Error(
+      "Selecione uma frequência válida."
+    );
   }
 
   const datas = [];
@@ -1154,13 +1227,22 @@ function gerarDatasRecorrencia() {
     let data;
 
     if (frequencia === "semanal") {
-      data = adicionarDias(inicio, indice * 7);
+      data = adicionarDias(
+        inicio,
+        indice * 7
+      );
 
     } else if (frequencia === "quinzenal") {
-      data = adicionarDias(inicio, indice * 14);
+      data = adicionarDias(
+        inicio,
+        indice * 14
+      );
 
     } else {
-      data = adicionarMeses(inicio, indice);
+      data = adicionarMeses(
+        inicio,
+        indice
+      );
     }
 
     datas.push(data);
@@ -1169,16 +1251,11 @@ function gerarDatasRecorrencia() {
   return datas;
 }
 
-// ==========================================
-// PRÉVIA DA RECORRÊNCIA
-// ==========================================
-
 function limparPreviaRecorrencia() {
   datasRecorrencia = [];
 
-  limparElemento(
-    campo("recorrencia-previa")
-  );
+  campo("recorrencia-previa")
+    .replaceChildren();
 
   campo("salvar-recorrencia").disabled = true;
 }
@@ -1199,81 +1276,105 @@ function limparPreviaRecorrencia() {
   );
 });
 
-campo("previsualizar-recorrencia").addEventListener(
-  "click",
-  () => {
-    try {
-      exigirBancoPreparado();
+// ==========================================
+// PRÉVIA DA RECORRÊNCIA
+// ==========================================
 
-      if (!formularioRecorrencia.reportValidity()) {
-        return;
+campo("previsualizar-recorrencia")
+  .addEventListener(
+    "click",
+    () => {
+      try {
+        exigirBancoPreparado();
+
+        if (
+          !campo("recorrencia-form")
+            .reportValidity()
+        ) {
+          return;
+        }
+
+        datasRecorrencia =
+          gerarDatasRecorrencia();
+
+        const previa =
+          campo("recorrencia-previa");
+
+        previa.replaceChildren();
+
+        datasRecorrencia.forEach(
+          (data, indice) => {
+            const item = criarElemento(
+              "div",
+              undefined,
+              "admin-item"
+            );
+
+            item.append(
+              criarElemento(
+                "span",
+                `Sessão ${indice + 1}: ` +
+                  formatarData(data)
+              ),
+              criarBotao(
+                "Remover",
+                () => {
+                  datasRecorrencia =
+                    datasRecorrencia.filter(
+                      valorData =>
+                        valorData !== data
+                    );
+
+                  item.remove();
+
+                  campo(
+                    "salvar-recorrencia"
+                  ).disabled =
+                    !datasRecorrencia.length;
+                }
+              )
+            );
+
+            previa.append(item);
+          }
+        );
+
+        campo("salvar-recorrencia").disabled =
+          !datasRecorrencia.length;
+
+        mensagem(
+          "recorrencia-mensagem",
+          `${datasRecorrencia.length} ` +
+          "sessões prontas para revisão."
+        );
+
+      } catch (erro) {
+        mensagem(
+          "recorrencia-mensagem",
+          erro.message
+        );
       }
-
-      datasRecorrencia = gerarDatasRecorrencia();
-
-      const previa = campo("recorrencia-previa");
-      limparElemento(previa);
-
-      datasRecorrencia.forEach((data, indice) => {
-        const item = criarElemento(
-          "div",
-          undefined,
-          "admin-item"
-        );
-
-        item.append(
-          criarElemento(
-            "span",
-            `Sessão ${indice + 1}: ` +
-            formatarData(data)
-          ),
-          criarBotao(
-            "Remover",
-            () => {
-              datasRecorrencia =
-                datasRecorrencia.filter(
-                  valorData => valorData !== data
-                );
-
-              item.remove();
-
-              campo("salvar-recorrencia").disabled =
-                !datasRecorrencia.length;
-            }
-          )
-        );
-
-        previa.append(item);
-      });
-
-      campo("salvar-recorrencia").disabled =
-        !datasRecorrencia.length;
-
-      mensagemRecorrencia.textContent =
-        `${datasRecorrencia.length} ` +
-        "sessões prontas para revisão.";
-
-    } catch (erro) {
-      mensagemRecorrencia.textContent =
-        erro.message;
     }
-  }
-);
+  );
 
 // ==========================================
 // SALVAR RECORRÊNCIA
 // ==========================================
 
-formularioRecorrencia.addEventListener(
+campo("recorrencia-form").addEventListener(
   "submit",
   async evento => {
     evento.preventDefault();
 
-    const botao = campo("salvar-recorrencia");
+    const botao =
+      campo("salvar-recorrencia");
+
     botao.disabled = true;
 
-    mensagemRecorrencia.textContent =
-      "Salvando sessões...";
+    mensagem(
+      "recorrencia-mensagem",
+      "Salvando sessões..."
+    );
 
     try {
       await exigirAdministrador();
@@ -1283,7 +1384,8 @@ formularioRecorrencia.addEventListener(
         valor("recorrencia-campanha")
       );
 
-      const campanha = encontrarCampanha(campanhaId);
+      const campanha =
+        encontrarCampanha(campanhaId);
 
       if (!campanha) {
         throw new Error(
@@ -1297,22 +1399,18 @@ formularioRecorrencia.addEventListener(
         );
       }
 
-      const hora = valor("recorrencia-hora");
+      const hora =
+        valor("recorrencia-hora");
 
       const turno =
         valor("recorrencia-turno") ||
         obterTurno(hora);
 
-      // Cada sessão é salva separadamente,
-      // vinculada à campanha.
-      //
-      // Guardamos também os dados atuais
-      // para preservar o histórico depois.
-      //
-      // O link fica vazio para acompanhar
-      // o link principal da campanha.
-      const registros = datasRecorrencia.map(
-        data => ({
+      const snapshot =
+        criarSnapshotCampanha(campanha);
+
+      const registros =
+        datasRecorrencia.map(data => ({
           campanha_id: campanhaId,
           titulo: campanha.titulo,
           categoria: campanha.categoria,
@@ -1323,32 +1421,44 @@ formularioRecorrencia.addEventListener(
             campo(
               "recorrencia-bloqueia-turno"
             ).checked,
-          status: valor("recorrencia-status"),
-          canal: campanha.canal || null,
-          narrador: campanha.narrador || null,
-          sinopse: campanha.sinopse || null,
-          imagem: campanha.imagem || null,
-          link: null
-        })
-      );
+          status:
+            valor("recorrencia-status"),
+          canal:
+            campanha.canal || null,
+          narrador:
+            campanha.narrador || null,
+          sinopse:
+            campanha.sinopse || null,
+          imagem:
+            campanha.imagem || null,
+          link: null,
+          campanha_snapshot: snapshot
+        }));
 
-      // Conferir duplicatas já existentes.
-      const { data: existentes, error: erroConsulta } =
-        await supabaseClient
-          .from("eventos")
-          .select("data, hora")
-          .eq("campanha_id", campanhaId);
+      // Verifica sessões já cadastradas
+      // para evitar duplicatas.
 
-      if (erroConsulta) throw erroConsulta;
+      const {
+        data: existentes,
+        error: erroConsulta
+      } = await supabaseClient
+        .from("eventos")
+        .select("data, hora")
+        .eq("campanha_id", campanhaId);
 
-      const duplicadas = registros.filter(
-        registro => (existentes || []).some(
-          item =>
-            item.data === registro.data &&
-            formatarHora(item.hora) ===
-            formatarHora(registro.hora)
-        )
-      );
+      if (erroConsulta) {
+        throw erroConsulta;
+      }
+
+      const duplicadas =
+        registros.filter(registro => {
+          return (existentes || []).some(
+            item =>
+              item.data === registro.data &&
+              formatarHora(item.hora) ===
+                formatarHora(registro.hora)
+          );
+        });
 
       if (duplicadas.length) {
         throw new Error(
@@ -1363,17 +1473,21 @@ formularioRecorrencia.addEventListener(
 
       if (error) throw error;
 
-      formularioRecorrencia.reset();
+      campo("recorrencia-form").reset();
       limparPreviaRecorrencia();
 
       await carregarEventos();
 
-      mensagemRecorrencia.textContent =
-        "💜 Sessões cadastradas com sucesso!";
+      mensagem(
+        "recorrencia-mensagem",
+        "💜 Sessões cadastradas com sucesso!"
+      );
 
     } catch (erro) {
-      mensagemRecorrencia.textContent =
-        erro.message;
+      mensagem(
+        "recorrencia-mensagem",
+        erro.message
+      );
 
       console.error(
         "Erro na recorrência:",
@@ -1389,7 +1503,7 @@ formularioRecorrencia.addEventListener(
 );
 
 // ==========================================
-// CARREGAMENTO GERAL DO PAINEL
+// CARREGAMENTO GERAL
 // ==========================================
 
 async function carregarPainel() {
@@ -1400,10 +1514,10 @@ async function carregarPainel() {
     atualizarEstadoBanco();
 
     if (!preparado) {
-      mostrarMensagem(
+      mostrarMensagemLogin(
         "Login realizado! 💜 " +
-        "Não foi possível verificar a estrutura " +
-        "do Supabase."
+        "Não foi possível verificar a " +
+        "estrutura do Supabase."
       );
       return;
     }
@@ -1417,7 +1531,7 @@ async function carregarPainel() {
       erro.message
     );
 
-    mostrarMensagem(
+    mostrarMensagemLogin(
       "Não foi possível carregar todos " +
       "os dados do painel."
     );
@@ -1428,14 +1542,14 @@ async function carregarPainel() {
 // SAIR DA CONTA
 // ==========================================
 
-botaoSair.addEventListener(
+campo("sair").addEventListener(
   "click",
   async () => {
     const { error } =
       await supabaseClient.auth.signOut();
 
     if (error) {
-      mostrarMensagem(
+      mostrarMensagemLogin(
         "Não foi possível sair da conta."
       );
       return;
@@ -1451,7 +1565,9 @@ botaoSair.addEventListener(
 
     mostrarLogin();
 
-    mostrarMensagem("Você saiu da conta.");
+    mostrarMensagemLogin(
+      "Você saiu da conta."
+    );
   }
 );
 
@@ -1470,7 +1586,7 @@ async function iniciarPainel() {
     if (autorizado) {
       mostrarPainel();
 
-      mostrarMensagem(
+      mostrarMensagemLogin(
         "Sessão administrativa ativa. 💜"
       );
 
