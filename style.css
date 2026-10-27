@@ -846,15 +846,60 @@ button.postit:hover {
 }
 
 .campanha {
-  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
   border: 1px solid var(--borda);
   border-radius: 16px;
   background: linear-gradient(145deg, #241539, #130e20);
 }
 
-.campanha h3 {
-  color: #ddb8ff;
+.campanha-imagem {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #120c20;
 }
+
+.campanha h3 {
+  margin: 22px 24px 10px;
+  color: #ddb8ff;
+  font-size: 1.15rem;
+  line-height: 1.4;
+}
+
+.campanha-info {
+  margin: 0 24px 12px;
+  color: var(--suave);
+  font-size: 0.85rem;
+}
+
+.campanha-sinopse {
+  margin: 0 24px 20px;
+  line-height: 1.65;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.campanha-link {
+  align-self: flex-start;
+  margin: auto 24px 24px;
+}
+
+@media (max-width: 1000px) {
+  .grade-campanhas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .grade-campanhas {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 
 /* ==========================================
    18. MODAL DE DETALHES
