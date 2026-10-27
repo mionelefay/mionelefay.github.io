@@ -36,15 +36,17 @@ function mostrarPainel() {
 // Verifica se a conta tem acesso administrativo
 // consultando a tabela protegida pelas políticas RLS.
 async function verificarAdministrador() {
-  const { data, error } = await supabaseClient
-    .from("eventos")
-    .select("id")
-    .eq("status", "agendada")
-    .limit(1);
+  const { data: { user }, error } =
+    await supabaseClient.auth.getUser();
 
-  if (error) {
-    throw error;
+  if (error || !user) {
+    return false;
   }
+
+  const ADMIN_UID = "5f0cd47a-7c6f-4fc5-99d8-449534c393e8";
+
+  return user.id === ADMIN_UID;
+}
 
   // Esta consulta não comprova privilégios administrativos.
   // Por segurança, não liberamos o painel por esse resultado.
@@ -69,12 +71,19 @@ formulario.addEventListener("submit", async (evento) => {
 
     campoSenha.value = "";
 
-    // Autenticação confirmada. A autorização administrativa
-    // será configurada na próxima etapa.
-    mostrarLogin();
-    mostrarMensagem(
-      "Login realizado com sucesso! Falta ativar a verificação administrativa."
-    );
+// Verificar se a conta autenticada é a administradora
+const autorizado = await verificarAdministrador();
+
+if (!autorizado) {
+  await supabaseClient.auth.signOut();
+  mostrarLogin();
+  mostrarMensagem("Esta conta não possui acesso administrativo.");
+  return;
+}
+
+// Liberar o painel para a administradora
+mostrarPainel();
+mostrarMensagem("Login administrativo realizado com sucesso! 💜");
 
   } catch (erro) {
     mostrarLogin();
