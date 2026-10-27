@@ -15,10 +15,10 @@
     defer>
   </script>
 
-<script src="script.js" defer></script>
-<script src="google-agenda.js" defer></script>
-<script src="situacoes-calendario.js" defer></script>
-<script src="agenda-semanal.js" defer></script>
+  <script src="script.js" defer></script>
+  <script src="google-agenda.js" defer></script>
+  <script src="situacoes-calendario.js" defer></script>
+  <script src="agenda-semanal.js" defer></script>
 
   <style>
     /* Botões da janela de detalhes */
@@ -85,86 +85,88 @@
 
   <main>
 
+    <section class="hero" id="inicio">
 
-<section class="hero" id="inicio">
+      <div class="hero-layout">
 
-  <div class="hero-layout">
+        <!-- COLUNA ESQUERDA: APRESENTAÇÃO -->
 
-    <!-- COLUNA ESQUERDA: APRESENTAÇÃO -->
+        <div class="hero-apresentacao">
 
-    <div class="hero-apresentacao">
+          <div class="hero-texto">
 
-      <div class="hero-texto">
+            <p class="destaque">
+              🎮 RPG • GAMEPLAY • PODCASTS
+            </p>
 
-        <p class="destaque">
-          🎮 RPG • GAMEPLAY • PODCASTS
-        </p>
+            <h1>
+              Seu próximo encontro com a Mione
+              começa aqui.
+            </h1>
 
-        <h1>
-          Seu próximo encontro com a Mione
-          começa aqui.
-        </h1>
+            <p>
+              Confira minhas lives, participações em
+              outros canais e novos vídeos.
+              Tudo em um só lugar!
+            </p>
 
-        <p>
-          Confira minhas lives, participações em
-          outros canais e novos vídeos.
-          Tudo em um só lugar!
-        </p>
+            <a class="botao" href="#agenda">
+              Explorar agenda
+            </a>
 
-        <a class="botao" href="#agenda">
-          Explorar agenda
-        </a>
+          </div>
 
-      </div>
+          <img
+            class="hero-mione"
+            src="mione-hero.png"
+            alt="Ilustração da Mione Le Fay"
+            width="1200"
+            height="1600"
+            fetchpriority="high">
 
-      <img
-        class="hero-mione"
-        src="mione-hero.png"
-        alt="Ilustração da Mione Le Fay"
-        width="1200"
-        height="1600"
-        fetchpriority="high">
-
-    </div>
-
-    <!-- COLUNA DIREITA: AGENDA SEMANAL -->
-
-    <aside
-      class="hero-agenda"
-      aria-labelledby="agenda-semanal-titulo">
-
-      <div class="hero-agenda-cabecalho">
-
-        <div>
-          <p class="destaque">
-            SUA PROGRAMAÇÃO
-          </p>
-
-          <h2 id="agenda-semanal-titulo">
-            📅 Esta semana
-          </h2>
         </div>
 
-        <a
-          class="hero-agenda-link"
-          href="#agenda">
-          Ver calendário completo
-        </a>
+        <!-- COLUNA DIREITA: AGENDA SEMANAL -->
+
+        <aside
+          class="hero-agenda"
+          aria-labelledby="agenda-semanal-titulo">
+
+          <div class="hero-agenda-cabecalho">
+
+            <div>
+              <p class="destaque">
+                SUA PROGRAMAÇÃO
+              </p>
+
+              <h2 id="agenda-semanal-titulo">
+                📅 Esta semana
+              </h2>
+            </div>
+
+            <a
+              class="hero-agenda-link"
+              href="#agenda">
+              Ver calendário completo
+            </a>
+
+          </div>
+
+          <div
+            id="agenda-semanal"
+            class="agenda-semanal"
+            aria-live="polite">
+          </div>
+
+        </aside>
 
       </div>
 
-      <div
-        id="agenda-semanal"
-        class="agenda-semanal"
-        aria-live="polite">
-      </div>
+    </section>
 
-    </aside>
-
-  </div>
-
-</section>
-
+    <!-- ==========================================
+         AGENDA DE LIVES
+    ========================================== -->
 
     <section class="secao" id="agenda">
 
@@ -172,13 +174,16 @@
 
         <div>
           <p class="destaque">PROGRAMAÇÃO</p>
+
           <h2>📅 Agenda de Lives</h2>
+
           <p>
             Um mural de post-its para não perder nada!
           </p>
         </div>
 
         <div class="navegacao-mes">
+
           <button
             id="mes-anterior"
             aria-label="Mês anterior">
@@ -192,6 +197,7 @@
             aria-label="Próximo mês">
             ❯
           </button>
+
         </div>
 
       </div>
@@ -243,77 +249,77 @@
 
     </section>
 
+    <!-- ==========================================
+         BIBLIOTECA DE CAMPANHAS
+    ========================================== -->
 
-<section class="secao" id="campanhas">
+    <section class="secao" id="campanhas">
 
+      <div class="campanhas-cabecalho">
 
-<!-- ==========================================
-     BIBLIOTECA DE CAMPANHAS
-========================================== -->
+        <div>
 
-<section class="secao" id="campanhas">
+          <p class="destaque">
+            AVENTURAS E PROGRAMAS
+          </p>
 
-  <div class="campanhas-cabecalho">
+          <h2>✨ Biblioteca de Campanhas</h2>
 
-    <div>
-      <p class="destaque">
-        AVENTURAS E PROGRAMAS
-      </p>
+          <p>
+            Explore as aventuras e histórias
+            que fazem parte do canal.
+          </p>
 
-      <h2>✨ Biblioteca de Campanhas</h2>
+        </div>
 
-      <p>
-        Explore as aventuras e histórias
-        que fazem parte do canal.
-      </p>
-    </div>
+        <!-- CONTROLES DO CARROSSEL -->
 
-    <!-- CONTROLES DO CARROSSEL -->
+        <div
+          class="campanhas-controles"
+          aria-label="Navegação das campanhas">
 
-    <div
-      class="campanhas-controles"
-      aria-label="Navegação das campanhas">
+          <button
+            type="button"
+            id="campanhas-anterior"
+            class="campanhas-seta"
+            aria-label="Ver campanhas anteriores"
+            aria-controls="lista-campanhas">
+            ❮
+          </button>
 
-      <button
-        type="button"
-        id="campanhas-anterior"
-        class="campanhas-seta"
-        aria-label="Ver campanhas anteriores"
-        aria-controls="lista-campanhas">
-        ❮
-      </button>
+          <button
+            type="button"
+            id="campanhas-proximo"
+            class="campanhas-seta"
+            aria-label="Ver próximas campanhas"
+            aria-controls="lista-campanhas">
+            ❯
+          </button>
 
-      <button
-        type="button"
-        id="campanhas-proximo"
-        class="campanhas-seta"
-        aria-label="Ver próximas campanhas"
-        aria-controls="lista-campanhas">
-        ❯
-      </button>
+        </div>
 
-    </div>
+      </div>
 
-  </div>
+      <!-- ÁREA DE ROLAGEM HORIZONTAL -->
 
-  <!-- ÁREA DE ROLAGEM HORIZONTAL -->
+      <div class="campanhas-carrossel">
 
-  <div class="campanhas-carrossel">
+        <div
+          class="grade-campanhas"
+          id="lista-campanhas"
+          aria-label="Biblioteca de campanhas">
 
-    <div
-      class="grade-campanhas"
-      id="lista-campanhas"
-      aria-label="Biblioteca de campanhas">
+          <p>Carregando campanhas...</p>
 
-      <p>Carregando campanhas...</p>
+        </div>
 
-    </div>
+      </div>
 
-  </div>
+    </section>
 
-</section>
-
-
+    <!-- ==========================================
+         REDES SOCIAIS
+    ========================================== -->
 
     <section class="secao" id="redes">
 
@@ -363,7 +369,9 @@
 
   </main>
 
-  <!-- JANELA DE DETALHES -->
+  <!-- ==========================================
+       JANELA DE DETALHES
+  ========================================== -->
 
   <div
     class="modal oculto"
@@ -423,6 +431,10 @@
     </div>
 
   </div>
+
+  <!-- ==========================================
+       RODAPÉ
+  ========================================== -->
 
   <footer>
     <p>
