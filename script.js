@@ -1,5 +1,14 @@
 
 "use strict";
+// Conexão com o Supabase
+const SUPABASE_URL = "https://gevkvjuaurcxokudlblc.supabase.co";
+
+const SUPABASE_KEY = "sb_publishable_4mIXjg7273CgkxJzNGILow_0GyQ6yTd";
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
 // Agenda Mione Le Fay
 // Eventos demonstrativos. Substituiremos pelos eventos reais.
