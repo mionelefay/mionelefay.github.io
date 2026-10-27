@@ -25,58 +25,7 @@ const hoje = new Date();
 let mesExibido = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
 let filtroAtual = "todas";
 
-const eventos = [
-  {
-    titulo: "Labirinto: Ecos da Infância",
-    categoria: "rpg-proprio",
-    data: "2026-11-05",
-    hora: "20:00",
-    canal: "Mione Le Fay",
-    sinopse: "Uma aventura de mistério, amizade e fantasia, onde os medos da infância ganham vida.",
-    imagem: "",
-    link: ""
-  },
-  {
-    titulo: "Participação especial em RPG",
-    categoria: "rpg-externo",
-    data: "2026-11-08",
-    hora: "19:00",
-    canal: "Canal convidado",
-    sinopse: "Uma participação especial em uma mesa de RPG.",
-    imagem: "",
-    link: ""
-  },
-  {
-    titulo: "Podcast com convidados",
-    categoria: "podcast",
-    data: "2026-11-12",
-    hora: "20:00",
-    canal: "Canal convidado",
-    sinopse: "Uma conversa sobre RPG, criação de conteúdo e histórias.",
-    imagem: "",
-    link: ""
-  },
-  {
-    titulo: "Gameplay com Mione",
-    categoria: "jogos",
-    data: "2026-11-14",
-    hora: "20:00",
-    canal: "Mione Le Fay",
-    sinopse: "Uma noite de gameplay e interação com a comunidade.",
-    imagem: "",
-    link: ""
-  },
-  {
-    titulo: "Fofocas de Arton",
-    categoria: "video",
-    data: "2026-11-18",
-    hora: "18:00",
-    canal: "Mione Le Fay",
-    sinopse: "Histórias e curiosidades do universo de Tormenta.",
-    imagem: "",
-    link: ""
-  }
-];
+let eventos = [];
 
 const calendario = document.getElementById("calendario");
 const tituloMes = document.getElementById("mes-atual");
@@ -252,22 +201,29 @@ modal.addEventListener("click", evento => {
 document.addEventListener("keydown", evento => {
   if (evento.key === "Escape") fecharModal();
 });
-
+// Exibir o calendário inicialmente
 renderizarCalendario();
 
-// Teste de conexão com o Supabase
-async function testarConexaoSupabase() {
+// Carregar eventos publicados do Supabase
+async function carregarEventos() {
   const { data, error } = await supabaseClient
     .from("eventos")
-    .select("titulo, data, status")
-    .eq("status", "publicada");
+    .select("id, titulo, categoria, data, hora, canal, sinopse, imagem, link")
+    .eq("status", "publicada")
+    .order("data", { ascending: true })
+    .order("hora", { ascending: true });
 
   if (error) {
-    console.error("Erro ao consultar Supabase:", error);
+    console.error("Erro ao carregar eventos:", error.message);
     return;
   }
 
-  console.log("Eventos encontrados no Supabase:", data);
+  eventos = (data || []).map(evento => ({
+    ...evento,
+    hora: evento.hora ? evento.hora.slice(0, 5) : ""
+  }));
+
+  renderizarCalendario();
 }
 
-testarConexaoSupabase();
+carregarEventos();
