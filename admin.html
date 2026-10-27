@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#100b1d">
+  <title>Painel Administrativo | Mione Le Fay</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js" defer></script>
+  <script src="admin.js" defer></script>
+
+  <style>
+    .admin-container {
+      max-width: 480px;
+      margin: 80px auto;
+      padding: 32px;
+      background: #211631;
+      border: 1px solid #68458a;
+      border-radius: 18px;
+      color: #fff;
+    }
+
+    .admin-container h1 {
+      margin-bottom: 12px;
+      color: #e8c7ff;
+    }
+
+    .admin-container p {
+      margin-bottom: 24px;
+    }
+
+    .admin-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .admin-form label {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .admin-form input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #7956a0;
+      border-radius: 8px;
+      background: #100b1d;
+      color: white;
+      font: inherit;
+    }
+
+    .admin-form button {
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      background: #a66de0;
+      color: #100b1d;
+      font: inherit;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .admin-form button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .admin-mensagem {
+      margin-top: 18px;
+    }
+
+    .admin-mensagem[hidden] {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topo">
+    <a class="logo" href="index.html">✦ MIONE LE FAY</a>
+    <nav aria-label="Menu principal">
+      <a href="index.html">Voltar ao site</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="admin-container">
+      <p class="destaque">ÁREA RESTRITA</p>
+      <h1>🔐 Painel Administrativo</h1>
+      <p>Entre com suas credenciais para gerenciar a agenda.</p>
+
+      <form id="login-form" class="admin-form">
+        <label for="admin-email">
+          E-mail
+          <input
+            type="email"
+            id="admin-email"
+            autocomplete="username"
+            required
+          >
+        </label>
+
+        <label for="admin-senha">
+          Senha
+          <input
+            type="password"
+            id="admin-senha"
+            autocomplete="current-password"
+            required
+          >
+        </label>
+
+        <button type="submit" id="entrar">
+          Entrar no painel
+        </button>
+      </form>
+
+      <p id="admin-mensagem" class="admin-mensagem"
+         role="status" aria-live="polite" hidden></p>
+
+      <section id="area-admin" hidden>
+        <h2>Bem-vinda ao painel! 💜</h2>
+        <p>Login realizado. Em breve, a agenda será gerenciada aqui.</p>
+        <button id="sair" type="button">Sair da conta</button>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    <p>💜 Mione Le Fay • Área administrativa</p>
+  </footer>
+</body>
+</html>
