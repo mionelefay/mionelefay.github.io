@@ -15,9 +15,10 @@
     defer>
   </script>
 
-  <script src="script.js" defer></script>
-  <script src="google-agenda.js" defer></script>
-  <script src="situacoes-calendario.js" defer></script>
+<script src="script.js" defer></script>
+<script src="google-agenda.js" defer></script>
+<script src="situacoes-calendario.js" defer></script>
+<script src="agenda-semanal.js" defer></script>
 
   <style>
     /* Botões da janela de detalhes */
@@ -84,24 +85,86 @@
 
   <main>
 
-    <section class="hero" id="inicio">
-      <p class="destaque">
-        🎮 RPG • GAMEPLAY • PODCASTS
-      </p>
 
-      <h1>
-        Seu próximo encontro com a Mione começa aqui.
-      </h1>
+<section class="hero" id="inicio">
 
-      <p>
-        Confira minhas lives, participações em outros
-        canais e novos vídeos. Tudo em um só lugar!
-      </p>
+  <div class="hero-layout">
 
-      <a class="botao" href="#agenda">
-        Explorar agenda
-      </a>
-    </section>
+    <!-- COLUNA ESQUERDA: APRESENTAÇÃO -->
+
+    <div class="hero-apresentacao">
+
+      <div class="hero-texto">
+
+        <p class="destaque">
+          🎮 RPG • GAMEPLAY • PODCASTS
+        </p>
+
+        <h1>
+          Seu próximo encontro com a Mione
+          começa aqui.
+        </h1>
+
+        <p>
+          Confira minhas lives, participações em
+          outros canais e novos vídeos.
+          Tudo em um só lugar!
+        </p>
+
+        <a class="botao" href="#agenda">
+          Explorar agenda
+        </a>
+
+      </div>
+
+      <img
+        class="hero-mione"
+        src="mione-hero.png"
+        alt="Ilustração da Mione Le Fay"
+        width="1200"
+        height="1600"
+        fetchpriority="high">
+
+    </div>
+
+    <!-- COLUNA DIREITA: AGENDA SEMANAL -->
+
+    <aside
+      class="hero-agenda"
+      aria-labelledby="agenda-semanal-titulo">
+
+      <div class="hero-agenda-cabecalho">
+
+        <div>
+          <p class="destaque">
+            SUA PROGRAMAÇÃO
+          </p>
+
+          <h2 id="agenda-semanal-titulo">
+            📅 Esta semana
+          </h2>
+        </div>
+
+        <a
+          class="hero-agenda-link"
+          href="#agenda">
+          Ver calendário completo
+        </a>
+
+      </div>
+
+      <div
+        id="agenda-semanal"
+        class="agenda-semanal"
+        aria-live="polite">
+      </div>
+
+    </aside>
+
+  </div>
+
+</section>
+
 
     <section class="secao" id="agenda">
 
