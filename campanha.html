@@ -119,7 +119,7 @@
       padding: 28px;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
       min-width: 0;
     }
 
@@ -141,6 +141,12 @@
       margin: 0;
       font-size: 1rem;
       line-height: 1.5;
+    }
+
+    .personagem-apresentacao {
+      margin: 24px 0 0;
+      font-size: 1rem;
+      line-height: 1.8;
     }
 
     .personagem-imagem-container {
@@ -190,12 +196,6 @@
     .personagem-historia-container h3 {
       font-size: 1.4rem;
       margin: 0 0 18px;
-    }
-
-    .personagem-apresentacao {
-      font-size: 1.05rem;
-      line-height: 1.9;
-      margin: 0 0 28px;
     }
 
     .personagem-historia-container
@@ -320,9 +320,7 @@
 
     <div id="campanha-conteudo" hidden>
 
-      <!-- ==========================================
-           APRESENTAÇÃO DA CAMPANHA
-      ========================================== -->
+      <!-- APRESENTAÇÃO DA CAMPANHA -->
 
       <section class="campanha-hero">
 
@@ -345,11 +343,8 @@
           </h1>
 
           <div class="campanha-metadados">
-
             <p id="campanha-narrador" hidden></p>
-
             <p id="campanha-canal" hidden></p>
-
           </div>
 
           <p
@@ -378,11 +373,9 @@
 
         <h2>🧙 Minha Personagem</h2>
 
-        <!-- PARTE SUPERIOR: DADOS E IMAGEM -->
-
         <div class="personagem-layout">
 
-          <!-- COLUNA ESQUERDA -->
+          <!-- SUPERIOR ESQUERDO -->
 
           <div class="personagem-identidade">
 
@@ -400,9 +393,17 @@
 
             </div>
 
+            <!-- APRESENTAÇÃO JUNTO DOS DADOS -->
+
+            <p
+              id="personagem-apresentacao"
+              class="campanha-texto personagem-apresentacao"
+              hidden>
+            </p>
+
           </div>
 
-          <!-- COLUNA DIREITA -->
+          <!-- SUPERIOR DIREITO -->
 
           <div class="personagem-imagem-container">
 
@@ -416,18 +417,12 @@
 
         </div>
 
-        <!-- PARTE INFERIOR: HISTÓRIA -->
+        <!-- INFERIOR: SOMENTE HISTÓRIA -->
 
         <div
           id="personagem-historia-container"
           class="personagem-historia-container"
           hidden>
-
-          <p
-            id="personagem-apresentacao"
-            class="campanha-texto personagem-apresentacao"
-            hidden>
-          </p>
 
           <div id="personagem-historia" hidden>
 
@@ -449,9 +444,7 @@
 
       </section>
 
-      <!-- ==========================================
-           UNIVERSO E MATERIAIS
-      ========================================== -->
+      <!-- UNIVERSO E MATERIAIS -->
 
       <section
         id="secao-universo"
@@ -505,10 +498,6 @@
   <script>
     "use strict";
 
-    // ==========================================
-    // CONEXÃO COM O SUPABASE
-    // ==========================================
-
     const SUPABASE_URL =
       "https://gevkvjuaurcxokudlblc.supabase.co";
 
@@ -529,22 +518,6 @@
       return Boolean(conteudo);
     }
 
-    function mostrarImagem(id, url, descricao) {
-      const imagem = elemento(id);
-
-      if (!urlValida(url)) {
-        imagem.hidden = true;
-        imagem.removeAttribute("src");
-        return false;
-      }
-
-      imagem.src = url;
-      imagem.alt = descricao;
-      imagem.hidden = false;
-
-      return true;
-    }
-
     function urlValida(url) {
       if (!url || typeof url !== "string") {
         return false;
@@ -560,6 +533,22 @@
       } catch {
         return false;
       }
+    }
+
+    function mostrarImagem(id, url, descricao) {
+      const imagem = elemento(id);
+
+      if (!urlValida(url)) {
+        imagem.hidden = true;
+        imagem.removeAttribute("src");
+        return false;
+      }
+
+      imagem.src = url;
+      imagem.alt = descricao;
+      imagem.hidden = false;
+
+      return true;
     }
 
     function adicionarLink(containerId, url, texto) {
@@ -580,20 +569,13 @@
       return true;
     }
 
-    // ==========================================
-    // PREENCHER DADOS DA CAMPANHA
-    // ==========================================
-
     function preencherCampanha(campanha) {
       const detalhes = campanha.detalhes || {};
       const personagem = detalhes.personagem || {};
       const universo = detalhes.universo || {};
-
       const papel = detalhes.papel || "";
 
-      // ========================================
       // APRESENTAÇÃO PRINCIPAL
-      // ========================================
 
       mostrarTexto(
         "campanha-titulo",
@@ -653,9 +635,6 @@
         papel === "ambos";
 
       if (mostrarPersonagem) {
-
-        // COLUNA ESQUERDA: IDENTIDADE
-
         const temNome = mostrarTexto(
           "personagem-nome",
           personagem.nome
@@ -675,7 +654,14 @@
             : ""
         );
 
-        // COLUNA DIREITA: IMAGEM
+        // APRESENTAÇÃO NA COLUNA ESQUERDA
+
+        const temApresentacao = mostrarTexto(
+          "personagem-apresentacao",
+          personagem.apresentacao
+        );
+
+        // IMAGEM NA COLUNA DIREITA
 
         const temImagem = mostrarImagem(
           "personagem-imagem",
@@ -684,12 +670,7 @@
           (personagem.nome || "personagem")
         );
 
-        // PARTE INFERIOR: HISTÓRIA
-
-        const temApresentacao = mostrarTexto(
-          "personagem-apresentacao",
-          personagem.apresentacao
-        );
+        // HISTÓRIA NA PARTE INFERIOR
 
         const temResumo = mostrarTexto(
           "personagem-resumo",
@@ -706,18 +687,14 @@
         );
 
         elemento("personagem-historia-container").hidden =
-          !(
-            temApresentacao ||
-            temResumo ||
-            temPdf
-          );
+          !(temResumo || temPdf);
 
         elemento("secao-personagem").hidden = !(
           temNome ||
           temRaca ||
           temClasse ||
-          temImagem ||
           temApresentacao ||
+          temImagem ||
           temResumo ||
           temPdf
         );
@@ -776,17 +753,9 @@
         );
       }
 
-      // ========================================
-      // EXIBIR PÁGINA
-      // ========================================
-
       elemento("campanha-carregando").hidden = true;
       elemento("campanha-conteudo").hidden = false;
     }
-
-    // ==========================================
-    // CARREGAR CAMPANHA DO SUPABASE
-    // ==========================================
 
     async function carregarCampanha() {
       const parametros = new URLSearchParams(
