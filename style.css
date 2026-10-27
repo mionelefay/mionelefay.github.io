@@ -478,17 +478,34 @@ button.postit:hover {
   box-shadow: none;
   transform: none;
   border-radius: 7px;
-  opacity: 0.85;
+  opacity: 1;
 }
 
 .postit-disponibilidade.livre {
-  background: #a8e8c5;
-  color: #164b35;
+  background-color: #a8e8c5 !important;
+  color: #164b35 !important;
 }
 
 .postit-disponibilidade.ocupado {
-  background: #f2a7b3;
-  color: #622334;
+  background-color: #f2a7b3 !important;
+  color: #622334 !important;
+}
+
+/* Indicadores de disponibilidade: contraste garantido */
+.turno-eventos .postit.postit-disponibilidade.livre {
+  background: #a8e8c5 !important;
+  color: #164b35 !important;
+  opacity: 1;
+  box-shadow: none;
+  transform: none;
+}
+
+.turno-eventos .postit.postit-disponibilidade.ocupado {
+  background: #f2a7b3 !important;
+  color: #622334 !important;
+  opacity: 1;
+  box-shadow: none;
+  transform: none;
 }
 
 /* ==========================================
