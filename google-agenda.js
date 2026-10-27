@@ -90,6 +90,12 @@ function formatarDataGoogleAgenda(
 // ==========================================
 
 function criarLinkGoogleAgenda(evento) {
+    if (
+    evento?.situacao === "cancelada" ||
+    evento?.situacao === "adiada"
+  ) {
+    return null;
+  }
   if (!evento || !evento.data || !evento.hora) {
     return null;
   }
