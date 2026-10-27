@@ -619,6 +619,9 @@ function editarCampanha(id) {
     campo(`campanha-${chave}`).value =
       campanha[chave] || "";
   });
+  
+  campo("campanha-papel").value =
+    campanha.detalhes?.papel || "";
 
   campo("salvar-campanha").textContent =
     "💾 Atualizar campanha";
