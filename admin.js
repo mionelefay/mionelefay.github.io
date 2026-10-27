@@ -651,6 +651,27 @@ function editarCampanha(id) {
     campanha.detalhes?.papel || "";
   atualizarSecaoPersonagem();
 
+  
+  const personagem = campanha.detalhes?.personagem || {};
+
+  const camposPersonagem = {
+    nome: "nome",
+    imagem: "imagem",
+    raca: "raca",
+    classe: "classe",
+    apresentacao: "apresentacao",
+    resumo: "resumo_historia",
+    pdf: "historia_completa_url"
+  };
+
+  Object.entries(camposPersonagem).forEach(
+    ([campoFormulario, propriedade]) => {
+      campo(`campanha-personagem-${campoFormulario}`).value =
+        personagem[propriedade] || "";
+    }
+  );
+
+
   campo("salvar-campanha").textContent =
     "💾 Atualizar campanha";
 
