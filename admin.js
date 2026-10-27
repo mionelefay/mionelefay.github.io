@@ -521,6 +521,22 @@ function renderizarCampanhas() {
 // ==========================================
 
 
+function atualizarSecaoPersonagem() {
+  const papel = valor("campanha-papel");
+
+  const mostrar =
+    papel === "jogadora" ||
+    papel === "ambos";
+
+  campo("campanha-secao-personagem").hidden = !mostrar;
+}
+
+campo("campanha-papel").addEventListener(
+  "change",
+  atualizarSecaoPersonagem
+);
+
+
 function dadosFormularioCampanha() {
   const campanhaAtual = campanhaEmEdicao !== null
     ? encontrarCampanha(campanhaEmEdicao)
@@ -622,6 +638,7 @@ function editarCampanha(id) {
   
   campo("campanha-papel").value =
     campanha.detalhes?.papel || "";
+  atualizarSecaoPersonagem();
 
   campo("salvar-campanha").textContent =
     "💾 Atualizar campanha";
@@ -640,6 +657,7 @@ function editarCampanha(id) {
 function cancelarEdicaoCampanha() {
   campanhaEmEdicao = null;
   campo("campanha-form").reset();
+  atualizarSecaoPersonagem();
 
   campo("salvar-campanha").textContent =
     "💾 Salvar campanha";
