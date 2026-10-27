@@ -835,24 +835,115 @@ button.postit:hover {
 }
 
 /* ==========================================
-   17. CAMPANHAS
+   17. CAMPANHAS - CARROSSEL
 ========================================== */
 
+/* CABEÇALHO E CONTROLES */
+
+.campanhas-cabecalho {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.campanhas-controles {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.campanhas-seta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--borda);
+  border-radius: 50%;
+  background: #28183e;
+  color: #f7f1ff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.campanhas-seta:hover:not(:disabled) {
+  background: #503075;
+  border-color: #b66cff;
+}
+
+.campanhas-seta:focus-visible {
+  outline: 2px solid #ddb8ff;
+  outline-offset: 3px;
+}
+
+.campanhas-seta:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ÁREA DE ROLAGEM */
+
+.campanhas-carrossel {
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* FAIXA HORIZONTAL */
+
 .grade-campanhas {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: flex;
   gap: 20px;
   margin-top: 25px;
+  padding: 0 0 16px;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+
+  scrollbar-width: thin;
+  scrollbar-color: #70459a transparent;
 }
+
+.grade-campanhas::-webkit-scrollbar {
+  height: 6px;
+}
+
+.grade-campanhas::-webkit-scrollbar-thumb {
+  background: #70459a;
+  border-radius: 10px;
+}
+
+/* CARDS */
 
 .campanha {
   display: flex;
   flex-direction: column;
+
+  flex: 0 0 calc((100% - 40px) / 3);
   min-width: 0;
+
   overflow: hidden;
+  scroll-snap-align: start;
+
   border: 1px solid var(--borda);
   border-radius: 16px;
-  background: linear-gradient(145deg, #241539, #130e20);
+
+  background: linear-gradient(
+    145deg,
+    #241539,
+    #130e20
+  );
 }
 
 .campanha-imagem {
@@ -879,8 +970,13 @@ button.postit:hover {
 .campanha-sinopse {
   margin: 0 24px 20px;
   line-height: 1.65;
-  white-space: pre-line;
   overflow-wrap: anywhere;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+  overflow: hidden;
 }
 
 .campanha-link {
@@ -888,18 +984,59 @@ button.postit:hover {
   margin: auto 24px 24px;
 }
 
+/* TABLETS - 2 CARDS */
+
 @media (max-width: 1000px) {
-  .grade-campanhas {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .campanha {
+    flex-basis: calc((100% - 20px) / 2);
   }
 }
+
+/* CELULARES - 1 CARD */
 
 @media (max-width: 650px) {
+  .campanhas-cabecalho {
+    align-items: center;
+  }
+
+  .campanhas-seta {
+    width: 40px;
+    height: 40px;
+  }
+
   .grade-campanhas {
-    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .campanha {
+    flex-basis: 88%;
+  }
+
+  .campanha h3 {
+    margin: 18px 18px 10px;
+  }
+
+  .campanha-info {
+    margin-left: 18px;
+    margin-right: 18px;
+  }
+
+  .campanha-sinopse {
+    margin-left: 18px;
+    margin-right: 18px;
+  }
+
+  .campanha-link {
+    margin-left: 18px;
+    margin-right: 18px;
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .grade-campanhas {
+    scroll-behavior: auto;
+  }
+}
 
 /* ==========================================
    18. MODAL DE DETALHES
