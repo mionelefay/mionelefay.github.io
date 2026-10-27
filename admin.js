@@ -552,6 +552,7 @@ campo("campanha-papel").addEventListener(
 );
 
 
+
 function dadosFormularioCampanha() {
   const campanhaAtual = campanhaEmEdicao !== null
     ? encontrarCampanha(campanhaEmEdicao)
@@ -568,22 +569,36 @@ function dadosFormularioCampanha() {
     imagem: valor("campanha-imagem"),
     link: valor("campanha-link"),
 
-detalhes: {
-  ...detalhesAtuais,
-  papel: valor("campanha-papel"),
-  personagem: {
-    ...(detalhesAtuais.personagem || {}),
-    nome: valor("campanha-personagem-nome"),
-    imagem: valor("campanha-personagem-imagem"),
-    raca: valor("campanha-personagem-raca"),
-    classe: valor("campanha-personagem-classe"),
-    apresentacao: valor("campanha-personagem-apresentacao"),
-    resumo_historia: valor("campanha-personagem-resumo"),
-    historia_completa_url: valor("campanha-personagem-pdf")
-  }
-}
+    detalhes: {
+      ...detalhesAtuais,
+
+      papel: valor("campanha-papel"),
+
+      personagem: {
+        ...(detalhesAtuais.personagem || {}),
+
+        nome: valor("campanha-personagem-nome"),
+        imagem: valor("campanha-personagem-imagem"),
+        raca: valor("campanha-personagem-raca"),
+        classe: valor("campanha-personagem-classe"),
+        apresentacao: valor("campanha-personagem-apresentacao"),
+        resumo_historia: valor("campanha-personagem-resumo"),
+        historia_completa_url: valor("campanha-personagem-pdf")
+      },
+
+      universo: {
+        ...(detalhesAtuais.universo || {}),
+
+        sistema: valor("campanha-universo-sistema"),
+        lore: valor("campanha-universo-lore"),
+        sistema_url: valor("campanha-universo-sistema-url"),
+        materiais_url: valor("campanha-universo-materiais-url"),
+        materiais_descricao: valor("campanha-universo-materiais-descricao")
+      }
+    }
   };
 }
+
 
 campo("campanha-form").addEventListener(
   "submit",
