@@ -13,6 +13,10 @@
   <script src="admin.js" defer></script>
 
   <style>
+    [hidden] {
+      display: none !important;
+    }
+
     .admin-container {
       max-width: 480px;
       margin: 80px auto;
@@ -26,6 +30,13 @@
     .admin-container h1 {
       margin-bottom: 12px;
       color: #e8c7ff;
+    }
+
+    .admin-container h2,
+    .admin-container h3 {
+      color: #e8c7ff;
+      margin-top: 24px;
+      margin-bottom: 16px;
     }
 
     .admin-container p {
@@ -44,14 +55,29 @@
       gap: 8px;
     }
 
-    .admin-form input {
+    .admin-form input,
+    .admin-form select,
+    .admin-form textarea {
       width: 100%;
+      box-sizing: border-box;
       padding: 12px;
       border: 1px solid #7956a0;
       border-radius: 8px;
       background: #100b1d;
       color: white;
       font: inherit;
+    }
+
+    .admin-form textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .admin-form input:focus,
+    .admin-form select:focus,
+    .admin-form textarea:focus {
+      outline: 2px solid #a66de0;
+      outline-offset: 2px;
     }
 
     .admin-form button {
@@ -65,17 +91,41 @@
       cursor: pointer;
     }
 
+    .admin-form button:hover {
+      background: #c39af0;
+    }
+
     .admin-form button:disabled {
       opacity: 0.6;
       cursor: wait;
     }
 
-    .admin-mensagem {
+    .admin-mensagem,
+    #evento-mensagem {
       margin-top: 18px;
+      color: #e8c7ff;
     }
 
-    .admin-mensagem[hidden] {
-      display: none;
+    #sair {
+      margin-top: 28px;
+      padding: 12px 18px;
+      border: 1px solid #7956a0;
+      border-radius: 8px;
+      background: transparent;
+      color: #e8c7ff;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    #sair:hover {
+      background: #342348;
+    }
+
+    @media (max-width: 600px) {
+      .admin-container {
+        margin: 32px 16px;
+        padding: 22px;
+      }
     }
   </style>
 </head>
@@ -83,6 +133,7 @@
 <body>
   <header class="topo">
     <a class="logo" href="index.html">✦ MIONE LE FAY</a>
+
     <nav aria-label="Menu principal">
       <a href="index.html">Voltar ao site</a>
     </nav>
@@ -94,6 +145,7 @@
       <h1>🔐 Painel Administrativo</h1>
       <p>Entre com suas credenciais para gerenciar a agenda.</p>
 
+      <!-- Formulário de login -->
       <form id="login-form" class="admin-form">
         <label for="admin-email">
           E-mail
@@ -120,82 +172,124 @@
         </button>
       </form>
 
-      <p id="admin-mensagem" class="admin-mensagem"
-         role="status" aria-live="polite" hidden></p>
+      <p
+        id="admin-mensagem"
+        class="admin-mensagem"
+        role="status"
+        aria-live="polite"
+        hidden
+      ></p>
 
-     
-<section id="area-admin" hidden>
-  <h2>Bem-vinda ao painel! 💜</h2>
-  <p>Cadastre e organize os eventos da sua agenda.</p>
+      <!-- Área administrativa -->
+      <section id="area-admin" hidden>
+        <h2>Bem-vinda ao painel! 💜</h2>
+        <p>Cadastre e organize os eventos da sua agenda.</p>
 
-  <h3>📅 Cadastrar novo evento</h3>
+        <h3>📅 Cadastrar novo evento</h3>
 
-  <form id="evento-form" class="admin-form">
-    <label for="evento-titulo">
-      Título
-      <input type="text" id="evento-titulo" required>
-    </label>
+        <form id="evento-form" class="admin-form">
 
-    <label for="evento-categoria">
-      Categoria
-      <select id="evento-categoria" required>
-        <option value="">Selecione uma categoria</option>
-        <option value="rpg-proprio">🎲 RPG no meu canal</option>
-        <option value="rpg-externo">🧙 RPG em outros canais</option>
-        <option value="podcast">🎙️ Podcasts</option>
-        <option value="jogos">🎮 Jogos</option>
-        <option value="video">🎬 Vídeos</option>
-      </select>
-    </label>
+          <label for="evento-titulo">
+            Título
+            <input
+              type="text"
+              id="evento-titulo"
+              required
+            >
+          </label>
 
-    <label for="evento-data">
-      Data
-      <input type="date" id="evento-data" required>
-    </label>
+          <label for="evento-categoria">
+            Categoria
+            <select id="evento-categoria" required>
+              <option value="">Selecione uma categoria</option>
+              <option value="rpg-proprio">🎲 RPG no meu canal</option>
+              <option value="rpg-externo">🧙 RPG em outros canais</option>
+              <option value="podcast">🎙️ Podcasts</option>
+              <option value="jogos">🎮 Jogos</option>
+              <option value="video">🎬 Vídeos</option>
+            </select>
+          </label>
 
-    <label for="evento-hora">
-      Horário
-      <input type="time" id="evento-hora" required>
-    </label>
+          <label for="evento-data">
+            Data
+            <input
+              type="date"
+              id="evento-data"
+              required
+            >
+          </label>
 
-    <label for="evento-canal">
-      Canal
-      <input type="text" id="evento-canal">
-    </label>
+          <label for="evento-hora">
+            Horário
+            <input
+              type="time"
+              id="evento-hora"
+              required
+            >
+          </label>
 
-    <label for="evento-sinopse">
-      Sinopse
-      <textarea id="evento-sinopse" rows="4"></textarea>
-    </label>
+          <label for="evento-canal">
+            Canal
+            <input
+              type="text"
+              id="evento-canal"
+            >
+          </label>
 
-    <label for="evento-imagem">
-      URL da imagem
-      <input type="url" id="evento-imagem">
-    </label>
+          <label for="evento-sinopse">
+            Sinopse
+            <textarea
+              id="evento-sinopse"
+              rows="4"
+            ></textarea>
+          </label>
 
-    <label for="evento-link">
-      Link da transmissão
-      <input type="url" id="evento-link">
-    </label>
+          <label for="evento-imagem">
+            URL da imagem
+            <input
+              type="url"
+              id="evento-imagem"
+              placeholder="https://..."
+            >
+          </label>
 
-    <label for="evento-status">
-      Situação do evento
-      <select id="evento-status">
-        <option value="agendada">Rascunho (não publicado)</option>
-        <option value="publicada">Publicado no calendário</option>
-      </select>
-    </label>
+          <label for="evento-link">
+            Link da transmissão
+            <input
+              type="url"
+              id="evento-link"
+              placeholder="https://..."
+            >
+          </label>
 
-    <button type="submit" id="salvar-evento">
-      💾 Salvar evento
-    </button>
-  </form>
+          <label for="evento-status">
+            Situação do evento
+            <select id="evento-status">
+              <option value="agendada">
+                Rascunho (não publicado)
+              </option>
+              <option value="publicada">
+                Publicado no calendário
+              </option>
+            </select>
+          </label>
 
-  <p id="evento-mensagem" role="status" aria-live="polite"></p>
+          <button type="submit" id="salvar-evento">
+            💾 Salvar evento
+          </button>
 
-  <button id="sair" type="button">Sair da conta</button>
-</section>
+        </form>
 
+        <p
+          id="evento-mensagem"
+          role="status"
+          aria-live="polite"
+        ></p>
+
+        <button id="sair" type="button">
+          Sair da conta
+        </button>
+      </section>
     </section>
   </main>
 
