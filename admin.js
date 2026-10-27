@@ -658,6 +658,7 @@ campo("campanha-form").addEventListener(
   }
 );
 
+
 function editarCampanha(id) {
   const campanha = encontrarCampanha(id);
   if (!campanha) return;
@@ -676,13 +677,17 @@ function editarCampanha(id) {
     campo(`campanha-${chave}`).value =
       campanha[chave] || "";
   });
-  
+
+  // Papel na campanha
   campo("campanha-papel").value =
     campanha.detalhes?.papel || "";
+
   atualizarSecaoPersonagem();
   atualizarSecaoNarradora();
-    
-  const personagem = campanha.detalhes?.personagem || {};
+
+  // Dados da personagem
+  const personagem =
+    campanha.detalhes?.personagem || {};
 
   const camposPersonagem = {
     nome: "nome",
@@ -701,7 +706,26 @@ function editarCampanha(id) {
     }
   );
 
+  // Dados do universo da campanha
+  const universo =
+    campanha.detalhes?.universo || {};
 
+  campo("campanha-universo-sistema").value =
+    universo.sistema || "";
+
+  campo("campanha-universo-lore").value =
+    universo.lore || "";
+
+  campo("campanha-universo-sistema-url").value =
+    universo.sistema_url || "";
+
+  campo("campanha-universo-materiais-url").value =
+    universo.materiais_url || "";
+
+  campo("campanha-universo-materiais-descricao").value =
+    universo.materiais_descricao || "";
+
+  // Atualiza os botões do formulário
   campo("salvar-campanha").textContent =
     "💾 Atualizar campanha";
 
