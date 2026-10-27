@@ -1,0 +1,680 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#100b1d">
+
+  <title>Campanha | Mione Le Fay</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"
+    defer>
+  </script>
+
+  <style>
+    [hidden] {
+      display: none !important;
+    }
+
+    .pagina-campanha {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 50px 24px 90px;
+      color: #f7f1ff;
+    }
+
+    .campanha-voltar {
+      display: inline-block;
+      margin-bottom: 30px;
+      color: #e8c7ff;
+      text-decoration: none;
+    }
+
+    .campanha-voltar:hover {
+      text-decoration: underline;
+    }
+
+    .campanha-hero {
+      display: grid;
+      grid-template-columns: minmax(240px, 360px) 1fr;
+      gap: 36px;
+      align-items: start;
+      margin-bottom: 36px;
+    }
+
+    .campanha-capa {
+      width: 100%;
+      display: block;
+      border-radius: 18px;
+      border: 1px solid #68458a;
+      object-fit: cover;
+    }
+
+    .campanha-categoria {
+      color: #d7a5ff;
+      font-weight: bold;
+      margin-bottom: 14px;
+    }
+
+    .campanha-titulo {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      line-height: 1.12;
+      margin: 0 0 20px;
+      color: #f0d7ff;
+    }
+
+    .campanha-metadados {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 22px;
+      color: #d9c7e9;
+    }
+
+    .campanha-texto {
+      line-height: 1.8;
+      white-space: pre-line;
+      overflow-wrap: anywhere;
+    }
+
+    .campanha-bloco {
+      background: #211631;
+      border: 1px solid #68458a;
+      border-radius: 18px;
+      padding: 30px;
+      margin-top: 26px;
+    }
+
+    .campanha-bloco h2 {
+      color: #e8c7ff;
+      font-size: 1.6rem;
+      margin: 0 0 20px;
+    }
+
+    .campanha-bloco h3 {
+      color: #e8c7ff;
+      margin: 24px 0 10px;
+    }
+
+    .personagem-layout {
+      display: grid;
+      grid-template-columns: minmax(180px, 280px) 1fr;
+      gap: 30px;
+      align-items: start;
+    }
+
+    .personagem-imagem {
+      display: block;
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid #68458a;
+    }
+
+    .personagem-nome {
+      font-size: 1.9rem;
+      color: #f0d7ff;
+      margin: 0 0 12px;
+    }
+
+    .personagem-detalhes {
+      color: #d9c7e9;
+      margin-bottom: 20px;
+    }
+
+    .campanha-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .campanha-links .botao {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      text-decoration: none;
+      margin: 0;
+    }
+
+    .campanha-aviso {
+      background: #211631;
+      border: 1px solid #68458a;
+      border-radius: 14px;
+      padding: 24px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 720px) {
+      .pagina-campanha {
+        padding: 28px 16px 60px;
+      }
+
+      .campanha-hero,
+      .personagem-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .campanha-capa {
+        max-width: 440px;
+        margin: 0 auto;
+      }
+
+      .personagem-imagem {
+        max-width: 300px;
+        margin: 0 auto;
+      }
+
+      .campanha-bloco {
+        padding: 22px 18px;
+      }
+
+      .campanha-links {
+        flex-direction: column;
+      }
+
+      .campanha-links .botao {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="topo">
+    <a class="logo" href="index.html">
+      ✦ MIONE LE FAY
+    </a>
+
+    <nav aria-label="Menu principal">
+      <a href="index.html">Início</a>
+      <a href="index.html#agenda">Agenda</a>
+      <a href="index.html#campanhas">Campanhas</a>
+      <a href="index.html#redes">Redes sociais</a>
+    </nav>
+  </header>
+
+  <main class="pagina-campanha">
+
+    <a
+      class="campanha-voltar"
+      href="index.html#campanhas">
+      ← Voltar para a Biblioteca de Campanhas
+    </a>
+
+    <p
+      id="campanha-carregando"
+      class="campanha-aviso"
+      role="status">
+      Carregando informações da campanha...
+    </p>
+
+    <div id="campanha-conteudo" hidden>
+
+      <!-- APRESENTAÇÃO DA CAMPANHA -->
+
+      <section class="campanha-hero">
+
+        <img
+          id="campanha-capa"
+          class="campanha-capa"
+          alt="Capa da campanha"
+          hidden>
+
+        <div>
+
+          <p
+            id="campanha-categoria"
+            class="campanha-categoria">
+          </p>
+
+          <h1
+            id="campanha-titulo"
+            class="campanha-titulo">
+          </h1>
+
+          <div class="campanha-metadados">
+
+            <p id="campanha-narrador" hidden></p>
+
+            <p id="campanha-canal" hidden></p>
+
+          </div>
+
+          <p
+            id="campanha-sinopse"
+            class="campanha-texto"
+            hidden>
+          </p>
+
+          <div
+            id="campanha-links-principais"
+            class="campanha-links">
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- MINHA PERSONAGEM -->
+
+      <section
+        id="secao-personagem"
+        class="campanha-bloco"
+        hidden>
+
+        <h2>🧙 Minha Personagem</h2>
+
+        <div class="personagem-layout">
+
+          <img
+            id="personagem-imagem"
+            class="personagem-imagem"
+            alt="Ilustração da personagem"
+            hidden>
+
+          <div>
+
+            <h3
+              id="personagem-nome"
+              class="personagem-nome"
+              hidden>
+            </h3>
+
+            <p
+              id="personagem-detalhes"
+              class="personagem-detalhes"
+              hidden>
+            </p>
+
+            <p
+              id="personagem-apresentacao"
+              class="campanha-texto"
+              hidden>
+            </p>
+
+            <div id="personagem-historia" hidden>
+
+              <h3>📖 História da Personagem</h3>
+
+              <p
+                id="personagem-resumo"
+                class="campanha-texto">
+              </p>
+
+            </div>
+
+            <div
+              id="personagem-links"
+              class="campanha-links">
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- UNIVERSO E MATERIAIS -->
+
+      <section
+        id="secao-universo"
+        class="campanha-bloco"
+        hidden>
+
+        <h2>📜 Universo e Materiais da Campanha</h2>
+
+        <p id="universo-sistema" hidden></p>
+
+        <div id="universo-historia" hidden>
+
+          <h3>🌍 História e Ambientação</h3>
+
+          <p
+            id="universo-lore"
+            class="campanha-texto">
+          </p>
+
+        </div>
+
+        <div id="universo-materiais" hidden>
+
+          <h3>📚 Materiais Complementares</h3>
+
+          <p
+            id="universo-materiais-descricao"
+            class="campanha-texto"
+            hidden>
+          </p>
+
+        </div>
+
+        <div
+          id="universo-links"
+          class="campanha-links">
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+  <footer>
+    <p>
+      💜 Mione Le Fay • RPG, jogos e muitas histórias
+    </p>
+  </footer>
+
+  <script>
+    "use strict";
+
+    const SUPABASE_URL =
+      "https://gevkvjuaurcxokudlblc.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_4mIXjg7273CgkxJzNGILow_0GyQ6yTd";
+
+    function elemento(id) {
+      return document.getElementById(id);
+    }
+
+    function mostrarTexto(id, texto) {
+      const destino = elemento(id);
+      const conteudo = String(texto || "").trim();
+
+      destino.textContent = conteudo;
+      destino.hidden = !conteudo;
+
+      return Boolean(conteudo);
+    }
+
+    function mostrarImagem(id, url, descricao) {
+      const imagem = elemento(id);
+
+      if (!urlValida(url)) {
+        imagem.hidden = true;
+        imagem.removeAttribute("src");
+        return false;
+      }
+
+      imagem.src = url;
+      imagem.alt = descricao;
+      imagem.hidden = false;
+
+      return true;
+    }
+
+    function urlValida(url) {
+      if (!url || typeof url !== "string") {
+        return false;
+      }
+
+      try {
+        const endereco = new URL(url);
+        return (
+          endereco.protocol === "https:" ||
+          endereco.protocol === "http:"
+        );
+      } catch {
+        return false;
+      }
+    }
+
+    function adicionarLink(containerId, url, texto) {
+      if (!urlValida(url)) {
+        return false;
+      }
+
+      const link = document.createElement("a");
+
+      link.className = "botao";
+      link.href = url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = texto;
+
+      elemento(containerId).append(link);
+
+      return true;
+    }
+
+    function preencherCampanha(campanha) {
+      const detalhes = campanha.detalhes || {};
+      const personagem = detalhes.personagem || {};
+      const universo = detalhes.universo || {};
+
+      const papel = detalhes.papel || "";
+
+      // APRESENTAÇÃO PRINCIPAL
+
+      mostrarTexto(
+        "campanha-titulo",
+        campanha.titulo || "Campanha sem título"
+      );
+
+      mostrarTexto(
+        "campanha-categoria",
+        campanha.categoria === "rpg-proprio"
+          ? "🎲 RPG no meu canal"
+          : campanha.categoria === "rpg-externo"
+            ? "🧙 RPG em outros canais"
+            : ""
+      );
+
+      mostrarTexto(
+        "campanha-narrador",
+        campanha.narrador
+          ? "🎲 Narrador(a): " + campanha.narrador
+          : ""
+      );
+
+      mostrarTexto(
+        "campanha-canal",
+        campanha.canal
+          ? "📺 Canal: " + campanha.canal
+          : ""
+      );
+
+      mostrarTexto(
+        "campanha-sinopse",
+        campanha.sinopse
+      );
+
+      mostrarImagem(
+        "campanha-capa",
+        campanha.imagem,
+        "Capa de " + (campanha.titulo || "campanha")
+      );
+
+      adicionarLink(
+        "campanha-links-principais",
+        campanha.link,
+        "▶ Acompanhar campanha"
+      );
+
+      document.title =
+        (campanha.titulo || "Campanha") +
+        " | Mione Le Fay";
+
+      // MINHA PERSONAGEM
+
+      const mostrarPersonagem =
+        papel === "jogadora" ||
+        papel === "ambos";
+
+      if (mostrarPersonagem) {
+        const temNome = mostrarTexto(
+          "personagem-nome",
+          personagem.nome
+        );
+
+        const temImagem = mostrarImagem(
+          "personagem-imagem",
+          personagem.imagem,
+          "Ilustração de " +
+          (personagem.nome || "personagem")
+        );
+
+        const dados = [];
+
+        if (personagem.raca) {
+          dados.push("🧬 " + personagem.raca);
+        }
+
+        if (personagem.classe) {
+          dados.push("⚔️ " + personagem.classe);
+        }
+
+        const temDetalhes = mostrarTexto(
+          "personagem-detalhes",
+          dados.join(" • ")
+        );
+
+        const temApresentacao = mostrarTexto(
+          "personagem-apresentacao",
+          personagem.apresentacao
+        );
+
+        const temResumo = mostrarTexto(
+          "personagem-resumo",
+          personagem.resumo_historia
+        );
+
+        elemento("personagem-historia").hidden =
+          !temResumo;
+
+        const temPdf = adicionarLink(
+          "personagem-links",
+          personagem.historia_completa_url,
+          "📖 Ler história completa"
+        );
+
+        elemento("secao-personagem").hidden = !(
+          temNome ||
+          temImagem ||
+          temDetalhes ||
+          temApresentacao ||
+          temResumo ||
+          temPdf
+        );
+      }
+
+      // UNIVERSO E MATERIAIS
+
+      const mostrarUniverso =
+        papel === "narradora" ||
+        papel === "ambos";
+
+      if (mostrarUniverso) {
+        const temSistema = mostrarTexto(
+          "universo-sistema",
+          universo.sistema
+            ? "🎲 Sistema de RPG: " + universo.sistema
+            : ""
+        );
+
+        const temLore = mostrarTexto(
+          "universo-lore",
+          universo.lore
+        );
+
+        elemento("universo-historia").hidden =
+          !temLore;
+
+        const temDescricao = mostrarTexto(
+          "universo-materiais-descricao",
+          universo.materiais_descricao
+        );
+
+        const temLinkSistema = adicionarLink(
+          "universo-links",
+          universo.sistema_url,
+          "📘 Acessar sistema de RPG"
+        );
+
+        const temLinkMateriais = adicionarLink(
+          "universo-links",
+          universo.materiais_url,
+          "📚 Acessar materiais complementares"
+        );
+
+        elemento("universo-materiais").hidden =
+          !(temDescricao || temLinkMateriais);
+
+        elemento("secao-universo").hidden = !(
+          temSistema ||
+          temLore ||
+          temDescricao ||
+          temLinkSistema ||
+          temLinkMateriais
+        );
+      }
+
+      // EXIBIR PÁGINA
+
+      elemento("campanha-carregando").hidden = true;
+      elemento("campanha-conteudo").hidden = false;
+    }
+
+    async function carregarCampanha() {
+      const parametros = new URLSearchParams(
+        window.location.search
+      );
+
+      const id = parametros.get("id");
+
+      if (!id || !/^\d+$/.test(id)) {
+        elemento("campanha-carregando").textContent =
+          "Campanha não encontrada. Volte à biblioteca e selecione uma aventura.";
+        return;
+      }
+
+      try {
+        const cliente = supabase.createClient(
+          SUPABASE_URL,
+          SUPABASE_KEY
+        );
+
+        const { data, error } = await cliente
+          .from("campanhas")
+          .select(
+            "id, titulo, categoria, narrador, canal, " +
+            "sinopse, imagem, link, detalhes"
+          )
+          .eq("id", Number(id))
+          .single();
+
+        if (error) {
+          throw error;
+        }
+
+        if (!data) {
+          throw new Error("Campanha não encontrada.");
+        }
+
+        preencherCampanha(data);
+
+      } catch (erro) {
+        console.error(
+          "Erro ao carregar campanha:",
+          erro
+        );
+
+        elemento("campanha-carregando").textContent =
+          "Não foi possível carregar esta campanha. Verifique o endereço ou tente novamente.";
+      }
+    }
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      carregarCampanha
+    );
+  </script>
+
+</body>
+</html>
