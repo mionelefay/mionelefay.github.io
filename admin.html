@@ -14,7 +14,6 @@
     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"
     defer
   ></script>
-
   <script src="admin.js" defer></script>
 
   <style>
@@ -229,6 +228,134 @@
       background: #342348;
     }
 
+    /* NOVOS FILTROS DO GERENCIAR */
+
+    .gerenciar-filtros {
+      padding: 20px;
+      border: 1px solid #68458a;
+      border-radius: 12px;
+      background: #211631;
+    }
+
+    .gerenciar-filtros-titulo {
+      margin: 0 0 16px !important;
+      color: #e8c7ff;
+      font-size: 1rem;
+      font-weight: bold;
+    }
+
+    .gerenciar-filtros-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .gerenciar-filtros label {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      color: #e8c7ff;
+      font-size: 0.95rem;
+    }
+
+    .gerenciar-filtros input,
+    .gerenciar-filtros select {
+      width: 100%;
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid #7956a0;
+      border-radius: 8px;
+      background: #100b1d;
+      color: #fff;
+      font: inherit;
+    }
+
+    .gerenciar-filtros input:focus,
+    .gerenciar-filtros select:focus {
+      outline: 2px solid #a66de0;
+      outline-offset: 2px;
+    }
+
+    .gerenciar-filtros select:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .gerenciar-busca {
+      margin-top: 16px;
+    }
+
+    .gerenciar-filtros-acoes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .gerenciar-filtros-acoes button {
+      padding: 12px 16px;
+      border: 1px solid #7956a0;
+      border-radius: 8px;
+      background: #a66de0;
+      color: #100b1d;
+      font: inherit;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .gerenciar-filtros-acoes button:hover {
+      background: #c39af0;
+    }
+
+    .gerenciar-filtros-acoes .gerenciar-botao-secundario {
+      background: #342348;
+      color: #fff;
+    }
+
+    .gerenciar-filtros-acoes .gerenciar-botao-secundario:hover {
+      background: #50366b;
+    }
+
+    .gerenciar-resumo {
+      margin: 20px 0 0 !important;
+      color: #c9b6dd;
+      font-size: 0.9rem;
+    }
+
+    .gerenciar-paginacao {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .gerenciar-paginacao button {
+      padding: 10px 15px;
+      border: 1px solid #7956a0;
+      border-radius: 8px;
+      background: #342348;
+      color: #fff;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .gerenciar-paginacao button:hover:not(:disabled) {
+      background: #50366b;
+    }
+
+    .gerenciar-paginacao button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .gerenciar-pagina-atual {
+      color: #e8c7ff;
+      font-size: 0.95rem;
+      text-align: center;
+    }
+
     @media (max-width: 650px) {
       .admin-container {
         margin: 24px 12px;
@@ -239,7 +366,8 @@
         padding: 16px;
       }
 
-      .admin-grid {
+      .admin-grid,
+      .gerenciar-filtros-grid {
         grid-template-columns: 1fr;
       }
 
@@ -249,6 +377,14 @@
 
       .admin-abas button {
         flex: 1 1 45%;
+      }
+
+      .gerenciar-filtros {
+        padding: 14px;
+      }
+
+      .gerenciar-filtros-acoes button {
+        flex: 1 1 100%;
       }
     }
   </style>
@@ -278,6 +414,7 @@
       </p>
 
       <!-- LOGIN -->
+
       <form id="login-form" class="admin-form">
 
         <label for="admin-email">
@@ -315,6 +452,7 @@
       ></p>
 
       <!-- ÁREA ADMINISTRATIVA -->
+
       <section id="area-admin" hidden>
 
         <h2>Bem-vinda ao painel! 💜</h2>
@@ -324,6 +462,7 @@
         </p>
 
         <!-- NAVEGAÇÃO -->
+
         <nav class="admin-abas" aria-label="Seções administrativas">
 
           <button
@@ -361,9 +500,7 @@
 
         </nav>
 
-        <!-- =================================
-             CADASTRO DE COMPROMISSOS
-        ================================== -->
+        <!-- CADASTRO DE COMPROMISSOS -->
 
         <section
           id="aba-eventos"
@@ -442,7 +579,6 @@
                   <option value="livre">
                     🟢 Livre
                   </option>
-
                 </select>
               </label>
 
@@ -588,9 +724,7 @@
 
         </section>
 
-        <!-- =================================
-             BIBLIOTECA DE CAMPANHAS
-        ================================== -->
+        <!-- BIBLIOTECA DE CAMPANHAS -->
 
         <section
           id="aba-campanhas"
@@ -716,9 +850,7 @@
 
         </section>
 
-        <!-- =================================
-             AGENDAMENTO RECORRENTE
-        ================================== -->
+        <!-- AGENDAMENTO RECORRENTE -->
 
         <section
           id="aba-recorrencia"
@@ -885,9 +1017,7 @@
 
         </section>
 
-        <!-- =================================
-             GERENCIAMENTO DE EVENTOS
-        ================================== -->
+        <!-- GERENCIAMENTO DE EVENTOS -->
 
         <section
           id="aba-gerenciar"
@@ -898,37 +1028,150 @@
           <h3>🗂️ Gerenciar compromissos</h3>
 
           <p class="admin-ajuda">
-            Visualize seus compromissos, corrija
-            informações, publique ou exclua registros.
+            Encontre compromissos por situação, categoria,
+            período, campanha ou título. Edite, publique
+            ou exclua registros quando necessário.
           </p>
 
-          <div class="admin-form">
+          <!-- NOVOS FILTROS -->
 
-            <label for="gerenciar-filtro">
-              Filtrar compromissos
+          <div class="gerenciar-filtros">
 
-              <select id="gerenciar-filtro">
-                <option value="todos">
-                  Todos
-                </option>
+            <p class="gerenciar-filtros-titulo">
+              🔎 Filtrar compromissos
+            </p>
 
-                <option value="publicada">
-                  Publicados
-                </option>
+            <div class="gerenciar-filtros-grid">
 
-                <option value="agendada">
-                  Rascunhos
-                </option>
-              </select>
+              <label for="gerenciar-filtro">
+                Situação
+
+                <select id="gerenciar-filtro">
+                  <option value="todos">
+                    Todos
+                  </option>
+
+                  <option value="publicada">
+                    Publicados
+                  </option>
+
+                  <option value="agendada">
+                    Rascunhos
+                  </option>
+                </select>
+              </label>
+
+              <label for="gerenciar-categoria">
+                Categoria
+
+                <select id="gerenciar-categoria">
+                  <option value="todos">
+                    Todas as categorias
+                  </option>
+
+                  <option value="rpg-proprio">
+                    🎲 RPG no meu canal
+                  </option>
+
+                  <option value="rpg-externo">
+                    🧙 RPG em outros canais
+                  </option>
+
+                  <option value="podcast">
+                    🎙️ Podcasts
+                  </option>
+
+                  <option value="jogos">
+                    🎮 Jogos
+                  </option>
+
+                  <option value="video">
+                    🎬 Vídeos
+                  </option>
+
+                  <option value="evento">
+                    🎪 Evento externo
+                  </option>
+
+                  <option value="trabalho">
+                    💼 Trabalho
+                  </option>
+
+                  <option value="ocupado">
+                    🔴 Ocupado
+                  </option>
+
+                  <option value="livre">
+                    🟢 Livre
+                  </option>
+                </select>
+              </label>
+
+              <label for="gerenciar-periodo">
+                Período
+
+                <select id="gerenciar-periodo">
+                  <option value="futuros" selected>
+                    Próximos compromissos
+                  </option>
+
+                  <option value="passados">
+                    Já realizados
+                  </option>
+
+                  <option value="todos">
+                    Todos os períodos
+                  </option>
+                </select>
+              </label>
+
+              <label for="gerenciar-campanha">
+                Campanha de RPG
+
+                <select
+                  id="gerenciar-campanha"
+                  disabled
+                >
+                  <option value="todas">
+                    Todas as campanhas
+                  </option>
+                </select>
+              </label>
+
+            </div>
+
+            <label
+              class="gerenciar-busca"
+              for="gerenciar-busca"
+            >
+              Buscar pelo título
+
+              <input
+                type="search"
+                id="gerenciar-busca"
+                placeholder="Digite o nome da sessão ou compromisso..."
+                autocomplete="off"
+              >
             </label>
 
-            <button
-              type="button"
-              id="atualizar-eventos"
-              class="admin-botao"
-            >
-              🔄 Atualizar lista
-            </button>
+            <div class="gerenciar-filtros-acoes">
+
+              <button
+                type="button"
+                id="limpar-filtros"
+                class="gerenciar-botao-secundario"
+              >
+                ✖ Limpar filtros
+              </button>
+
+              <button
+                type="button"
+                id="atualizar-eventos"
+              >
+                🔄 Atualizar lista
+              </button>
+
+            </div>
 
           </div>
 
@@ -939,6 +1182,15 @@
             aria-live="polite"
           ></p>
 
+          <p
+            id="gerenciar-resumo"
+            class="gerenciar-resumo"
+            role="status"
+            aria-live="polite"
+          ></p>
+
+          <!-- LISTA DE COMPROMISSOS -->
+
           <div
             id="lista-eventos"
             class="admin-lista"
@@ -946,6 +1198,41 @@
           >
             <p>Nenhum compromisso carregado.</p>
           </div>
+
+          <!-- PAGINAÇÃO -->
+
+          <nav
+            id="gerenciar-paginacao"
+            class="gerenciar-paginacao"
+            aria-label="Navegação entre páginas de compromissos"
+            hidden
+          >
+
+            <button
+              type="button"
+              id="gerenciar-anterior"
+              disabled
+            >
+              ← Anterior
+            </button>
+
+            <span
+              id="gerenciar-pagina-atual"
+              class="gerenciar-pagina-atual"
+              aria-live="polite"
+            >
+              Página 1 de 1
+            </span>
+
+            <button
+              type="button"
+              id="gerenciar-proxima"
+              disabled
+            >
+              Próxima →
+            </button>
+
+          </nav>
 
         </section>
 
