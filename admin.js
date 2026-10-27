@@ -5,6 +5,9 @@
 const SUPABASE_URL = "https://gevkvjuaurcxokudlblc.supabase.co";
 const SUPABASE_KEY = "sb_publishable_4mIXjg7273CgkxJzNGILow_0GyQ6yTd";
 
+// Identificador da conta administrativa
+const ADMIN_UID = "5f0cd47a-7c6f-4fc5-99d8-449534c393e8";
+
 const supabaseClient = supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
@@ -33,8 +36,8 @@ function mostrarPainel() {
   areaAdmin.hidden = false;
 }
 
-// Verifica se a conta tem acesso administrativo
-// consultando a tabela protegida pelas políticas RLS.
+// Verifica a identidade da conta autenticada.
+// As políticas RLS do Supabase protegem os dados.
 async function verificarAdministrador() {
   const { data: { user }, error } =
     await supabaseClient.auth.getUser();
@@ -43,16 +46,10 @@ async function verificarAdministrador() {
     return false;
   }
 
-  const ADMIN_UID = "5f0cd47a-7c6f-4fc5-99d8-449534c393e8";
-
   return user.id === ADMIN_UID;
 }
 
-  // Esta consulta não comprova privilégios administrativos.
-  // Por segurança, não liberamos o painel por esse resultado.
-  return false;
-}
-
+// Login administrativo
 formulario.addEventListener("submit", async (evento) => {
   evento.preventDefault();
 
@@ -71,29 +68,31 @@ formulario.addEventListener("submit", async (evento) => {
 
     campoSenha.value = "";
 
-// Verificar se a conta autenticada é a administradora
-const autorizado = await verificarAdministrador();
+    // Verificar se a conta é administradora
+    const autorizado = await verificarAdministrador();
 
-if (!autorizado) {
-  await supabaseClient.auth.signOut();
-  mostrarLogin();
-  mostrarMensagem("Esta conta não possui acesso administrativo.");
-  return;
-}
+    if (!autorizado) {
+      await supabaseClient.auth.signOut();
+      mostrarLogin();
+      mostrarMensagem("Esta conta não possui acesso administrativo.");
+      return;
+    }
 
-// Liberar o painel para a administradora
-mostrarPainel();
-mostrarMensagem("Login administrativo realizado com sucesso! 💜");
+    // Liberar a interface administrativa
+    mostrarPainel();
+    mostrarMensagem("Login administrativo realizado com sucesso! 💜");
 
   } catch (erro) {
     mostrarLogin();
     mostrarMensagem("Não foi possível entrar. Confira o e-mail e a senha.");
     console.error("Erro de autenticação:", erro.message);
+
   } finally {
     botaoEntrar.disabled = false;
   }
 });
 
+// Sair da conta
 botaoSair.addEventListener("click", async () => {
   const { error } = await supabaseClient.auth.signOut();
 
@@ -106,6 +105,21 @@ botaoSair.addEventListener("click", async () => {
   mostrarMensagem("Você saiu da conta.");
 });
 
-// Mantém a tela de login até configurarmos
-// a autorização administrativa.
-mostrarLogin();
+// Verificar se já existe uma sessão autenticada
+async function iniciarPainel() {
+  mostrarLogin();
+
+  try {
+    const autorizado = await verificarAdministrador();
+
+    if (autorizado) {
+      mostrarPainel();
+      mostrarMensagem("Sessão administrativa ativa. 💜");
+    }
+  } catch (erro) {
+    console.error("Erro ao verificar sessão:", erro.message);
+  }
+}
+
+iniciarPainel();
+
