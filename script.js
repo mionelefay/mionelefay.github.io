@@ -88,6 +88,8 @@ const modal =
 // ==========================================
 
 function formatarData(dataTexto) {
+  if (!dataTexto) return "";
+
   const [ano, mes, dia] =
     dataTexto.split("-").map(Number);
 
@@ -130,10 +132,12 @@ function dataISO(ano, mes, dia) {
 }
 
 function dataAtualISO() {
+  const agora = new Date();
+
   return dataISO(
-    hoje.getFullYear(),
-    hoje.getMonth(),
-    hoje.getDate()
+    agora.getFullYear(),
+    agora.getMonth(),
+    agora.getDate()
   );
 }
 
@@ -152,7 +156,7 @@ function criarElemento(tag, texto, classe) {
 }
 
 // ==========================================
-// DADOS DAS CAMPANHAS
+// INTEGRAÇÃO COM CAMPANHAS
 // ==========================================
 
 function integrarCampanha(evento) {
@@ -161,51 +165,67 @@ function integrarCampanha(evento) {
   }
 
   const campanha = campanhas.find(
-    item => item.id === evento.campanha_id
+    item => Number(item.id) ===
+      Number(evento.campanha_id)
   );
 
   if (!campanha) {
     return evento;
   }
 
-  // Sessões passadas preservam os dados
-  // que já estavam registrados no evento.
   const sessaoPassada =
     evento.data < dataAtualISO();
+
+  // Sessões anteriores priorizam os dados
+  // que foram salvos no compromisso.
+  //
+  // Se um campo histórico estiver vazio,
+  // usamos o cadastro da campanha como
+  // alternativa. Isso não recupera versões
+  // antigas que nunca foram armazenadas.
 
   if (sessaoPassada) {
     return {
       ...evento,
-      titulo: evento.titulo || campanha.titulo,
+      titulo:
+        evento.titulo || campanha.titulo,
       categoria:
         evento.categoria || campanha.categoria,
-      canal: evento.canal || campanha.canal,
+      canal:
+        evento.canal || campanha.canal,
       narrador:
         evento.narrador || campanha.narrador,
       sinopse:
         evento.sinopse || campanha.sinopse,
       imagem:
         evento.imagem || campanha.imagem,
-      link: evento.link || campanha.link
+      link:
+        evento.link || campanha.link
     };
   }
 
-  // Sessões futuras usam os dados atuais
-  // da campanha, preservando título e link
-  // próprios quando existirem.
+  // Sessões futuras acompanham os dados
+  // atuais da campanha.
+  //
+  // O título e o link específicos do
+  // compromisso continuam prioritários.
 
   return {
     ...evento,
-    titulo: evento.titulo || campanha.titulo,
-    categoria: campanha.categoria,
-    canal: campanha.canal || evento.canal,
+    titulo:
+      evento.titulo || campanha.titulo,
+    categoria:
+      campanha.categoria || evento.categoria,
+    canal:
+      campanha.canal || evento.canal,
     narrador:
       campanha.narrador || evento.narrador,
     sinopse:
       campanha.sinopse || evento.sinopse,
     imagem:
       campanha.imagem || evento.imagem,
-    link: evento.link || campanha.link
+    link:
+      evento.link || campanha.link
   };
 }
 
@@ -233,12 +253,88 @@ function disponibilidadePadrao(
     return "livre";
   }
 
-  if (turnoId === "manha" ||
-      turnoId === "tarde") {
+  if (
+    turnoId === "manha" ||
+    turnoId === "tarde"
+  ) {
     return "ocupado";
   }
 
   return "livre";
+}
+
+// ==========================================
+// EVENTOS DE UM TURNO
+// ==========================================
+
+function eventosNoTurno(
+  eventosDoDia,
+  turnoId
+) {
+  return eventosDoDia
+    .filter(evento => {
+      const turnoEvento =
+        evento.turno ||
+        obterTurno(evento.hora);
+
+      return turnoEvento === turnoId;
+    })
+    .sort((a, b) => {
+      return formatarHora(a.hora).localeCompare(
+        formatarHora(b.hora)
+      );
+    });
+}
+
+// ==========================================
+// SITUAÇÃO REAL DO TURNO
+// ==========================================
+
+function situacaoDoTurno(
+  dataTexto,
+  turnoId,
+  eventosDoDia
+) {
+  const padrao = disponibilidadePadrao(
+    dataTexto,
+    turnoId
+  );
+
+  const compromissos = eventosNoTurno(
+    eventosDoDia,
+    turnoId
+  );
+
+  const bloqueado = compromissos.some(
+    evento => evento.bloqueia_turno !== false
+  );
+
+  // Compromissos explícitos de disponibilidade
+  // podem substituir o padrão do calendário.
+
+  const indisponibilidadeExplicita =
+    compromissos.some(
+      evento => evento.categoria === "ocupado"
+    );
+
+  const disponibilidadeExplicita =
+    compromissos.some(
+      evento => evento.categoria === "livre"
+    );
+
+  if (indisponibilidadeExplicita) {
+    return "ocupado";
+  }
+
+  if (bloqueado) {
+    return "ocupado";
+  }
+
+  if (disponibilidadeExplicita) {
+    return "livre";
+  }
+
+  return padrao;
 }
 
 // ==========================================
@@ -261,7 +357,7 @@ function criarPostit(evento) {
 
   const nome = criarElemento(
     "strong",
-    evento.titulo
+    evento.titulo || "Compromisso"
   );
 
   botao.append(horario, nome);
@@ -313,7 +409,8 @@ function criarPostitDisponibilidade(
 function criarTurno(
   dataTexto,
   turno,
-  eventosDoDia
+  eventosDoDia,
+  filtro = "todas"
 ) {
   const bloco = criarElemento(
     "section",
@@ -343,26 +440,42 @@ function criarTurno(
     "turno-eventos"
   );
 
-  const eventosDoTurno =
+  const compromissos = eventosNoTurno(
+    eventosDoDia,
+    turno.id
+  );
+
+  const situacao = situacaoDoTurno(
+    dataTexto,
+    turno.id,
     eventosDoDia
-      .filter(evento => {
-        const turnoEvento =
-          evento.turno ||
-          obterTurno(evento.hora);
+  );
 
-        return turnoEvento === turno.id;
-      })
-      .sort(
-        (a, b) =>
-          formatarHora(a.hora).localeCompare(
-            formatarHora(b.hora)
-          )
+  // ========================================
+  // FILTROS DE DISPONIBILIDADE
+  // ========================================
+
+  if (
+    filtro === "livre" ||
+    filtro === "ocupado"
+  ) {
+    if (situacao === filtro) {
+      lista.append(
+        criarPostitDisponibilidade(situacao)
       );
+    }
 
-  eventosDoTurno.forEach(evento => {
-    lista.append(
-      criarPostit(evento)
-    );
+    bloco.append(cabecalho, lista);
+
+    return bloco;
+  }
+
+  // ========================================
+  // EXIBIÇÃO NORMAL
+  // ========================================
+
+  compromissos.forEach(evento => {
+    lista.append(criarPostit(evento));
   });
 
   const padrao = disponibilidadePadrao(
@@ -370,23 +483,18 @@ function criarTurno(
     turno.id
   );
 
-  const bloqueado =
-    eventosDoTurno.some(
-      evento => evento.bloqueia_turno !== false
-    );
+  const bloqueado = compromissos.some(
+    evento => evento.bloqueia_turno !== false
+  );
 
-  // Um evento que ocupa todo o turno
-  // deixa o período indisponível.
-  // Eventos parciais preservam a
-  // disponibilidade restante.
-
-  if (eventosDoTurno.length === 0) {
+  if (compromissos.length === 0) {
     lista.append(
-      criarPostitDisponibilidade(padrao)
+      criarPostitDisponibilidade(situacao)
     );
 
   } else if (
     !bloqueado &&
+    situacao === "livre" &&
     padrao === "livre"
   ) {
     lista.append(
@@ -394,6 +502,19 @@ function criarTurno(
         "livre",
         true
       )
+    );
+
+  } else if (
+    !bloqueado &&
+    situacao === "livre" &&
+    padrao === "ocupado"
+  ) {
+    // Quando a disponibilidade foi
+    // liberada explicitamente, mostramos
+    // a situação atual do turno.
+
+    lista.append(
+      criarPostitDisponibilidade("livre")
     );
   }
 
@@ -445,11 +566,7 @@ function renderizarCalendario() {
     new Date(ano, mes, 1).getDay();
 
   const totalDias =
-    new Date(
-      ano,
-      mes + 1,
-      0
-    ).getDate();
+    new Date(ano, mes + 1, 0).getDate();
 
   for (
     let indice = 0;
@@ -498,45 +615,64 @@ function renderizarCalendario() {
       )
     );
 
-    const eventosDoDia =
-      eventos
-        .filter(evento => {
-          return (
-            evento.data === data &&
-            (
-              filtroAtual === "todas" ||
-              evento.categoria === filtroAtual
-            )
-          );
-        });
+    // Todos os compromissos do dia,
+    // independentemente do filtro.
+    //
+    // Isso é importante para calcular
+    // corretamente a disponibilidade.
 
-    // Disponibilidade é exibida no filtro
-    // "Todas" ou nos filtros correspondentes.
+    const eventosDoDia = eventos.filter(
+      evento => evento.data === data
+    );
 
-    const mostrarDisponibilidade =
+    if (
       filtroAtual === "todas" ||
       filtroAtual === "livre" ||
-      filtroAtual === "ocupado";
-
-    if (mostrarDisponibilidade) {
+      filtroAtual === "ocupado"
+    ) {
       turnos.forEach(turno => {
+        const situacao = situacaoDoTurno(
+          data,
+          turno.id,
+          eventosDoDia
+        );
+
+        // Em filtros específicos de
+        // disponibilidade, não mostramos
+        // turnos com situação diferente.
+
+        if (
+          filtroAtual !== "todas" &&
+          situacao !== filtroAtual
+        ) {
+          return;
+        }
+
         celula.append(
           criarTurno(
             data,
             turno,
-            eventosDoDia
+            eventosDoDia,
+            filtroAtual
           )
         );
       });
 
     } else {
-      // Nos filtros específicos, exibimos
-      // somente os compromissos correspondentes.
+      // Categorias específicas mostram
+      // apenas os compromissos daquela
+      // categoria.
 
       eventosDoDia
+        .filter(
+          evento =>
+            evento.categoria === filtroAtual
+        )
         .sort(
           (a, b) =>
-            a.hora.localeCompare(b.hora)
+            formatarHora(a.hora).localeCompare(
+              formatarHora(b.hora)
+            )
         )
         .forEach(evento => {
           celula.append(
@@ -596,8 +732,7 @@ function abrirEvento(evento) {
     );
   }
 
-  canal.textContent =
-    detalhes.join(" • ");
+  canal.textContent = detalhes.join(" • ");
 
   data.textContent =
     "📅 " +
@@ -624,11 +759,11 @@ function abrirEvento(evento) {
 
   if (evento.categoria === "video") {
     link.textContent = "▶ Ver vídeo";
-  } else if (
-    evento.categoria === "evento"
-  ) {
+
+  } else if (evento.categoria === "evento") {
     link.textContent =
       "🔗 Informações do evento";
+
   } else {
     link.textContent =
       "▶ Assistir transmissão";
@@ -640,6 +775,7 @@ function abrirEvento(evento) {
   ) {
     link.href = evento.link;
     link.hidden = false;
+
   } else {
     link.removeAttribute("href");
     link.hidden = true;
