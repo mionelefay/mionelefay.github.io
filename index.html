@@ -246,27 +246,73 @@
 
 <section class="secao" id="campanhas">
 
-  <p class="destaque">
-    AVENTURAS E PROGRAMAS
-  </p>
 
-  <h2>✨ Biblioteca de Campanhas</h2>
+<!-- ==========================================
+     BIBLIOTECA DE CAMPANHAS
+========================================== -->
 
-  <p>
-    Conheça as aventuras, histórias e campanhas
-    que fazem parte do canal.
-  </p>
+<section class="secao" id="campanhas">
 
-  <div
-    class="grade-campanhas"
-    id="lista-campanhas"
-    aria-live="polite">
+  <div class="campanhas-cabecalho">
 
-    <p>Carregando campanhas...</p>
+    <div>
+      <p class="destaque">
+        AVENTURAS E PROGRAMAS
+      </p>
+
+      <h2>✨ Biblioteca de Campanhas</h2>
+
+      <p>
+        Explore as aventuras e histórias
+        que fazem parte do canal.
+      </p>
+    </div>
+
+    <!-- CONTROLES DO CARROSSEL -->
+
+    <div
+      class="campanhas-controles"
+      aria-label="Navegação das campanhas">
+
+      <button
+        type="button"
+        id="campanhas-anterior"
+        class="campanhas-seta"
+        aria-label="Ver campanhas anteriores"
+        aria-controls="lista-campanhas">
+        ❮
+      </button>
+
+      <button
+        type="button"
+        id="campanhas-proximo"
+        class="campanhas-seta"
+        aria-label="Ver próximas campanhas"
+        aria-controls="lista-campanhas">
+        ❯
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- ÁREA DE ROLAGEM HORIZONTAL -->
+
+  <div class="campanhas-carrossel">
+
+    <div
+      class="grade-campanhas"
+      id="lista-campanhas"
+      aria-label="Biblioteca de campanhas">
+
+      <p>Carregando campanhas...</p>
+
+    </div>
 
   </div>
 
 </section>
+
 
 
     <section class="secao" id="redes">
