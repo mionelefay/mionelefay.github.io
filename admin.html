@@ -123,11 +123,79 @@
       <p id="admin-mensagem" class="admin-mensagem"
          role="status" aria-live="polite" hidden></p>
 
-      <section id="area-admin" hidden>
-        <h2>Bem-vinda ao painel! 💜</h2>
-        <p>Login realizado. Em breve, a agenda será gerenciada aqui.</p>
-        <button id="sair" type="button">Sair da conta</button>
-      </section>
+     
+<section id="area-admin" hidden>
+  <h2>Bem-vinda ao painel! 💜</h2>
+  <p>Cadastre e organize os eventos da sua agenda.</p>
+
+  <h3>📅 Cadastrar novo evento</h3>
+
+  <form id="evento-form" class="admin-form">
+    <label for="evento-titulo">
+      Título
+      <input type="text" id="evento-titulo" required>
+    </label>
+
+    <label for="evento-categoria">
+      Categoria
+      <select id="evento-categoria" required>
+        <option value="">Selecione uma categoria</option>
+        <option value="rpg-proprio">🎲 RPG no meu canal</option>
+        <option value="rpg-externo">🧙 RPG em outros canais</option>
+        <option value="podcast">🎙️ Podcasts</option>
+        <option value="jogos">🎮 Jogos</option>
+        <option value="video">🎬 Vídeos</option>
+      </select>
+    </label>
+
+    <label for="evento-data">
+      Data
+      <input type="date" id="evento-data" required>
+    </label>
+
+    <label for="evento-hora">
+      Horário
+      <input type="time" id="evento-hora" required>
+    </label>
+
+    <label for="evento-canal">
+      Canal
+      <input type="text" id="evento-canal">
+    </label>
+
+    <label for="evento-sinopse">
+      Sinopse
+      <textarea id="evento-sinopse" rows="4"></textarea>
+    </label>
+
+    <label for="evento-imagem">
+      URL da imagem
+      <input type="url" id="evento-imagem">
+    </label>
+
+    <label for="evento-link">
+      Link da transmissão
+      <input type="url" id="evento-link">
+    </label>
+
+    <label for="evento-status">
+      Situação do evento
+      <select id="evento-status">
+        <option value="agendada">Rascunho (não publicado)</option>
+        <option value="publicada">Publicado no calendário</option>
+      </select>
+    </label>
+
+    <button type="submit" id="salvar-evento">
+      💾 Salvar evento
+    </button>
+  </form>
+
+  <p id="evento-mensagem" role="status" aria-live="polite"></p>
+
+  <button id="sair" type="button">Sair da conta</button>
+</section>
+
     </section>
   </main>
 
