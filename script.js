@@ -914,6 +914,101 @@ document.addEventListener(
 );
 
 // ==========================================
+// EXIBIR BIBLIOTECA DE CAMPANHAS
+// ==========================================
+
+function renderizarCampanhas() {
+  const lista = document.getElementById("lista-campanhas");
+
+  if (!lista) return;
+
+  lista.replaceChildren();
+
+  if (campanhas.length === 0) {
+    lista.append(
+      criarElemento(
+        "p",
+        "Nenhuma campanha cadastrada no momento."
+      )
+    );
+    return;
+  }
+
+  const campanhasOrdenadas = [...campanhas].sort(
+    (a, b) =>
+      (a.titulo || "").localeCompare(
+        b.titulo || "",
+        "pt-BR"
+      )
+  );
+
+  campanhasOrdenadas.forEach(campanha => {
+    const card = criarElemento(
+      "article",
+      undefined,
+      "campanha"
+    );
+
+    if (campanha.imagem) {
+      const imagem = document.createElement("img");
+
+      imagem.src = campanha.imagem;
+      imagem.alt = "Capa de " + (campanha.titulo || "campanha");
+      imagem.loading = "lazy";
+      imagem.className = "campanha-imagem";
+
+      card.append(imagem);
+    }
+
+    card.append(
+      criarElemento(
+        "h3",
+        campanha.titulo || "Campanha sem título"
+      )
+    );
+
+    if (campanha.narrador) {
+      card.append(
+        criarElemento(
+          "p",
+          "🎲 Narrador(a): " + campanha.narrador,
+          "campanha-info"
+        )
+      );
+    }
+
+    if (campanha.sinopse) {
+      card.append(
+        criarElemento(
+          "p",
+          campanha.sinopse,
+          "campanha-sinopse"
+        )
+      );
+    }
+
+    if (
+      campanha.link &&
+      /^https?:\/\//i.test(campanha.link)
+    ) {
+      const link = criarElemento(
+        "a",
+        "▶ Conhecer campanha",
+        "botao campanha-link"
+      );
+
+      link.href = campanha.link;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+
+      card.append(link);
+    }
+
+    lista.append(card);
+  });
+}
+
+// ==========================================
 // CARREGAR CAMPANHAS E COMPROMISSOS
 // ==========================================
 
@@ -953,6 +1048,7 @@ async function carregarAgenda() {
 
     campanhas =
       respostaCampanhas.data || [];
+    renderizarCampanhas();
 
     eventos =
       (respostaEventos.data || [])
