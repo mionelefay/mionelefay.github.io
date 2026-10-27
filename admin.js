@@ -552,10 +552,21 @@ function dadosFormularioCampanha() {
     sinopse: valor("campanha-sinopse"),
     imagem: valor("campanha-imagem"),
     link: valor("campanha-link"),
-    detalhes: {
-      ...detalhesAtuais,
-      papel: valor("campanha-papel")
-    }
+
+detalhes: {
+  ...detalhesAtuais,
+  papel: valor("campanha-papel"),
+  personagem: {
+    ...(detalhesAtuais.personagem || {}),
+    nome: valor("campanha-personagem-nome"),
+    imagem: valor("campanha-personagem-imagem"),
+    raca: valor("campanha-personagem-raca"),
+    classe: valor("campanha-personagem-classe"),
+    apresentacao: valor("campanha-personagem-apresentacao"),
+    resumo_historia: valor("campanha-personagem-resumo"),
+    historia_completa_url: valor("campanha-personagem-pdf")
+  }
+}
   };
 }
 
