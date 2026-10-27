@@ -165,67 +165,104 @@ function integrarCampanha(evento) {
   }
 
   const campanha = campanhas.find(
-    item => Number(item.id) ===
-      Number(evento.campanha_id)
+    item =>
+      Number(item.id) === Number(evento.campanha_id)
   );
-
-  if (!campanha) {
-    return evento;
-  }
 
   const sessaoPassada =
     evento.data < dataAtualISO();
 
-  // Sessões anteriores priorizam os dados
-  // que foram salvos no compromisso.
+  const snapshotValido =
+    evento.campanha_snapshot &&
+    typeof evento.campanha_snapshot === "object" &&
+    !Array.isArray(evento.campanha_snapshot);
+
+  // Sessões passadas utilizam o snapshot,
+  // quando ele existe.
   //
-  // Se um campo histórico estiver vazio,
-  // usamos o cadastro da campanha como
-  // alternativa. Isso não recupera versões
-  // antigas que nunca foram armazenadas.
+  // Se não houver snapshot, utilizamos
+  // as informações individuais do evento
+  // e, como alternativa, a campanha atual.
+
+  const dadosCampanha =
+    sessaoPassada && snapshotValido
+      ? evento.campanha_snapshot
+      : campanha;
+
+  if (!dadosCampanha) {
+    return evento;
+  }
+
+  // ========================================
+  // SESSÕES PASSADAS
+  // ========================================
 
   if (sessaoPassada) {
     return {
       ...evento,
+
+      // O título específico da sessão
+      // sempre tem prioridade.
       titulo:
-        evento.titulo || campanha.titulo,
+        evento.titulo || dadosCampanha.titulo,
+
+      // A categoria individual é preservada.
       categoria:
-        evento.categoria || campanha.categoria,
+        evento.categoria || dadosCampanha.categoria,
+
+      // Dados históricos da campanha.
       canal:
-        evento.canal || campanha.canal,
+        dadosCampanha.canal ?? evento.canal,
+
       narrador:
-        evento.narrador || campanha.narrador,
+        dadosCampanha.narrador ?? evento.narrador,
+
       sinopse:
-        evento.sinopse || campanha.sinopse,
+        dadosCampanha.sinopse ?? evento.sinopse,
+
       imagem:
-        evento.imagem || campanha.imagem,
+        dadosCampanha.imagem ?? evento.imagem,
+
+      // O link específico da sessão
+      // tem prioridade sobre o da campanha.
       link:
-        evento.link || campanha.link
+        evento.link || dadosCampanha.link
     };
   }
 
-  // Sessões futuras acompanham os dados
-  // atuais da campanha.
+  // ========================================
+  // SESSÕES FUTURAS
+  // ========================================
+
+  // Os dados da campanha são consultados
+  // na versão atual do cadastro.
   //
-  // O título e o link específicos do
-  // compromisso continuam prioritários.
+  // Título e link específicos da sessão
+  // continuam sendo preservados.
 
   return {
     ...evento,
+
     titulo:
-      evento.titulo || campanha.titulo,
+      evento.titulo || dadosCampanha.titulo,
+
     categoria:
-      campanha.categoria || evento.categoria,
+      dadosCampanha.categoria || evento.categoria,
+
     canal:
-      campanha.canal || evento.canal,
+      dadosCampanha.canal ?? evento.canal,
+
     narrador:
-      campanha.narrador || evento.narrador,
+      dadosCampanha.narrador ?? evento.narrador,
+
     sinopse:
-      campanha.sinopse || evento.sinopse,
+      dadosCampanha.sinopse ?? evento.sinopse,
+
     imagem:
-      campanha.imagem || evento.imagem,
+      dadosCampanha.imagem ?? evento.imagem,
+
     link:
-      evento.link || campanha.link
+      evento.link || dadosCampanha.link
   };
 }
 
