@@ -946,6 +946,11 @@ footer {
    20. RESPONSIVIDADE
 ========================================== */
 
+
+/* ==========================================
+   20. RESPONSIVIDADE
+========================================== */
+
 @media (max-width: 1200px) {
   .hero-layout {
     grid-template-columns: minmax(0, 1fr);
@@ -953,20 +958,28 @@ footer {
   }
 
   .hero-apresentacao {
-    min-height: 340px;
-    padding-right: 0;
+    grid-template-columns: minmax(0, 40%) minmax(0, 60%);
+    gap: 18px;
+    padding: 10px 0;
   }
 
   .hero-texto {
-    max-width: 70%;
+    grid-column: 2;
+    grid-row: 1;
+    max-width: 100%;
+  }
+
+  .hero-texto h1 {
+    font-size: clamp(1.7rem, 3vw, 2.6rem);
   }
 
   .hero-mione {
-    left: auto;
-    right: 0;
-    bottom: -30px;
-    transform: none;
-    width: min(32%, 260px);
+    grid-column: 1;
+    grid-row: 1;
+    width: min(100%, 340px);
+    max-width: 100%;
+    justify-self: center;
+    align-self: center;
   }
 
   .semana-grade {
@@ -1031,53 +1044,60 @@ footer {
   }
 
   .hero {
-    padding: 40px 5%;
+    padding: 32px 4%;
   }
 
   .hero-apresentacao {
-    min-height: 320px;
+    grid-template-columns: minmax(0, 38%) minmax(0, 62%);
+    gap: 14px;
   }
 
   .hero-texto h1 {
-    font-size: clamp(2rem, 5vw, 2.8rem);
+    font-size: clamp(1.6rem, 4vw, 2.3rem);
   }
 
   .hero-mione {
-    width: min(35%, 235px);
+    width: min(100%, 280px);
   }
 }
 
 @media (max-width: 600px) {
   .hero {
-    padding: 35px 4%;
+    padding: 30px 4%;
   }
 
   .hero-apresentacao {
-    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
     padding: 0;
-    overflow: visible;
   }
 
   .hero-texto {
+    width: 100%;
     max-width: 100%;
     text-align: center;
   }
 
   .hero-texto h1 {
-    font-size: clamp(2rem, 8vw, 2.7rem);
+    font-size: clamp(1.8rem, 7vw, 2.5rem);
   }
 
   .hero-texto p:not(.destaque) {
+    max-width: 380px;
     margin-left: auto;
     margin-right: auto;
   }
 
   .hero-mione {
     position: static;
-    transform: none;
-    width: min(65%, 240px);
+    width: clamp(180px, 55vw, 260px);
     max-width: 100%;
-    margin: 18px auto 0;
+    height: auto;
+    margin: 0 auto;
+    transform: none;
+    align-self: center;
   }
 
   .hero-agenda {
@@ -1186,3 +1206,4 @@ footer {
     max-height: 320px;
   }
 }
+
