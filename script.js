@@ -1015,9 +1015,19 @@ function renderizarCampanhas() {
       card.append(botaoLerMais);
     }
 
+    // ========================================
+    // LINK PARA A PÁGINA INDIVIDUAL
+    // ========================================
+
+    // O botão agora abre campanha.html
+    // utilizando o ID da campanha.
+    //
+    // O link externo cadastrado continua
+    // disponível dentro da página individual.
+
     if (
-      campanha.link &&
-      /^https?:\/\//i.test(campanha.link)
+      campanha.id !== null &&
+      campanha.id !== undefined
     ) {
       const link = criarElemento(
         "a",
@@ -1025,9 +1035,9 @@ function renderizarCampanhas() {
         "botao campanha-link"
       );
 
-      link.href = campanha.link;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
+      link.href =
+        "campanha.html?id=" +
+        encodeURIComponent(campanha.id);
 
       card.append(link);
     }
@@ -1037,7 +1047,6 @@ function renderizarCampanhas() {
 
   atualizarSetasCampanhas();
 }
-
 
 // ==========================================
 // NAVEGAÇÃO DO CARROSSEL DE CAMPANHAS
@@ -1130,8 +1139,8 @@ async function carregarAgenda() {
           "id, titulo, categoria, data, hora, canal, " +
           "sinopse, imagem, link, narrador, turno, " +
           "bloqueia_turno, campanha_id, campanha_snapshot, " +
-"situacao, motivo_alteracao, evento_original_id, " +
-"evento_remarcado_id"
+          "situacao, motivo_alteracao, evento_original_id, " +
+          "evento_remarcado_id"
         )
         .eq("status", "publicada")
         .order("data", { ascending: true })
@@ -1148,6 +1157,7 @@ async function carregarAgenda() {
 
     campanhas =
       respostaCampanhas.data || [];
+
     renderizarCampanhas();
 
     eventos =
