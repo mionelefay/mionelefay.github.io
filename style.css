@@ -1349,3 +1349,89 @@ footer {
     font-size: 0.6rem;
   }
 }
+/* ==========================================
+   CORREÇÃO DE TAMANHO DA AGENDA SEMANAL
+   ========================================== */
+
+.hero .hero-layout {
+  width: 100%;
+  max-width: 1600px;
+  display: grid;
+  grid-template-columns: minmax(0, 38%) minmax(0, 62%);
+  gap: 0;
+  align-items: start;
+}
+
+.hero .hero-apresentacao {
+  min-width: 0;
+  padding-right: 30px;
+}
+
+.hero .hero-agenda {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+.hero .agenda-semanal {
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.hero .semana-grade {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 7px;
+  min-width: 0;
+  width: 100%;
+}
+
+.hero .semana-dia,
+.hero .semana-dia-eventos,
+.hero .semana-evento {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.hero .semana-evento-imagem {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: center;
+}
+
+.hero .semana-evento-sem-imagem {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.hero .semana-evento-conteudo {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.hero .semana-evento-titulo {
+  overflow-wrap: anywhere;
+}
+
+/* TELAS MENORES */
+
+@media (max-width: 1100px) {
+  .hero .hero-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 25px;
+  }
+
+  .hero .hero-apresentacao {
+    padding-right: 0;
+  }
+
+  .hero .semana-grade {
+    grid-template-columns: repeat(7, minmax(115px, 1fr));
+    overflow-x: auto;
+  }
+}
