@@ -4,6 +4,11 @@
 // ==========================================
 // AGENDA SEMANAL COMPACTA
 // Domingo a sábado, com cartões de eventos.
+//
+// Prioridade das imagens:
+// 1. Thumbnail da live no YouTube
+// 2. Imagem cadastrada no evento/campanha
+// 3. Imagem padrão
 // ==========================================
 
 (function () {
@@ -30,7 +35,9 @@
   function elemento(tag, classe, texto) {
     const item = document.createElement(tag);
 
-    if (classe) item.className = classe;
+    if (classe) {
+      item.className = classe;
+    }
 
     if (texto !== undefined && texto !== null) {
       item.textContent = String(texto);
@@ -48,9 +55,153 @@
   }
 
   function situacaoEvento(evento) {
-    return String(evento.situacao || "programada")
-      .toLowerCase();
+    return String(
+      evento.situacao || "programada"
+    ).toLowerCase();
   }
+
+  // ==========================================
+  // IDENTIFICAR VÍDEOS DO YOUTUBE
+  // ==========================================
+
+  function obterIdYoutube(link) {
+    if (!link || typeof link !== "string") {
+      return null;
+    }
+
+    try {
+      const url = new URL(link.trim());
+
+      const host = url.hostname
+        .toLowerCase()
+        .replace(/^www\./, "")
+        .replace(/^m\./, "");
+
+      let id = null;
+
+      // Exemplo: youtu.be/ABC123
+      if (host === "youtu.be") {
+        id = url.pathname.split("/")[1];
+      }
+
+      // Exemplos:
+      // youtube.com/watch?v=ABC123
+      // youtube.com/live/ABC123
+      // youtube.com/shorts/ABC123
+      // youtube.com/embed/ABC123
+      else if (
+        host === "youtube.com" ||
+        host === "youtube-nocookie.com"
+      ) {
+        const partes = url.pathname
+          .split("/")
+          .filter(Boolean);
+
+        if (partes[0] === "watch") {
+          id = url.searchParams.get("v");
+        } else if (
+          ["live", "shorts", "embed", "v"]
+            .includes(partes[0])
+        ) {
+          id = partes[1];
+        }
+      }
+
+      // IDs de vídeos do YouTube têm 11 caracteres.
+      if (
+        id &&
+        /^[a-zA-Z0-9_-]{11}$/.test(id)
+      ) {
+        return id;
+      }
+
+      return null;
+
+    } catch (erro) {
+      return null;
+    }
+  }
+
+  // ==========================================
+  // MINIATURAS DOS EVENTOS
+  // ==========================================
+
+  function criarImagemEvento(evento) {
+    const idYoutube = obterIdYoutube(evento.link);
+
+    const imagemCadastrada =
+      typeof evento.imagem === "string"
+        ? evento.imagem.trim()
+        : "";
+
+    // Lista de imagens em ordem de prioridade.
+    const fontes = [];
+
+    if (idYoutube) {
+      fontes.push(
+        `https://i.ytimg.com/vi/${idYoutube}/maxresdefault.jpg`
+      );
+
+      fontes.push(
+        `https://i.ytimg.com/vi/${idYoutube}/hqdefault.jpg`
+      );
+    }
+
+    if (imagemCadastrada) {
+      fontes.push(imagemCadastrada);
+    }
+
+    // Sem nenhuma imagem disponível.
+    if (fontes.length === 0) {
+      return elemento(
+        "div",
+        "semana-evento-sem-imagem",
+        "✦"
+      );
+    }
+
+    const imagem = elemento(
+      "img",
+      "semana-evento-imagem"
+    );
+
+    imagem.alt = "";
+    imagem.loading = "lazy";
+    imagem.decoding = "async";
+
+    let indiceFonte = 0;
+
+    function tentarProximaFonte() {
+      indiceFonte++;
+
+      if (indiceFonte < fontes.length) {
+        imagem.src = fontes[indiceFonte];
+        return;
+      }
+
+      // Todas as imagens falharam.
+      const imagemPadrao = elemento(
+        "div",
+        "semana-evento-sem-imagem",
+        "✦"
+      );
+
+      imagem.replaceWith(imagemPadrao);
+    }
+
+    imagem.addEventListener(
+      "error",
+      tentarProximaFonte
+    );
+
+    imagem.src = fontes[0];
+
+    return imagem;
+  }
+
+  // ==========================================
+  // CARTÃO DE EVENTO
+  // ==========================================
 
   function criarCartaoEvento(evento) {
     const situacao = situacaoEvento(evento);
@@ -69,30 +220,15 @@
     }
 
     if (situacao !== "programada") {
-      cartao.classList.add("semana-evento-alterado");
+      cartao.classList.add(
+        "semana-evento-alterado"
+      );
     }
 
-    // Miniatura do evento.
-    if (evento.imagem) {
-      const imagem = elemento(
-        "img",
-        "semana-evento-imagem"
-      );
-
-      imagem.src = evento.imagem;
-      imagem.alt = "";
-      imagem.loading = "lazy";
-
-      cartao.append(imagem);
-    } else {
-      const imagemPadrao = elemento(
-        "div",
-        "semana-evento-sem-imagem",
-        "✦"
-      );
-
-      cartao.append(imagemPadrao);
-    }
+    // Thumbnail do YouTube ou imagem cadastrada.
+    cartao.append(
+      criarImagemEvento(evento)
+    );
 
     const conteudo = elemento(
       "div",
@@ -125,7 +261,11 @@
       : "";
 
     rodape.append(
-      elemento("span", "", hora || "Sem horário")
+      elemento(
+        "span",
+        "",
+        hora || "Sem horário"
+      )
     );
 
     if (evento.canal) {
@@ -140,6 +280,7 @@
 
     conteudo.append(rodape);
 
+    // Cancelamentos e adiamentos.
     if (situacao === "cancelada") {
       conteudo.append(
         elemento(
@@ -162,6 +303,7 @@
 
     cartao.append(conteudo);
 
+    // Mantém a janela de detalhes original.
     cartao.addEventListener("click", () => {
       abrirEvento(evento);
     });
@@ -169,17 +311,25 @@
     return cartao;
   }
 
+  // ==========================================
+  // DISPONIBILIDADE DOS TURNOS
+  // ==========================================
+
   function criarDisponibilidade(dataISO) {
     const resumo = elemento(
       "div",
       "semana-disponibilidade"
     );
 
+    const eventosDoDia = eventos.filter(
+      evento => evento.data === dataISO
+    );
+
     turnos.forEach(turno => {
       const situacao = situacaoDoTurno(
         dataISO,
         turno.id,
-        eventos.filter(evento => evento.data === dataISO)
+        eventosDoDia
       );
 
       const indicador = elemento(
@@ -195,20 +345,26 @@
 
       indicador.textContent = nome;
 
-      // A disponibilidade continua sendo calculada
-      // pelas regras do calendário mensal.
-      const descricao = typeof situacao === "string"
-        ? situacao
-        : JSON.stringify(situacao || "");
+      const descricao =
+        typeof situacao === "string"
+          ? situacao
+          : JSON.stringify(situacao || "");
 
       const texto = descricao.toLowerCase();
 
-      if (texto.includes("ocupado")) {
-        indicador.classList.add("semana-turno-ocupado");
-      } else if (texto.includes("parcial")) {
-        indicador.classList.add("semana-turno-parcial");
+      // Verifica parcial antes de ocupado.
+      if (texto.includes("parcial")) {
+        indicador.classList.add(
+          "semana-turno-parcial"
+        );
+      } else if (texto.includes("ocupado")) {
+        indicador.classList.add(
+          "semana-turno-ocupado"
+        );
       } else {
-        indicador.classList.add("semana-turno-livre");
+        indicador.classList.add(
+          "semana-turno-livre"
+        );
       }
 
       indicador.title =
@@ -220,21 +376,21 @@
     return resumo;
   }
 
+  // ==========================================
+  // RENDERIZAR A SEMANA
+  // ==========================================
+
   function renderizarAgendaSemanal() {
     destino.replaceChildren();
 
     const hoje = new Date();
     const hojeISO = dataLocalISO(hoje);
 
+    // A semana começa no domingo.
     const domingo = new Date(
       hoje.getFullYear(),
       hoje.getMonth(),
       hoje.getDate() - hoje.getDay()
-    );
-
-    const cabecalhoPeriodo = elemento(
-      "p",
-      "semana-periodo"
     );
 
     const sabado = new Date(
@@ -248,8 +404,11 @@
       "/" +
       String(data.getMonth() + 1).padStart(2, "0");
 
-    cabecalhoPeriodo.textContent =
-      formatar(domingo) + " a " + formatar(sabado);
+    const cabecalhoPeriodo = elemento(
+      "p",
+      "semana-periodo",
+      formatar(domingo) + " a " + formatar(sabado)
+    );
 
     destino.append(cabecalhoPeriodo);
 
@@ -273,7 +432,9 @@
       );
 
       if (iso === hojeISO) {
-        coluna.classList.add("semana-dia-hoje");
+        coluna.classList.add(
+          "semana-dia-hoje"
+        );
       }
 
       const cabecalho = elemento(
@@ -324,7 +485,9 @@
 
       if (eventosDoDia.length) {
         eventosDoDia.forEach(evento => {
-          lista.append(criarCartaoEvento(evento));
+          lista.append(
+            criarCartaoEvento(evento)
+          );
         });
       } else {
         lista.append(
@@ -337,7 +500,11 @@
       }
 
       coluna.append(lista);
-      coluna.append(criarDisponibilidade(iso));
+
+      coluna.append(
+        criarDisponibilidade(iso)
+      );
+
       grade.append(coluna);
     }
 
@@ -345,7 +512,7 @@
   }
 
   // ==========================================
-  // SINCRONIZAÇÃO COM O CALENDÁRIO MENSAL
+  // SINCRONIZAÇÃO COM CALENDÁRIO MENSAL
   // ==========================================
 
   const renderizarOriginal = renderizarCalendario;
@@ -361,5 +528,7 @@
     return resultado;
   };
 
+  // Renderização inicial.
   renderizarAgendaSemanal();
+
 })();
