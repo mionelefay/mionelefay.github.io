@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 /* ==========================================
-   CORES E IDENTIDADE VISUAL
+   1. IDENTIDADE VISUAL
 ========================================== */
 
 :root {
@@ -30,7 +30,7 @@
 }
 
 /* ==========================================
-   ESTILOS GERAIS
+   2. ESTILOS GERAIS
 ========================================== */
 
 * {
@@ -69,8 +69,32 @@ a:focus-visible {
   outline-offset: 3px;
 }
 
+.destaque {
+  color: #c78cff;
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.botao {
+  display: inline-block;
+  background: linear-gradient(135deg, #a74dff, #7636c8);
+  padding: 12px 22px;
+  border-radius: 10px;
+  font-weight: 700;
+  margin-top: 12px;
+  color: white;
+  transition: transform 0.2s, filter 0.2s;
+}
+
+.botao:hover {
+  filter: brightness(1.2);
+  transform: translateY(-2px);
+}
+
 /* ==========================================
-   CABEÇALHO
+   3. CABEÇALHO
 ========================================== */
 
 .topo {
@@ -106,11 +130,13 @@ nav a:hover {
 }
 
 /* ==========================================
-   APRESENTAÇÃO
+   4. APRESENTAÇÃO INICIAL
 ========================================== */
 
 .hero {
-  padding: 110px 8%;
+  padding: 36px 5% 42px;
+  scroll-margin-top: 90px;
+  overflow: hidden;
   background:
     radial-gradient(
       ellipse at 80% 25%,
@@ -124,51 +150,372 @@ nav a:hover {
     );
 }
 
-.hero h1 {
-  font-size: clamp(2.3rem, 5vw, 4.8rem);
+.hero-layout {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 38fr)
+    minmax(0, 62fr);
+  gap: 0;
+  align-items: start;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.hero-apresentacao {
+  position: relative;
+  min-width: 0;
+  min-height: 530px;
+  padding: 14px 34px 0 0;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.hero-texto {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+
+.hero-texto h1 {
+  max-width: 490px;
+  margin: 12px 0 16px;
+  font-size: clamp(2rem, 2.7vw, 3.05rem);
   line-height: 1.13;
-  max-width: 850px;
-  margin: 15px 0;
+  letter-spacing: -0.035em;
 }
 
-.hero p:not(.destaque) {
-  max-width: 650px;
+.hero-texto p:not(.destaque) {
+  max-width: 440px;
+  margin: 0 0 12px;
   color: var(--suave);
-  font-size: 1.1rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
 }
 
-.destaque {
-  color: #c78cff;
-  font-weight: 800;
-  font-size: 0.8rem;
-  letter-spacing: 2px;
-  text-transform: uppercase;
+.hero-texto .botao {
+  position: relative;
+  z-index: 3;
 }
 
-.botao {
-  display: inline-block;
-  background: linear-gradient(
-    135deg,
-    #a74dff,
-    #7636c8
-  );
-  padding: 12px 22px;
-  border-radius: 10px;
-  font-weight: 700;
-  margin-top: 12px;
-  color: white;
-  transition:
-    transform 0.2s,
-    filter 0.2s;
-}
-
-.botao:hover {
-  filter: brightness(1.2);
-  transform: translateY(-2px);
+.hero-mione {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(78%, 330px);
+  max-width: 100%;
+  height: auto;
+  margin: 0;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: drop-shadow(0 12px 30px #0007);
 }
 
 /* ==========================================
-   SEÇÕES
+   5. PAINEL DA AGENDA SEMANAL
+========================================== */
+
+.hero-agenda {
+  min-width: 0;
+  width: 100%;
+  padding: 20px;
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+  background: linear-gradient(
+    145deg,
+    #211331,
+    #120c20
+  );
+  box-shadow: 0 20px 50px #0003;
+}
+
+.hero-agenda-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.hero-agenda-cabecalho h2 {
+  margin: 5px 0;
+  font-size: 1.25rem;
+}
+
+.hero-agenda-link {
+  color: #d5a6ff;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.hero-agenda-link:hover {
+  text-decoration: underline;
+}
+
+.agenda-semanal {
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.semana-periodo {
+  margin: 0 0 12px;
+  color: var(--suave);
+  font-size: 0.75rem;
+  text-align: right;
+}
+
+/* ==========================================
+   6. GRADE DA SEMANA
+========================================== */
+
+.semana-grade {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 7px;
+  min-width: 0;
+  width: 100%;
+}
+
+.semana-dia {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-width: 100%;
+  padding: 5px;
+  border: 1px solid #583574;
+  border-radius: 9px;
+  background: #180f29;
+}
+
+.semana-dia-hoje {
+  border-color: #c66dff;
+  background: #29133e;
+  box-shadow: 0 0 0 1px #b66cff55;
+}
+
+.semana-dia-cabecalho {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 45px;
+  padding: 5px 2px;
+  gap: 1px;
+}
+
+.semana-dia-nome {
+  color: #c9b2e0;
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.semana-dia-numero {
+  color: #fff;
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.semana-dia-etiqueta {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #b66cff;
+  color: #fff;
+  font-size: 0.55rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.semana-dia-eventos {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* ==========================================
+   7. CARTÕES DOS EVENTOS SEMANAIS
+========================================== */
+
+.semana-evento {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #48315e;
+  border-radius: 7px;
+  background: #241535;
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.semana-evento:hover {
+  transform: translateY(-2px);
+  border-color: var(--roxo);
+}
+
+.semana-evento-imagem,
+.semana-evento-sem-imagem {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: center;
+  background: linear-gradient(
+    135deg,
+    #63328d,
+    #211331
+  );
+}
+
+.semana-evento-sem-imagem {
+  display: grid;
+  place-items: center;
+  color: #d5a6ff;
+  font-size: 1.2rem;
+}
+
+.semana-evento-conteudo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+  gap: 5px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 6px 5px;
+}
+
+.semana-evento-categoria {
+  display: inline-block;
+  max-width: 100%;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background: #8b43d3;
+  color: #fff;
+  font-size: 0.52rem;
+  font-weight: 800;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.semana-evento-trabalho .semana-evento-categoria {
+  background: #7189aa;
+}
+
+.semana-evento-podcast .semana-evento-categoria {
+  background: #b94d89;
+}
+
+.semana-evento-jogos .semana-evento-categoria {
+  background: #338b66;
+}
+
+.semana-evento-titulo {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  width: 100%;
+  font-size: 0.65rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.semana-evento-rodape {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 3px;
+  width: 100%;
+  margin-top: auto;
+  color: #e6d3f7;
+  font-size: 0.59rem;
+}
+
+.semana-evento-canal {
+  overflow-wrap: anywhere;
+  font-size: 0.54rem;
+}
+
+.semana-evento-alterado {
+  opacity: 0.75;
+}
+
+.semana-evento-situacao {
+  color: #ffc0cb;
+  font-size: 0.58rem;
+  font-weight: 800;
+}
+
+.semana-sem-eventos {
+  margin: auto 0;
+  padding: 12px 2px;
+  color: #9f8bb7;
+  text-align: center;
+  font-size: 0.62rem;
+}
+
+/* ==========================================
+   8. DISPONIBILIDADE SEMANAL
+========================================== */
+
+.semana-disponibilidade {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 9px;
+  padding-top: 8px;
+  border-top: 1px solid #49335f;
+}
+
+.semana-disponibilidade-turno {
+  display: grid;
+  place-items: center;
+  width: 19px;
+  height: 19px;
+  border-radius: 5px;
+  color: #1b1226;
+  font-size: 0.57rem;
+  font-weight: 800;
+  cursor: help;
+}
+
+.semana-turno-livre {
+  background: #a8e8c5;
+}
+
+.semana-turno-ocupado {
+  background: #f2a7b3;
+}
+
+.semana-turno-parcial {
+  background: #ffe19b;
+}
+
+/* ==========================================
+   9. SEÇÕES DO SITE
 ========================================== */
 
 .secao {
@@ -192,7 +539,7 @@ nav a:hover {
 }
 
 /* ==========================================
-   NAVEGAÇÃO DO CALENDÁRIO
+   10. NAVEGAÇÃO DO CALENDÁRIO MENSAL
 ========================================== */
 
 .navegacao-mes {
@@ -214,9 +561,7 @@ nav a:hover {
   color: var(--texto);
   padding: 10px 14px;
   border-radius: 9px;
-  transition:
-    background 0.2s,
-    border-color 0.2s;
+  transition: background 0.2s, border-color 0.2s;
 }
 
 .navegacao-mes button:hover,
@@ -226,7 +571,7 @@ nav a:hover {
 }
 
 /* ==========================================
-   FILTROS
+   11. FILTROS
 ========================================== */
 
 .filtros {
@@ -242,15 +587,12 @@ nav a:hover {
 }
 
 /* ==========================================
-   GRADE DO CALENDÁRIO
+   12. CALENDÁRIO MENSAL
 ========================================== */
 
 .calendario {
   display: grid;
-  grid-template-columns: repeat(
-    7,
-    minmax(0, 1fr)
-  );
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 8px;
   align-items: stretch;
 }
@@ -298,7 +640,7 @@ nav a:hover {
 }
 
 /* ==========================================
-   BLOCOS DOS TURNOS
+   13. TURNOS DO CALENDÁRIO MENSAL
 ========================================== */
 
 .calendario-turno {
@@ -336,18 +678,15 @@ nav a:hover {
   color: #d7c5eb;
 }
 
-.calendario-turno[data-turno="manha"]
-.turno-nome {
+.calendario-turno[data-turno="manha"] .turno-nome {
   color: var(--turno-manha);
 }
 
-.calendario-turno[data-turno="tarde"]
-.turno-nome {
+.calendario-turno[data-turno="tarde"] .turno-nome {
   color: var(--turno-tarde);
 }
 
-.calendario-turno[data-turno="noite"]
-.turno-nome {
+.calendario-turno[data-turno="noite"] .turno-nome {
   color: var(--turno-noite);
 }
 
@@ -359,7 +698,7 @@ nav a:hover {
 }
 
 /* ==========================================
-   POST-ITS
+   14. POST-ITS
 ========================================== */
 
 .postit {
@@ -373,9 +712,7 @@ nav a:hover {
   text-align: left;
   box-shadow: 2px 4px 0 #0003;
   transform: rotate(-1deg);
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
   overflow-wrap: anywhere;
 }
 
@@ -405,8 +742,6 @@ button.postit:hover {
   margin-bottom: 4px;
 }
 
-/* Post-its dentro dos turnos */
-
 .turno-eventos .postit {
   margin-bottom: 0;
   padding: 7px;
@@ -426,7 +761,7 @@ button.postit:hover {
 }
 
 /* ==========================================
-   CORES DAS CATEGORIAS
+   15. CORES DAS CATEGORIAS
 ========================================== */
 
 .rpg-proprio {
@@ -466,7 +801,7 @@ button.postit:hover {
 }
 
 /* ==========================================
-   DISPONIBILIDADE
+   16. DISPONIBILIDADE DO CALENDÁRIO
 ========================================== */
 
 .postit-disponibilidade {
@@ -481,17 +816,7 @@ button.postit:hover {
   opacity: 1;
 }
 
-.postit-disponibilidade.livre {
-  background-color: #a8e8c5 !important;
-  color: #164b35 !important;
-}
-
-.postit-disponibilidade.ocupado {
-  background-color: #f2a7b3 !important;
-  color: #622334 !important;
-}
-
-/* Indicadores de disponibilidade: contraste garantido */
+.postit-disponibilidade.livre,
 .turno-eventos .postit.postit-disponibilidade.livre {
   background: #a8e8c5 !important;
   color: #164b35 !important;
@@ -500,6 +825,7 @@ button.postit:hover {
   transform: none;
 }
 
+.postit-disponibilidade.ocupado,
 .turno-eventos .postit.postit-disponibilidade.ocupado {
   background: #f2a7b3 !important;
   color: #622334 !important;
@@ -509,15 +835,12 @@ button.postit:hover {
 }
 
 /* ==========================================
-   CAMPANHAS
+   17. CAMPANHAS
 ========================================== */
 
 .grade-campanhas {
   display: grid;
-  grid-template-columns: repeat(
-    3,
-    minmax(0, 1fr)
-  );
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
   margin-top: 25px;
 }
@@ -526,11 +849,7 @@ button.postit:hover {
   padding: 28px;
   border: 1px solid var(--borda);
   border-radius: 16px;
-  background: linear-gradient(
-    145deg,
-    #241539,
-    #130e20
-  );
+  background: linear-gradient(145deg, #241539, #130e20);
 }
 
 .campanha h3 {
@@ -538,7 +857,7 @@ button.postit:hover {
 }
 
 /* ==========================================
-   MODAL DE DETALHES
+   18. MODAL DE DETALHES
 ========================================== */
 
 .modal {
@@ -613,7 +932,7 @@ button.postit:hover {
 }
 
 /* ==========================================
-   RODAPÉ
+   19. RODAPÉ
 ========================================== */
 
 footer {
@@ -624,8 +943,38 @@ footer {
 }
 
 /* ==========================================
-   TELAS MÉDIAS
+   20. RESPONSIVIDADE
 ========================================== */
+
+@media (max-width: 1200px) {
+  .hero-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 25px;
+  }
+
+  .hero-apresentacao {
+    min-height: 340px;
+    padding-right: 0;
+  }
+
+  .hero-texto {
+    max-width: 70%;
+  }
+
+  .hero-mione {
+    left: auto;
+    right: 0;
+    bottom: -30px;
+    transform: none;
+    width: min(32%, 260px);
+  }
+
+  .semana-grade {
+    grid-template-columns: repeat(7, minmax(115px, 1fr));
+    overflow-x: auto;
+    padding: 12px 2px 8px;
+  }
+}
 
 @media (max-width: 1100px) {
   .calendario {
@@ -658,10 +1007,6 @@ footer {
   }
 }
 
-/* ==========================================
-   TABLETS
-========================================== */
-
 @media (max-width: 850px) {
   .topo {
     flex-direction: column;
@@ -675,12 +1020,8 @@ footer {
     padding: 55px 4%;
   }
 
-  /* Mantém sete dias por semana,
-     permitindo rolagem horizontal. */
-
   .calendario {
-    grid-template-columns:
-      repeat(7, minmax(125px, 1fr));
+    grid-template-columns: repeat(7, minmax(125px, 1fr));
     overflow-x: auto;
     padding-bottom: 12px;
   }
@@ -688,15 +1029,77 @@ footer {
   .dia {
     min-height: 210px;
   }
+
+  .hero {
+    padding: 40px 5%;
+  }
+
+  .hero-apresentacao {
+    min-height: 320px;
+  }
+
+  .hero-texto h1 {
+    font-size: clamp(2rem, 5vw, 2.8rem);
+  }
+
+  .hero-mione {
+    width: min(35%, 235px);
+  }
 }
 
-/* ==========================================
-   CELULARES
-========================================== */
-
-@media (max-width: 500px) {
+@media (max-width: 600px) {
   .hero {
-    padding: 65px 6%;
+    padding: 35px 4%;
+  }
+
+  .hero-apresentacao {
+    min-height: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .hero-texto {
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .hero-texto h1 {
+    font-size: clamp(2rem, 8vw, 2.7rem);
+  }
+
+  .hero-texto p:not(.destaque) {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-mione {
+    position: static;
+    transform: none;
+    width: min(65%, 240px);
+    max-width: 100%;
+    margin: 18px auto 0;
+  }
+
+  .hero-agenda {
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .hero-agenda-cabecalho h2 {
+    font-size: 1.4rem;
+  }
+
+  .semana-grade {
+    grid-template-columns: repeat(7, 115px);
+    gap: 8px;
+  }
+
+  .semana-evento-titulo {
+    font-size: 0.75rem;
+  }
+
+  .semana-evento-categoria {
+    font-size: 0.6rem;
   }
 
   .secao {
@@ -737,8 +1140,7 @@ footer {
   }
 
   .calendario {
-    grid-template-columns:
-      repeat(7, minmax(132px, 1fr));
+    grid-template-columns: repeat(7, minmax(132px, 1fr));
     gap: 5px;
   }
 
@@ -782,656 +1184,5 @@ footer {
 
   .modal-conteudo img {
     max-height: 320px;
-  }
-}
-
-
-/* ==========================================
-   HERO COM ILUSTRAÇÃO E AGENDA SEMANAL
-   ========================================== */
-
-.hero {
-  padding: 60px 5%;
-}
-
-.hero-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: 36px;
-  align-items: start;
-  max-width: 1500px;
-  margin: 0 auto;
-}
-
-.hero-apresentacao {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 0;
-}
-
-.hero-texto {
-  width: 100%;
-}
-
-.hero-texto h1 {
-  font-size: clamp(2rem, 3.5vw, 3.7rem);
-  line-height: 1.15;
-  margin: 15px 0;
-}
-
-.hero-texto p:not(.destaque) {
-  max-width: 550px;
-  color: var(--suave);
-}
-
-.hero-mione {
-  display: block;
-  width: 100%;
-  max-width: 370px;
-  height: auto;
-  object-fit: contain;
-  margin: 25px auto 0;
-}
-
-/* ==========================================
-   PAINEL DA AGENDA SEMANAL
-   ========================================== */
-
-.hero-agenda {
-  min-width: 0;
-  padding: 24px;
-  background: rgba(23, 17, 38, 0.95);
-  border: 1px solid var(--borda);
-  border-radius: 22px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-}
-
-.hero-agenda-cabecalho {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.hero-agenda-cabecalho h2 {
-  font-size: 1.65rem;
-  margin: 5px 0;
-}
-
-.hero-agenda-link {
-  color: #d5a6ff;
-  font-size: 0.82rem;
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.hero-agenda-link:hover {
-  text-decoration: underline;
-}
-
-/* ==========================================
-   DIAS DA SEMANA
-   ========================================== */
-
-.agenda-semanal {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.agenda-semanal-dia {
-  min-width: 0;
-  padding: 13px;
-  background: #100c1e;
-  border: 1px solid #342546;
-  border-radius: 13px;
-}
-
-.agenda-semanal-dia-cabecalho {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.agenda-semanal-dia-cabecalho strong {
-  font-size: 0.9rem;
-  color: #f2e7ff;
-}
-
-.agenda-semanal-hoje {
-  border-color: #c48aff;
-  background: #201332;
-  box-shadow: inset 0 0 0 1px #c48aff33;
-}
-
-.agenda-semanal-etiqueta-hoje {
-  padding: 3px 9px;
-  border-radius: 999px;
-  background: #b66cff;
-  color: #160a24;
-  font-size: 0.7rem;
-  font-weight: 800;
-}
-
-/* ==========================================
-   TURNOS DENTRO DA AGENDA SEMANAL
-   ========================================== */
-
-.agenda-semanal-turnos {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 7px;
-}
-
-.agenda-semanal .calendario-turno {
-  min-width: 0;
-  padding: 7px;
-}
-
-.agenda-semanal .turno-nome {
-  font-size: 0.7rem;
-}
-
-.agenda-semanal .turno-eventos {
-  gap: 6px;
-}
-
-.agenda-semanal .turno-eventos .postit {
-  padding: 7px;
-  overflow-wrap: anywhere;
-}
-
-.agenda-semanal .turno-eventos .postit strong {
-  font-size: 0.72rem;
-  line-height: 1.35;
-}
-
-.agenda-semanal .turno-eventos .postit small {
-  font-size: 0.64rem;
-}
-
-.agenda-semanal .postit-disponibilidade {
-  font-size: 0.67rem;
-}
-
-/* ==========================================
-   TELAS INTERMEDIÁRIAS
-   ========================================== */
-
-@media (max-width: 1200px) {
-  .hero-layout {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
-    gap: 22px;
-  }
-
-  .hero-agenda {
-    padding: 17px;
-  }
-
-  .agenda-semanal-turnos {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ==========================================
-   TABLETS E CELULARES
-   ========================================== */
-
-@media (max-width: 850px) {
-  .hero {
-    padding: 45px 5%;
-  }
-
-  .hero-layout {
-    grid-template-columns: 1fr;
-    gap: 35px;
-  }
-
-  .hero-apresentacao {
-    text-align: center;
-  }
-
-  .hero-texto h1 {
-    font-size: clamp(2rem, 7vw, 3rem);
-  }
-
-  .hero-mione {
-    max-width: 290px;
-    margin-top: 20px;
-  }
-
-  .hero-agenda {
-    width: 100%;
-  }
-
-  .agenda-semanal-turnos {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 600px) {
-  .hero {
-    padding: 35px 4%;
-  }
-
-  .hero-mione {
-    max-width: 245px;
-  }
-
-  .hero-agenda {
-    padding: 14px;
-    border-radius: 16px;
-  }
-
-  .hero-agenda-cabecalho h2 {
-    font-size: 1.4rem;
-  }
-
-  .agenda-semanal-dia {
-    padding: 10px;
-  }
-
-  .agenda-semanal-turnos {
-    grid-template-columns: 1fr;
-  }
-
-  .agenda-semanal .calendario-turno {
-    padding: 8px;
-  }
-
-  .agenda-semanal .turno-eventos .postit strong {
-    font-size: 0.78rem;
-  }
-}
-
-/* ==========================================
-   AGENDA SEMANAL - MODELO COMPACTO
-   ========================================== */
-
-/* Painel direito */
-
-.hero .hero-agenda {
-  padding: 20px;
-  border-radius: 16px;
-  background: linear-gradient(
-    145deg,
-    #211331,
-    #120c20
-  );
-}
-
-.hero .hero-agenda-cabecalho {
-  margin-bottom: 10px;
-}
-
-.hero .hero-agenda-cabecalho h2 {
-  font-size: 1.25rem;
-}
-
-/* Período da semana */
-
-.semana-periodo {
-  margin: 0 0 12px;
-  color: var(--suave);
-  font-size: 0.75rem !important;
-  text-align: right;
-  max-width: none !important;
-}
-
-/* Sete colunas */
-
-.semana-grade {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 6px;
-  align-items: stretch;
-  width: 100%;
-}
-
-/* Cada dia */
-
-.semana-dia {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  padding: 5px;
-  border: 1px solid #583574;
-  border-radius: 9px;
-  background: #180f29;
-}
-
-.semana-dia-hoje {
-  border-color: #c66dff;
-  background: #29133e;
-  box-shadow: 0 0 0 1px #b66cff55;
-}
-
-.semana-dia-cabecalho {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 45px;
-  padding: 5px 2px;
-  gap: 1px;
-}
-
-.semana-dia-nome {
-  color: #c9b2e0;
-  font-size: 0.62rem;
-  font-weight: 800;
-}
-
-.semana-dia-numero {
-  color: #fff;
-  font-size: 1.05rem;
-  line-height: 1.2;
-}
-
-.semana-dia-etiqueta {
-  position: absolute;
-  top: -14px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 2px 8px;
-  border-radius: 6px;
-  background: #b66cff;
-  color: #fff;
-  font-size: 0.55rem;
-  font-weight: 800;
-  white-space: nowrap;
-}
-
-/* Eventos */
-
-.semana-dia-eventos {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  flex: 1;
-  min-width: 0;
-}
-
-.semana-evento {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  min-width: 0;
-  padding: 0;
-  overflow: hidden;
-  border: 1px solid #48315e;
-  border-radius: 7px;
-  background: #241535;
-  color: #fff;
-  text-align: left;
-  cursor: pointer;
-  transition:
-    transform 0.2s,
-    border-color 0.2s;
-}
-
-.semana-evento:hover {
-  transform: translateY(-2px);
-  border-color: var(--roxo);
-}
-
-.semana-evento-imagem,
-.semana-evento-sem-imagem {
-  display: block;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  background: linear-gradient(
-    135deg,
-    #63328d,
-    #211331
-  );
-}
-
-.semana-evento-sem-imagem {
-  display: grid;
-  place-items: center;
-  color: #d5a6ff;
-  font-size: 1.2rem;
-}
-
-.semana-evento-conteudo {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 5px;
-  padding: 6px 5px;
-  width: 100%;
-  min-width: 0;
-  flex: 1;
-}
-
-.semana-evento-categoria {
-  display: inline-block;
-  max-width: 100%;
-  padding: 2px 4px;
-  border-radius: 4px;
-  background: #8b43d3;
-  color: white;
-  font-size: 0.52rem;
-  font-weight: 800;
-  line-height: 1.2;
-  overflow-wrap: anywhere;
-}
-
-.semana-evento-trabalho .semana-evento-categoria {
-  background: #7189aa;
-}
-
-.semana-evento-podcast .semana-evento-categoria {
-  background: #b94d89;
-}
-
-.semana-evento-jogos .semana-evento-categoria {
-  background: #338b66;
-}
-
-.semana-evento-titulo {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
-  overflow: hidden;
-  width: 100%;
-  font-size: 0.65rem;
-  line-height: 1.35;
-  overflow-wrap: anywhere;
-}
-
-.semana-evento-rodape {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 3px;
-  width: 100%;
-  margin-top: auto;
-  color: #e6d3f7;
-  font-size: 0.59rem;
-}
-
-.semana-evento-canal {
-  overflow-wrap: anywhere;
-  font-size: 0.54rem;
-}
-
-.semana-evento-alterado {
-  opacity: 0.75;
-}
-
-.semana-evento-situacao {
-  color: #ffc0cb;
-  font-size: 0.58rem;
-  font-weight: 800;
-}
-
-.semana-sem-eventos {
-  margin: auto 0 !important;
-  padding: 12px 2px;
-  color: #9f8bb7 !important;
-  text-align: center;
-  font-size: 0.62rem !important;
-}
-
-/* Indicadores de disponibilidade */
-
-.semana-disponibilidade {
-  display: flex;
-  justify-content: center;
-  gap: 4px;
-  margin-top: 9px;
-  padding-top: 8px;
-  border-top: 1px solid #49335f;
-}
-
-.semana-disponibilidade-turno {
-  display: grid;
-  place-items: center;
-  width: 19px;
-  height: 19px;
-  border-radius: 5px;
-  color: #1b1226;
-  font-size: 0.57rem;
-  font-weight: 800;
-  cursor: help;
-}
-
-.semana-turno-livre {
-  background: #a8e8c5;
-}
-
-.semana-turno-ocupado {
-  background: #f2a7b3;
-}
-
-.semana-turno-parcial {
-  background: #ffe19b;
-}
-
-/* Responsividade */
-
-@media (max-width: 1200px) {
-  .semana-grade {
-    grid-template-columns: repeat(7, minmax(95px, 1fr));
-    overflow-x: auto;
-    padding: 12px 2px 8px;
-  }
-}
-
-@media (max-width: 600px) {
-  .hero .hero-agenda {
-    padding: 14px;
-  }
-
-  .semana-grade {
-    grid-template-columns: repeat(7, 115px);
-    overflow-x: auto;
-    gap: 8px;
-  }
-
-  .semana-evento-titulo {
-    font-size: 0.75rem;
-  }
-
-  .semana-evento-categoria {
-    font-size: 0.6rem;
-  }
-}
-/* ==========================================
-   CORREÇÃO DE TAMANHO DA AGENDA SEMANAL
-   ========================================== */
-
-.hero .hero-layout {
-  width: 100%;
-  max-width: 1600px;
-  display: grid;
-  grid-template-columns: minmax(0, 38%) minmax(0, 62%);
-  gap: 0;
-  align-items: start;
-}
-
-.hero .hero-apresentacao {
-  min-width: 0;
-  padding-right: 30px;
-}
-
-.hero .hero-agenda {
-  min-width: 0;
-  width: 100%;
-  max-width: 100%;
-}
-
-.hero .agenda-semanal {
-  min-width: 0;
-  width: 100%;
-  overflow: hidden;
-}
-
-.hero .semana-grade {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 7px;
-  min-width: 0;
-  width: 100%;
-}
-
-.hero .semana-dia,
-.hero .semana-dia-eventos,
-.hero .semana-evento {
-  min-width: 0;
-  max-width: 100%;
-}
-
-.hero .semana-evento-imagem {
-  display: block;
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  object-position: center;
-}
-
-.hero .semana-evento-sem-imagem {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-}
-
-.hero .semana-evento-conteudo {
-  min-width: 0;
-  max-width: 100%;
-}
-
-.hero .semana-evento-titulo {
-  overflow-wrap: anywhere;
-}
-
-/* TELAS MENORES */
-
-@media (max-width: 1100px) {
-  .hero .hero-layout {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 25px;
-  }
-
-  .hero .hero-apresentacao {
-    padding-right: 0;
-  }
-
-  .hero .semana-grade {
-    grid-template-columns: repeat(7, minmax(115px, 1fr));
-    overflow-x: auto;
   }
 }
