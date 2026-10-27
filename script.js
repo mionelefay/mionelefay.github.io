@@ -254,3 +254,20 @@ document.addEventListener("keydown", evento => {
 });
 
 renderizarCalendario();
+
+// Teste de conexão com o Supabase
+async function testarConexaoSupabase() {
+  const { data, error } = await supabaseClient
+    .from("eventos")
+    .select("titulo, data, status")
+    .eq("status", "publicada");
+
+  if (error) {
+    console.error("Erro ao consultar Supabase:", error);
+    return;
+  }
+
+  console.log("Eventos encontrados no Supabase:", data);
+}
+
+testarConexaoSupabase();
