@@ -5,14 +5,9 @@
 // CONFIGURAÇÃO DO SUPABASE
 // ==========================================
 
-const SUPABASE_URL =
-  "https://gevkvjuaurcxokudlblc.supabase.co";
-
-const SUPABASE_KEY =
-  "sb_publishable_4mIXjg7273CgkxJzNGILow_0GyQ6yTd";
-
-const ADMIN_UID =
-  "5f0cd47a-7c6f-4fc5-99d8-449534c393e8";
+const SUPABASE_URL = "https://gevkvjuaurcxokudlblc.supabase.co";
+const SUPABASE_KEY = "sb_publishable_4mIXjg7273CgkxJzNGILow_0GyQ6yTd";
+const ADMIN_UID = "5f0cd47a-7c6f-4fc5-99d8-449534c393e8";
 
 const supabaseClient = supabase.createClient(
   SUPABASE_URL,
@@ -20,7 +15,7 @@ const supabaseClient = supabase.createClient(
 );
 
 // ==========================================
-// CONFIGURAÇÕES DA AGENDA
+// CATEGORIAS E TURNOS
 // ==========================================
 
 const TURNOS = {
@@ -42,55 +37,7 @@ const CATEGORIAS = {
 };
 
 // ==========================================
-// ELEMENTOS DA PÁGINA
-// ==========================================
-
-const formulario = document.getElementById("login-form");
-const campoEmail = document.getElementById("admin-email");
-const campoSenha = document.getElementById("admin-senha");
-const botaoEntrar = document.getElementById("entrar");
-const mensagem = document.getElementById("admin-mensagem");
-const areaAdmin = document.getElementById("area-admin");
-const botaoSair = document.getElementById("sair");
-
-const formularioEvento = document.getElementById("evento-form");
-const botaoSalvarEvento = document.getElementById("salvar-evento");
-const mensagemEvento = document.getElementById("evento-mensagem");
-
-const formularioCampanha = document.getElementById("campanha-form");
-const mensagemCampanha = document.getElementById("campanha-mensagem");
-
-const formularioRecorrencia =
-  document.getElementById("recorrencia-form");
-
-const mensagemRecorrencia =
-  document.getElementById("recorrencia-mensagem");
-
-const mensagemGerenciar =
-  document.getElementById("gerenciar-mensagem");
-
-const listaCampanhas =
-  document.getElementById("lista-campanhas");
-
-const listaEventos =
-  document.getElementById("lista-eventos");
-
-// ==========================================
-// ESTADO DO PAINEL
-// ==========================================
-
-let campanhas = [];
-let eventos = [];
-
-let eventoEmEdicao = null;
-let campanhaEmEdicao = null;
-
-let datasRecorrencia = [];
-
-let bancoPreparado = false;
-
-// ==========================================
-// FUNÇÕES AUXILIARES
+// ELEMENTOS E ESTADO
 // ==========================================
 
 function campo(id) {
@@ -100,6 +47,39 @@ function campo(id) {
 function valor(id) {
   return campo(id).value.trim();
 }
+
+const formulario = campo("login-form");
+const campoEmail = campo("admin-email");
+const campoSenha = campo("admin-senha");
+const botaoEntrar = campo("entrar");
+const mensagem = campo("admin-mensagem");
+const areaAdmin = campo("area-admin");
+const botaoSair = campo("sair");
+
+const formularioEvento = campo("evento-form");
+const botaoSalvarEvento = campo("salvar-evento");
+const mensagemEvento = campo("evento-mensagem");
+
+const formularioCampanha = campo("campanha-form");
+const mensagemCampanha = campo("campanha-mensagem");
+const listaCampanhas = campo("lista-campanhas");
+
+const formularioRecorrencia = campo("recorrencia-form");
+const mensagemRecorrencia = campo("recorrencia-mensagem");
+
+const mensagemGerenciar = campo("gerenciar-mensagem");
+const listaEventos = campo("lista-eventos");
+
+let campanhas = [];
+let eventos = [];
+let eventoEmEdicao = null;
+let campanhaEmEdicao = null;
+let datasRecorrencia = [];
+let bancoPreparado = false;
+
+// ==========================================
+// FUNÇÕES AUXILIARES
+// ==========================================
 
 function mostrarMensagem(texto) {
   mensagem.textContent = texto;
@@ -118,14 +98,8 @@ function mostrarPainel() {
 
 function formatarData(data) {
   if (!data) return "";
-
   const partes = data.split("-");
-
-  return [
-    partes[2],
-    partes[1],
-    partes[0]
-  ].join("/");
+  return `${partes[2]}/${partes[1]}/${partes[0]}`;
 }
 
 function formatarHora(hora) {
@@ -133,8 +107,6 @@ function formatarHora(hora) {
 }
 
 function obterTurno(hora) {
-  if (!hora) return "noite";
-
   if (hora >= "06:00" && hora < "12:00") {
     return "manha";
   }
@@ -147,31 +119,25 @@ function obterTurno(hora) {
 }
 
 function dataLocal(dataTexto) {
-  const [ano, mes, dia] =
-    dataTexto.split("-").map(Number);
-
+  const [ano, mes, dia] = dataTexto.split("-").map(Number);
   return new Date(ano, mes - 1, dia);
 }
 
 function dataISO(data) {
   const ano = data.getFullYear();
-
-  const mes = String(
-    data.getMonth() + 1
-  ).padStart(2, "0");
-
-  const dia = String(
-    data.getDate()
-  ).padStart(2, "0");
+  const mes = String(data.getMonth() + 1).padStart(2, "0");
+  const dia = String(data.getDate()).padStart(2, "0");
 
   return `${ano}-${mes}-${dia}`;
 }
 
+function hojeISO() {
+  return dataISO(new Date());
+}
+
 function adicionarDias(dataTexto, dias) {
   const data = dataLocal(dataTexto);
-
   data.setDate(data.getDate() + dias);
-
   return dataISO(data);
 }
 
@@ -191,9 +157,7 @@ function adicionarMeses(dataTexto, meses) {
     0
   ).getDate();
 
-  destino.setDate(
-    Math.min(diaOriginal, ultimoDia)
-  );
+  destino.setDate(Math.min(diaOriginal, ultimoDia));
 
   return dataISO(destino);
 }
@@ -213,15 +177,9 @@ function criarElemento(tag, texto, classe) {
 }
 
 function criarBotao(texto, acao, classe = "") {
-  const botao = criarElemento(
-    "button",
-    texto,
-    classe
-  );
-
+  const botao = criarElemento("button", texto, classe);
   botao.type = "button";
   botao.addEventListener("click", acao);
-
   return botao;
 }
 
@@ -229,11 +187,16 @@ function limparElemento(elemento) {
   elemento.replaceChildren();
 }
 
+function encontrarCampanha(id) {
+  return campanhas.find(
+    campanha => campanha.id === Number(id)
+  );
+}
+
 function exigirBancoPreparado() {
   if (!bancoPreparado) {
     throw new Error(
-      "As novas tabelas e colunas do Supabase " +
-      "ainda precisam ser configuradas."
+      "A estrutura do Supabase não está disponível."
     );
   }
 }
@@ -248,54 +211,39 @@ async function verificarAdministrador() {
     error
   } = await supabaseClient.auth.getUser();
 
-  if (error || !user) {
-    return false;
-  }
-
-  return user.id === ADMIN_UID;
+  return !error && !!user && user.id === ADMIN_UID;
 }
 
 async function exigirAdministrador() {
-  const autorizado =
-    await verificarAdministrador();
+  const autorizado = await verificarAdministrador();
 
   if (!autorizado) {
     mostrarLogin();
-
-    throw new Error(
-      "Sessão administrativa não autorizada."
-    );
+    throw new Error("Sessão administrativa não autorizada.");
   }
 }
 
-// A proteção efetiva dos dados depende
-// das políticas RLS configuradas no Supabase.
+// A proteção real dos dados é feita pelas
+// políticas RLS configuradas no Supabase.
 
 // ==========================================
 // NAVEGAÇÃO ENTRE ABAS
 // ==========================================
 
 function abrirAba(id) {
-  const botoes = document.querySelectorAll(
+  document.querySelectorAll(".admin-secao").forEach(
+    secao => {
+      secao.hidden = secao.id !== id;
+    }
+  );
+
+  document.querySelectorAll(
     ".admin-abas button[data-aba]"
-  );
-
-  const secoes = document.querySelectorAll(
-    ".admin-secao"
-  );
-
-  secoes.forEach(secao => {
-    secao.hidden = secao.id !== id;
-  });
-
-  botoes.forEach(botao => {
+  ).forEach(botao => {
     const ativa = botao.dataset.aba === id;
 
     botao.classList.toggle("ativo", ativa);
-    botao.setAttribute(
-      "aria-selected",
-      String(ativa)
-    );
+    botao.setAttribute("aria-selected", String(ativa));
   });
 }
 
@@ -308,45 +256,42 @@ document.querySelectorAll(
 });
 
 // ==========================================
-// VERIFICAR ESTRUTURA DO BANCO
+// VERIFICAÇÃO DO BANCO
 // ==========================================
 
 async function verificarEstruturaBanco() {
   bancoPreparado = false;
 
-  const consultaCampanhas =
-    await supabaseClient
-      .from("campanhas")
-      .select("id")
-      .limit(1);
+  const consultaCampanhas = await supabaseClient
+    .from("campanhas")
+    .select("id")
+    .limit(1);
 
   if (consultaCampanhas.error) {
+    console.error(consultaCampanhas.error.message);
     return false;
   }
 
-  const consultaEventos =
-    await supabaseClient
-      .from("eventos")
-      .select(
-        "id, campanha_id, turno, bloqueia_turno, narrador"
-      )
-      .limit(1);
+  const consultaEventos = await supabaseClient
+    .from("eventos")
+    .select(
+      "id, campanha_id, turno, bloqueia_turno, narrador"
+    )
+    .limit(1);
 
   if (consultaEventos.error) {
+    console.error(consultaEventos.error.message);
     return false;
   }
 
   bancoPreparado = true;
-
   return true;
 }
 
 function atualizarEstadoBanco() {
   const texto = bancoPreparado
     ? ""
-    : "⚠️ As novas funções aguardam a " +
-      "atualização do Supabase. " +
-      "Não cadastre compromissos ainda.";
+    : "⚠️ Não foi possível verificar o Supabase.";
 
   mensagemEvento.textContent = texto;
   mensagemCampanha.textContent = texto;
@@ -367,70 +312,56 @@ function atualizarEstadoBanco() {
 // LOGIN
 // ==========================================
 
-formulario.addEventListener(
-  "submit",
-  async evento => {
-    evento.preventDefault();
+formulario.addEventListener("submit", async evento => {
+  evento.preventDefault();
 
-    botaoEntrar.disabled = true;
+  botaoEntrar.disabled = true;
+  mostrarMensagem("Verificando credenciais...");
+
+  try {
+    const { error } =
+      await supabaseClient.auth.signInWithPassword({
+        email: campoEmail.value.trim(),
+        password: campoSenha.value
+      });
+
+    if (error) throw error;
+
+    campoSenha.value = "";
+
+    await exigirAdministrador();
+
+    mostrarPainel();
+    mostrarMensagem("Login realizado com sucesso! 💜");
+
+    await carregarPainel();
+
+  } catch (erro) {
+    mostrarLogin();
 
     mostrarMensagem(
-      "Verificando credenciais..."
+      "Não foi possível entrar ou a conta não possui acesso."
     );
 
-    try {
-      const { error } =
-        await supabaseClient.auth.signInWithPassword({
-          email: campoEmail.value.trim(),
-          password: campoSenha.value
-        });
+    console.error("Erro de login:", erro.message);
 
-      if (error) throw error;
-
-      campoSenha.value = "";
-
-      await exigirAdministrador();
-
-      mostrarPainel();
-
-      mostrarMensagem(
-        "Login administrativo realizado com sucesso! 💜"
-      );
-
-      await carregarPainel();
-
-    } catch (erro) {
-      mostrarLogin();
-
-      mostrarMensagem(
-        "Não foi possível entrar ou a conta " +
-        "não possui acesso administrativo."
-      );
-
-      console.error(
-        "Erro de login:",
-        erro.message
-      );
-
-    } finally {
-      botaoEntrar.disabled = false;
-    }
+  } finally {
+    botaoEntrar.disabled = false;
   }
-);
+});
 
 // ==========================================
-// CARREGAMENTO DE CAMPANHAS
+// CARREGAMENTO DAS CAMPANHAS
 // ==========================================
 
 async function carregarCampanhas() {
   await exigirAdministrador();
   exigirBancoPreparado();
 
-  const { data, error } =
-    await supabaseClient
-      .from("campanhas")
-      .select("*")
-      .order("titulo");
+  const { data, error } = await supabaseClient
+    .from("campanhas")
+    .select("*")
+    .order("titulo");
 
   if (error) throw error;
 
@@ -447,22 +378,19 @@ function preencherSeletoresCampanhas() {
   ];
 
   seletores.forEach(seletor => {
-    const valorAnterior = seletor.value;
+    const anterior = seletor.value;
 
     while (seletor.options.length > 1) {
       seletor.remove(1);
     }
 
     campanhas.forEach(campanha => {
-      const opcao = new Option(
-        campanha.titulo,
-        campanha.id
+      seletor.add(
+        new Option(campanha.titulo, campanha.id)
       );
-
-      seletor.add(opcao);
     });
 
-    seletor.value = valorAnterior;
+    seletor.value = anterior;
 
     if (!seletor.value) {
       seletor.selectedIndex = 0;
@@ -475,12 +403,8 @@ function renderizarCampanhas() {
 
   if (!campanhas.length) {
     listaCampanhas.append(
-      criarElemento(
-        "p",
-        "Nenhuma campanha cadastrada."
-      )
+      criarElemento("p", "Nenhuma campanha cadastrada.")
     );
-
     return;
   }
 
@@ -492,10 +416,7 @@ function renderizarCampanhas() {
     );
 
     item.append(
-      criarElemento("h4", campanha.titulo)
-    );
-
-    item.append(
+      criarElemento("h4", campanha.titulo),
       criarElemento(
         "p",
         CATEGORIAS[campanha.categoria] ||
@@ -522,10 +443,7 @@ function renderizarCampanhas() {
       criarBotao(
         "✏️ Editar",
         () => editarCampanha(campanha.id)
-      )
-    );
-
-    acoes.append(
+      ),
       criarBotao(
         "🗑️ Excluir",
         () => excluirCampanha(campanha.id),
@@ -560,11 +478,9 @@ formularioCampanha.addEventListener(
     evento.preventDefault();
 
     const botao = campo("salvar-campanha");
-
     botao.disabled = true;
 
-    mensagemCampanha.textContent =
-      "Salvando campanha...";
+    mensagemCampanha.textContent = "Salvando campanha...";
 
     try {
       await exigirAdministrador();
@@ -585,9 +501,7 @@ formularioCampanha.addEventListener(
           .insert([dados]);
       }
 
-      if (consulta.error) {
-        throw consulta.error;
-      }
+      if (consulta.error) throw consulta.error;
 
       cancelarEdicaoCampanha();
 
@@ -613,9 +527,7 @@ formularioCampanha.addEventListener(
 );
 
 function editarCampanha(id) {
-  const campanha = campanhas.find(
-    item => item.id === id
-  );
+  const campanha = encontrarCampanha(id);
 
   if (!campanha) return;
 
@@ -645,8 +557,7 @@ function editarCampanha(id) {
   campo("salvar-campanha").textContent =
     "💾 Atualizar campanha";
 
-  campo("cancelar-edicao-campanha").hidden =
-    false;
+  campo("cancelar-edicao-campanha").hidden = false;
 
   abrirAba("aba-campanhas");
 
@@ -658,40 +569,46 @@ function editarCampanha(id) {
 
 function cancelarEdicaoCampanha() {
   campanhaEmEdicao = null;
-
   formularioCampanha.reset();
 
   campo("salvar-campanha").textContent =
     "💾 Salvar campanha";
 
-  campo("cancelar-edicao-campanha").hidden =
-    true;
+  campo("cancelar-edicao-campanha").hidden = true;
 }
 
-campo("cancelar-edicao-campanha")
-  .addEventListener(
-    "click",
-    cancelarEdicaoCampanha
-  );
+campo("cancelar-edicao-campanha").addEventListener(
+  "click",
+  cancelarEdicaoCampanha
+);
 
 async function excluirCampanha(id) {
-  const campanha = campanhas.find(
-    item => item.id === id
-  );
+  const campanha = encontrarCampanha(id);
 
   if (!campanha) return;
 
-  const vinculadas = eventos.filter(
-    item => item.campanha_id === id
-  );
+  // A verificação definitiva também é feita
+  // pela chave estrangeira no Supabase.
+  const { count, error: erroConsulta } =
+    await supabaseClient
+      .from("eventos")
+      .select("id", {
+        count: "exact",
+        head: true
+      })
+      .eq("campanha_id", id);
 
-  if (vinculadas.length) {
+  if (erroConsulta) {
+    mensagemCampanha.textContent =
+      "Não foi possível verificar as sessões vinculadas.";
+    return;
+  }
+
+  if (count > 0) {
     alert(
       "Esta campanha possui sessões vinculadas. " +
-      "Remova ou desvincule as sessões antes " +
-      "de excluir a campanha."
+      "Remova ou desvincule as sessões antes de excluí-la."
     );
-
     return;
   }
 
@@ -725,92 +642,104 @@ async function excluirCampanha(id) {
 }
 
 // ==========================================
-// PREENCHER EVENTO COM CAMPANHA
+// PREENCHIMENTO AUTOMÁTICO
 // ==========================================
+
+function preencherDadosCampanha(campanha) {
+  campo("evento-titulo").value =
+    campanha.titulo || "";
+
+  campo("evento-categoria").value =
+    campanha.categoria || "";
+
+  campo("evento-canal").value =
+    campanha.canal || "";
+
+  campo("evento-narrador").value =
+    campanha.narrador || "";
+
+  campo("evento-sinopse").value =
+    campanha.sinopse || "";
+
+  campo("evento-imagem").value =
+    campanha.imagem || "";
+
+  campo("evento-link").value =
+    campanha.link || "";
+}
 
 campo("evento-campanha").addEventListener(
   "change",
   () => {
-    const id = Number(
-      campo("evento-campanha").value
+    const campanha = encontrarCampanha(
+      valor("evento-campanha")
     );
 
-    const campanha = campanhas.find(
-      item => item.id === id
-    );
-
-    if (!campanha) return;
-
-    campo("evento-titulo").value =
-      campanha.titulo || "";
-
-    campo("evento-categoria").value =
-      campanha.categoria || "";
-
-    campo("evento-canal").value =
-      campanha.canal || "";
-
-    campo("evento-narrador").value =
-      campanha.narrador || "";
-
-    campo("evento-sinopse").value =
-      campanha.sinopse || "";
-
-    campo("evento-imagem").value =
-      campanha.imagem || "";
-
-    campo("evento-link").value =
-      campanha.link || "";
+    if (campanha) {
+      preencherDadosCampanha(campanha);
+    }
   }
 );
 
 // ==========================================
-// CADASTRO E EDIÇÃO DE COMPROMISSOS
+// DADOS DO COMPROMISSO
 // ==========================================
 
 function dadosFormularioEvento() {
-  const campanhaId =
-    campo("evento-campanha").value;
+  const campanhaId = valor("evento-campanha");
+
+  const campanha = campanhaId
+    ? encontrarCampanha(campanhaId)
+    : null;
+
+  if (campanhaId && !campanha) {
+    throw new Error("A campanha selecionada não existe.");
+  }
 
   const hora = valor("evento-hora");
+  const data = valor("evento-data");
 
-  const turnoSelecionado =
-    valor("evento-turno");
+  const titulo = valor("evento-titulo");
+  const linkInformado = valor("evento-link");
 
   const dados = {
-    titulo: valor("evento-titulo"),
+    titulo,
     categoria: valor("evento-categoria"),
-    data: valor("evento-data"),
+    data,
     hora,
     turno:
-      turnoSelecionado || obterTurno(hora),
+      valor("evento-turno") || obterTurno(hora),
     bloqueia_turno:
       campo("evento-bloqueia-turno").checked,
     status: valor("evento-status"),
-    campanha_id:
-      campanhaId ? Number(campanhaId) : null
+    campanha_id: campanha ? campanha.id : null,
+
+    // Guardamos uma cópia dos dados no evento.
+    // Isso permite preservar informações
+    // históricas das sessões anteriores.
+    canal: valor("evento-canal") || null,
+    narrador: valor("evento-narrador") || null,
+    sinopse: valor("evento-sinopse") || null,
+    imagem: valor("evento-imagem") || null,
+
+    // Se o link for igual ao da campanha,
+    // usamos null para permitir que o link
+    // principal seja atualizado futuramente.
+    //
+    // Se for diferente, guardamos o link
+    // exclusivo desta sessão.
+    link: campanha &&
+      linkInformado === (campanha.link || "")
+        ? null
+        : (linkInformado || null)
   };
-
-  // Dados independentes permanecem no evento.
-  // Dados de campanhas vinculadas são lidos
-  // da tabela campanhas pelo calendário.
-
-  if (!campanhaId) {
-    dados.canal = valor("evento-canal");
-    dados.narrador = valor("evento-narrador");
-    dados.sinopse = valor("evento-sinopse");
-    dados.imagem = valor("evento-imagem");
-    dados.link = valor("evento-link");
-  } else {
-    dados.canal = null;
-    dados.narrador = null;
-    dados.sinopse = null;
-    dados.imagem = null;
-    dados.link = null;
-  }
 
   return dados;
 }
+
+// ==========================================
+// SALVAR COMPROMISSO
+// ==========================================
 
 formularioEvento.addEventListener(
   "submit",
@@ -818,7 +747,6 @@ formularioEvento.addEventListener(
     evento.preventDefault();
 
     botaoSalvarEvento.disabled = true;
-
     mensagemEvento.textContent =
       "Salvando compromisso...";
 
@@ -841,9 +769,7 @@ formularioEvento.addEventListener(
           .insert([dados]);
       }
 
-      if (consulta.error) {
-        throw consulta.error;
-      }
+      if (consulta.error) throw consulta.error;
 
       cancelarEdicaoEvento();
 
@@ -854,7 +780,8 @@ formularioEvento.addEventListener(
 
     } catch (erro) {
       mensagemEvento.textContent =
-        "Não foi possível salvar o compromisso.";
+        "Não foi possível salvar o compromisso: " +
+        erro.message;
 
       console.error(
         "Erro ao salvar compromisso:",
@@ -862,11 +789,14 @@ formularioEvento.addEventListener(
       );
 
     } finally {
-      botaoSalvarEvento.disabled =
-        !bancoPreparado;
+      botaoSalvarEvento.disabled = !bancoPreparado;
     }
   }
 );
+
+// ==========================================
+// EDIÇÃO DE COMPROMISSOS
+// ==========================================
 
 function editarEvento(id) {
   const evento = eventos.find(
@@ -877,14 +807,18 @@ function editarEvento(id) {
 
   eventoEmEdicao = id;
 
+  const campanha = evento.campanha_id
+    ? encontrarCampanha(evento.campanha_id)
+    : null;
+
   campo("evento-campanha").value =
     evento.campanha_id || "";
 
   campo("evento-titulo").value =
-    evento.titulo || "";
+    evento.titulo || campanha?.titulo || "";
 
   campo("evento-categoria").value =
-    evento.categoria || "";
+    evento.categoria || campanha?.categoria || "";
 
   campo("evento-data").value =
     evento.data || "";
@@ -898,20 +832,34 @@ function editarEvento(id) {
   campo("evento-bloqueia-turno").checked =
     evento.bloqueia_turno !== false;
 
+  // Sessões passadas mostram seus dados
+  // registrados. Sessões futuras podem
+  // aproveitar os dados atuais da campanha.
+  const passada = evento.data < hojeISO();
+
+  function informacao(chave) {
+    if (passada) {
+      return evento[chave] || campanha?.[chave] || "";
+    }
+
+    return campanha?.[chave] || evento[chave] || "";
+  }
+
   campo("evento-canal").value =
-    evento.canal || "";
+    informacao("canal");
 
   campo("evento-narrador").value =
-    evento.narrador || "";
+    informacao("narrador");
 
   campo("evento-sinopse").value =
-    evento.sinopse || "";
+    informacao("sinopse");
 
   campo("evento-imagem").value =
-    evento.imagem || "";
+    informacao("imagem");
 
+  // O link exclusivo tem prioridade.
   campo("evento-link").value =
-    evento.link || "";
+    evento.link || campanha?.link || "";
 
   campo("evento-status").value =
     evento.status || "agendada";
@@ -919,8 +867,7 @@ function editarEvento(id) {
   campo("salvar-evento").textContent =
     "💾 Atualizar compromisso";
 
-  campo("cancelar-edicao-evento").hidden =
-    false;
+  campo("cancelar-edicao-evento").hidden = false;
 
   abrirAba("aba-eventos");
 
@@ -932,36 +879,32 @@ function editarEvento(id) {
 
 function cancelarEdicaoEvento() {
   eventoEmEdicao = null;
-
   formularioEvento.reset();
 
   campo("salvar-evento").textContent =
     "💾 Salvar compromisso";
 
-  campo("cancelar-edicao-evento").hidden =
-    true;
+  campo("cancelar-edicao-evento").hidden = true;
 }
 
-campo("cancelar-edicao-evento")
-  .addEventListener(
-    "click",
-    cancelarEdicaoEvento
-  );
+campo("cancelar-edicao-evento").addEventListener(
+  "click",
+  cancelarEdicaoEvento
+);
 
 // ==========================================
-// CARREGAMENTO E LISTAGEM DE EVENTOS
+// CARREGAR COMPROMISSOS
 // ==========================================
 
 async function carregarEventos() {
   await exigirAdministrador();
   exigirBancoPreparado();
 
-  const { data, error } =
-    await supabaseClient
-      .from("eventos")
-      .select("*")
-      .order("data", { ascending: true })
-      .order("hora", { ascending: true });
+  const { data, error } = await supabaseClient
+    .from("eventos")
+    .select("*")
+    .order("data", { ascending: true })
+    .order("hora", { ascending: true });
 
   if (error) throw error;
 
@@ -970,16 +913,18 @@ async function carregarEventos() {
   renderizarEventos();
 }
 
+// ==========================================
+// LISTAGEM E GERENCIAMENTO
+// ==========================================
+
 function renderizarEventos() {
   limparElemento(listaEventos);
 
   const filtro = valor("gerenciar-filtro");
 
   const filtrados = eventos.filter(evento => {
-    return (
-      filtro === "todos" ||
-      evento.status === filtro
-    );
+    return filtro === "todos" ||
+      evento.status === filtro;
   });
 
   if (!filtrados.length) {
@@ -989,14 +934,13 @@ function renderizarEventos() {
         "Nenhum compromisso encontrado."
       )
     );
-
     return;
   }
 
   filtrados.forEach(evento => {
-    const campanha = campanhas.find(
-      item => item.id === evento.campanha_id
-    );
+    const campanha = evento.campanha_id
+      ? encontrarCampanha(evento.campanha_id)
+      : null;
 
     const titulo =
       evento.titulo ||
@@ -1010,26 +954,17 @@ function renderizarEventos() {
     );
 
     item.append(
-      criarElemento("h4", titulo)
-    );
-
-    item.append(
+      criarElemento("h4", titulo),
       criarElemento(
         "p",
         `${formatarData(evento.data)} • ` +
-        `${formatarHora(evento.hora)}`
-      )
-    );
-
-    item.append(
+        formatarHora(evento.hora)
+      ),
       criarElemento(
         "p",
         CATEGORIAS[evento.categoria] ||
         evento.categoria
-      )
-    );
-
-    item.append(
+      ),
       criarElemento(
         "p",
         evento.status === "publicada"
@@ -1057,19 +992,13 @@ function renderizarEventos() {
       criarBotao(
         "✏️ Editar",
         () => editarEvento(evento.id)
-      )
-    );
-
-    acoes.append(
+      ),
       criarBotao(
         evento.status === "publicada"
           ? "📥 Despublicar"
           : "📤 Publicar",
         () => alternarPublicacao(evento.id)
-      )
-    );
-
-    acoes.append(
+      ),
       criarBotao(
         "🗑️ Excluir",
         () => excluirEvento(evento.id),
@@ -1092,7 +1021,6 @@ campo("atualizar-eventos").addEventListener(
   async () => {
     try {
       await carregarEventos();
-
       mensagemGerenciar.textContent =
         "Lista atualizada.";
 
@@ -1106,7 +1034,7 @@ campo("atualizar-eventos").addEventListener(
 );
 
 // ==========================================
-// PUBLICAR E DESPUBLICAR
+// PUBLICAR OU DESPUBLICAR
 // ==========================================
 
 async function alternarPublicacao(id) {
@@ -1145,7 +1073,7 @@ async function alternarPublicacao(id) {
 }
 
 // ==========================================
-// EXCLUSÃO DE COMPROMISSOS
+// EXCLUIR COMPROMISSO
 // ==========================================
 
 async function excluirEvento(id) {
@@ -1185,18 +1113,16 @@ async function excluirEvento(id) {
 }
 
 // ==========================================
-// AGENDAMENTO RECORRENTE
+// GERAR DATAS RECORRENTES
 // ==========================================
 
 function gerarDatasRecorrencia() {
   const inicio = valor("recorrencia-inicio");
-
   const quantidade = Number(
     valor("recorrencia-quantidade")
   );
 
-  const frequencia =
-    valor("recorrencia-frequencia");
+  const frequencia = valor("recorrencia-frequencia");
 
   if (
     !inicio ||
@@ -1210,28 +1136,31 @@ function gerarDatasRecorrencia() {
     );
   }
 
+  if (![
+    "semanal",
+    "quinzenal",
+    "mensal"
+  ].includes(frequencia)) {
+    throw new Error("Selecione uma frequência válida.");
+  }
+
   const datas = [];
 
-  for (let indice = 0; indice < quantidade; indice++) {
+  for (
+    let indice = 0;
+    indice < quantidade;
+    indice++
+  ) {
     let data;
 
     if (frequencia === "semanal") {
-      data = adicionarDias(
-        inicio,
-        indice * 7
-      );
+      data = adicionarDias(inicio, indice * 7);
 
     } else if (frequencia === "quinzenal") {
-      data = adicionarDias(
-        inicio,
-        indice * 14
-      );
+      data = adicionarDias(inicio, indice * 14);
 
     } else {
-      data = adicionarMeses(
-        inicio,
-        indice
-      );
+      data = adicionarMeses(inicio, indice);
     }
 
     datas.push(data);
@@ -1239,6 +1168,10 @@ function gerarDatasRecorrencia() {
 
   return datas;
 }
+
+// ==========================================
+// PRÉVIA DA RECORRÊNCIA
+// ==========================================
 
 function limparPreviaRecorrencia() {
   datasRecorrencia = [];
@@ -1266,8 +1199,9 @@ function limparPreviaRecorrencia() {
   );
 });
 
-campo("previsualizar-recorrencia")
-  .addEventListener("click", () => {
+campo("previsualizar-recorrencia").addEventListener(
+  "click",
+  () => {
     try {
       exigirBancoPreparado();
 
@@ -1275,53 +1209,42 @@ campo("previsualizar-recorrencia")
         return;
       }
 
-      datasRecorrencia =
-        gerarDatasRecorrencia();
+      datasRecorrencia = gerarDatasRecorrencia();
 
-      const previa =
-        campo("recorrencia-previa");
-
+      const previa = campo("recorrencia-previa");
       limparElemento(previa);
 
-      datasRecorrencia.forEach(
-        (data, indice) => {
-          const item = criarElemento(
-            "div",
-            undefined,
-            "admin-item"
-          );
+      datasRecorrencia.forEach((data, indice) => {
+        const item = criarElemento(
+          "div",
+          undefined,
+          "admin-item"
+        );
 
-          item.append(
-            criarElemento(
-              "span",
-              `Sessão ${indice + 1}: ` +
-              formatarData(data)
-            )
-          );
+        item.append(
+          criarElemento(
+            "span",
+            `Sessão ${indice + 1}: ` +
+            formatarData(data)
+          ),
+          criarBotao(
+            "Remover",
+            () => {
+              datasRecorrencia =
+                datasRecorrencia.filter(
+                  valorData => valorData !== data
+                );
 
-          item.append(
-            criarBotao(
-              "Remover",
-              () => {
-                datasRecorrencia =
-                  datasRecorrencia.filter(
-                    valorData =>
-                      valorData !== data
-                  );
+              item.remove();
 
-                item.remove();
+              campo("salvar-recorrencia").disabled =
+                !datasRecorrencia.length;
+            }
+          )
+        );
 
-                campo(
-                  "salvar-recorrencia"
-                ).disabled =
-                  !datasRecorrencia.length;
-              }
-            )
-          );
-
-          previa.append(item);
-        }
-      );
+        previa.append(item);
+      });
 
       campo("salvar-recorrencia").disabled =
         !datasRecorrencia.length;
@@ -1334,16 +1257,19 @@ campo("previsualizar-recorrencia")
       mensagemRecorrencia.textContent =
         erro.message;
     }
-  });
+  }
+);
+
+// ==========================================
+// SALVAR RECORRÊNCIA
+// ==========================================
 
 formularioRecorrencia.addEventListener(
   "submit",
   async evento => {
     evento.preventDefault();
 
-    const botao =
-      campo("salvar-recorrencia");
-
+    const botao = campo("salvar-recorrencia");
     botao.disabled = true;
 
     mensagemRecorrencia.textContent =
@@ -1357,9 +1283,7 @@ formularioRecorrencia.addEventListener(
         valor("recorrencia-campanha")
       );
 
-      const campanha = campanhas.find(
-        item => item.id === campanhaId
-      );
+      const campanha = encontrarCampanha(campanhaId);
 
       if (!campanha) {
         throw new Error(
@@ -1373,15 +1297,22 @@ formularioRecorrencia.addEventListener(
         );
       }
 
-      const hora =
-        valor("recorrencia-hora");
+      const hora = valor("recorrencia-hora");
 
       const turno =
         valor("recorrencia-turno") ||
         obterTurno(hora);
 
-      const registros =
-        datasRecorrencia.map(data => ({
+      // Cada sessão é salva separadamente,
+      // vinculada à campanha.
+      //
+      // Guardamos também os dados atuais
+      // para preservar o histórico depois.
+      //
+      // O link fica vazio para acompanhar
+      // o link principal da campanha.
+      const registros = datasRecorrencia.map(
+        data => ({
           campanha_id: campanhaId,
           titulo: campanha.titulo,
           categoria: campanha.categoria,
@@ -1393,25 +1324,29 @@ formularioRecorrencia.addEventListener(
               "recorrencia-bloqueia-turno"
             ).checked,
           status: valor("recorrencia-status"),
-          canal: null,
-          narrador: null,
-          sinopse: null,
-          imagem: null,
+          canal: campanha.canal || null,
+          narrador: campanha.narrador || null,
+          sinopse: campanha.sinopse || null,
+          imagem: campanha.imagem || null,
           link: null
-        }));
-
-      // Impedir duplicatas da mesma campanha,
-      // na mesma data e no mesmo horário.
-      const existentes = eventos.filter(
-        item => item.campanha_id === campanhaId
+        })
       );
 
+      // Conferir duplicatas já existentes.
+      const { data: existentes, error: erroConsulta } =
+        await supabaseClient
+          .from("eventos")
+          .select("data, hora")
+          .eq("campanha_id", campanhaId);
+
+      if (erroConsulta) throw erroConsulta;
+
       const duplicadas = registros.filter(
-        registro => existentes.some(
+        registro => (existentes || []).some(
           item =>
             item.data === registro.data &&
             formatarHora(item.hora) ===
-              formatarHora(registro.hora)
+            formatarHora(registro.hora)
         )
       );
 
@@ -1454,7 +1389,7 @@ formularioRecorrencia.addEventListener(
 );
 
 // ==========================================
-// CARREGAMENTO GERAL
+// CARREGAMENTO GERAL DO PAINEL
 // ==========================================
 
 async function carregarPainel() {
@@ -1467,10 +1402,9 @@ async function carregarPainel() {
     if (!preparado) {
       mostrarMensagem(
         "Login realizado! 💜 " +
-        "A nova estrutura do Supabase " +
-        "ainda precisa ser configurada."
+        "Não foi possível verificar a estrutura " +
+        "do Supabase."
       );
-
       return;
     }
 
@@ -1504,7 +1438,6 @@ botaoSair.addEventListener(
       mostrarMensagem(
         "Não foi possível sair da conta."
       );
-
       return;
     }
 
@@ -1512,11 +1445,13 @@ botaoSair.addEventListener(
     eventos = [];
     bancoPreparado = false;
 
+    cancelarEdicaoEvento();
+    cancelarEdicaoCampanha();
+    limparPreviaRecorrencia();
+
     mostrarLogin();
 
-    mostrarMensagem(
-      "Você saiu da conta."
-    );
+    mostrarMensagem("Você saiu da conta.");
   }
 );
 
