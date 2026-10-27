@@ -531,9 +531,24 @@ function atualizarSecaoPersonagem() {
   campo("campanha-secao-personagem").hidden = !mostrar;
 }
 
+function atualizarSecaoNarradora() {
+  const papel = valor("campanha-papel");
+
+  const mostrar =
+    papel === "narradora" ||
+    papel === "ambos";
+
+  campo("campanha-secao-narradora").hidden = !mostrar;
+}
+
+
+
 campo("campanha-papel").addEventListener(
   "change",
-  atualizarSecaoPersonagem
+  () => {
+    atualizarSecaoPersonagem();
+    atualizarSecaoNarradora();
+  }
 );
 
 
@@ -650,8 +665,8 @@ function editarCampanha(id) {
   campo("campanha-papel").value =
     campanha.detalhes?.papel || "";
   atualizarSecaoPersonagem();
-
-  
+  atualizarSecaoNarradora();
+    
   const personagem = campanha.detalhes?.personagem || {};
 
   const camposPersonagem = {
@@ -690,6 +705,7 @@ function cancelarEdicaoCampanha() {
   campanhaEmEdicao = null;
   campo("campanha-form").reset();
   atualizarSecaoPersonagem();
+  atualizarSecaoNarradora();
 
   campo("salvar-campanha").textContent =
     "💾 Salvar campanha";
