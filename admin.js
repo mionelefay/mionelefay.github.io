@@ -484,6 +484,23 @@ function renderizarCampanhas() {
       )
     );
 
+    // Exibe o status atual da campanha.
+    const statusCampanha = {
+      em_andamento: "🟢 Em andamento",
+      pausada: "🟡 Pausada",
+      finalizada: "🏁 Finalizada"
+    };
+
+    item.append(
+      criarElemento(
+        "p",
+        "Status: " + (
+          statusCampanha[campanha.status] ||
+          "🟢 Em andamento"
+        )
+      )
+    );
+
     if (campanha.narrador) {
       item.append(
         criarElemento(
@@ -520,7 +537,6 @@ function renderizarCampanhas() {
 // SALVAR CAMPANHA
 // ==========================================
 
-
 function atualizarSecaoPersonagem() {
   const papel = valor("campanha-papel");
 
@@ -541,8 +557,6 @@ function atualizarSecaoNarradora() {
   campo("campanha-secao-narradora").hidden = !mostrar;
 }
 
-
-
 campo("campanha-papel").addEventListener(
   "change",
   () => {
@@ -550,8 +564,6 @@ campo("campanha-papel").addEventListener(
     atualizarSecaoNarradora();
   }
 );
-
-
 
 function dadosFormularioCampanha() {
   const campanhaAtual = campanhaEmEdicao !== null
@@ -563,6 +575,10 @@ function dadosFormularioCampanha() {
   return {
     titulo: valor("campanha-titulo"),
     categoria: valor("campanha-categoria"),
+
+    // Salva o status diretamente na tabela campanhas.
+    status: valor("campanha-status"),
+
     narrador: valor("campanha-narrador"),
     canal: valor("campanha-canal"),
     sinopse: valor("campanha-sinopse"),
@@ -598,7 +614,6 @@ function dadosFormularioCampanha() {
     }
   };
 }
-
 
 campo("campanha-form").addEventListener(
   "submit",
@@ -658,7 +673,6 @@ campo("campanha-form").addEventListener(
   }
 );
 
-
 function editarCampanha(id) {
   const campanha = encontrarCampanha(id);
   if (!campanha) return;
@@ -677,6 +691,10 @@ function editarCampanha(id) {
     campo(`campanha-${chave}`).value =
       campanha[chave] || "";
   });
+
+  // Recupera o status salvo no Supabase.
+  campo("campanha-status").value =
+    campanha.status || "em_andamento";
 
   // Papel na campanha
   campo("campanha-papel").value =
@@ -1476,7 +1494,7 @@ campo("previsualizar-recorrencia")
     }
   );
 
-// ==========================================
+//
 // SALVAR RECORRÊNCIA
 // ==========================================
 
@@ -1832,7 +1850,7 @@ function filtrarEventosGerenciar() {
     const nomeCampanha = String(
       campanha?.titulo || ""
     ).toLocaleLowerCase("pt-BR");
-
+        
     const categoriaEvento =
       evento.categoria || campanha?.categoria || "";
 
