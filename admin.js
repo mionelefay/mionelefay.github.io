@@ -538,24 +538,18 @@ function renderizarCampanhas() {
 // ==========================================
 
 function atualizarSecaoPersonagem() {
-  const papel = valor("campanha-papel");
-
-  const mostrar =
-    papel === "jogadora" ||
-    papel === "ambos";
-
-  campo("campanha-secao-personagem").hidden = !mostrar;
+  campo("campanha-secao-personagem").hidden =
+    !campo("campanha-exibir-personagem").checked;
 }
 
 function atualizarSecaoNarradora() {
-  const papel = valor("campanha-papel");
-
-  const mostrar =
-    papel === "narradora" ||
-    papel === "ambos";
-
-  campo("campanha-secao-narradora").hidden = !mostrar;
+  // O universo e os materiais podem ser cadastrados independentemente do papel.
+  campo("campanha-secao-narradora").hidden = false;
 }
+
+campo("campanha-exibir-personagem").addEventListener(
+  "change", atualizarSecaoPersonagem
+);
 
 campo("campanha-papel").addEventListener(
   "change",
@@ -589,6 +583,7 @@ function dadosFormularioCampanha() {
       ...detalhesAtuais,
 
       papel: valor("campanha-papel"),
+      exibir_personagem: campo("campanha-exibir-personagem").checked,
 
       personagem: {
         ...(detalhesAtuais.personagem || {}),
@@ -699,6 +694,13 @@ function editarCampanha(id) {
   // Papel na campanha
   campo("campanha-papel").value =
     campanha.detalhes?.papel || "";
+
+  // Campanhas antigas seguem mostrando personagem quando jogadora/ambos,
+  // até que você escolha explicitamente no novo controle.
+  campo("campanha-exibir-personagem").checked =
+    typeof campanha.detalhes?.exibir_personagem === "boolean"
+      ? campanha.detalhes.exibir_personagem
+      : ["jogadora", "ambos"].includes(campanha.detalhes?.papel);
 
   atualizarSecaoPersonagem();
   atualizarSecaoNarradora();
