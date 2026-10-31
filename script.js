@@ -969,7 +969,18 @@ function renderizarCampanhas() {
         campanha.titulo || "Campanha sem título"
       )
     );
+  const offline =
+  campanha.detalhes?.modalidade === "offline";
 
+card.append(
+  criarElemento(
+    "p",
+    offline
+      ? "🎲 Campanha offline"
+      : "📺 Campanha transmitida",
+    "campanha-info"
+  )
+);
     if (campanha.narrador) {
       card.append(
         criarElemento(
@@ -1132,7 +1143,7 @@ async function carregarAgenda() {
       supabaseClient
         .from("campanhas")
         .select(
-          "id, titulo, categoria, narrador, canal, sinopse, imagem, link, status"
+          "id, titulo, categoria, narrador, canal, sinopse, imagem, link, status, detalhes"
         ),
 
       supabaseClient
