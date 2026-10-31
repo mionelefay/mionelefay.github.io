@@ -73,6 +73,7 @@ let filtroAtual = "todas";
 
 let eventos = [];
 let campanhas = [];
+let excecoesDisponibilidade = [];
 
 const calendario =
   document.getElementById("calendario");
@@ -300,6 +301,17 @@ function disponibilidadePadrao(
   return "livre";
 }
 
+// Uma exceção libera apenas os turnos escolhidos no período.
+// Não substitui compromissos publicados que ocupem o turno.
+function turnoLiberadoPorExcecao(dataTexto, turnoId) {
+  return excecoesDisponibilidade.some(excecao =>
+    dataTexto >= excecao.data_inicio &&
+    dataTexto <= excecao.data_fim &&
+    Array.isArray(excecao.turnos) &&
+    excecao.turnos.includes(turnoId)
+  );
+}
+
 // ==========================================
 // EVENTOS DE UM TURNO
 // ==========================================
@@ -368,6 +380,10 @@ function situacaoDoTurno(
   }
 
   if (disponibilidadeExplicita) {
+    return "livre";
+  }
+
+  if (turnoLiberadoPorExcecao(dataTexto, turnoId)) {
     return "livre";
   }
 
@@ -1180,6 +1196,18 @@ async function carregarAgenda() {
           hora: formatarHora(evento.hora)
         }))
         .map(integrarCampanha);
+
+    // Busca pública apenas exceções; a RLS limita a leitura.
+    const respostaExcecoes = await supabaseClient
+      .from("excecoes_disponibilidade")
+      .select("data_inicio,data_fim,turnos");
+
+    if (respostaExcecoes.error) {
+      console.error("Erro ao carregar exceções:", respostaExcecoes.error.message);
+      excecoesDisponibilidade = [];
+    } else {
+      excecoesDisponibilidade = respostaExcecoes.data || [];
+    }
 
     renderizarCalendario();
 
