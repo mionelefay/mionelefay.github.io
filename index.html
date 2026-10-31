@@ -1,80 +1,77 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#100b1d">
-
   <title>Mione Le Fay | Agenda de Lives</title>
-
   <link rel="stylesheet" href="style.css">
-
-  <script
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"
-    defer>
-  </script>
-
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js" defer></script>
   <script src="script.js" defer></script>
   <script src="google-agenda.js" defer></script>
   <script src="situacoes-calendario.js" defer></script>
   <script src="agenda-semanal.js" defer></script>
-
   <style>
     /* Botões da janela de detalhes */
-
-    .modal-acoes {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: stretch;
-      gap: 10px;
-      margin-top: 20px;
+    .modal-acoes { display:flex; flex-wrap:wrap; align-items:stretch; gap:10px; margin-top:20px; }
+    .modal-acoes .botao { display:inline-flex; justify-content:center; align-items:center; text-align:center; flex:1 1 190px; margin-top:0; min-height:48px; }
+    .modal-acoes .botao[hidden] { display:none; }
+    .botao-google-agenda { background:transparent; border:1px solid #b66cff; color:#f7f1ff; }
+    .botao-google-agenda:hover { background:#392650; }
+    @media (max-width:500px) {
+      .modal-acoes { flex-direction:column; }
+      .modal-acoes .botao { flex:none; width:100%; }
     }
 
-    .modal-acoes .botao {
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      flex: 1 1 190px;
-      margin-top: 0;
-      min-height: 48px;
+    /* Banner: mascote e apresentação em áreas separadas, sem sobreposição. */
+    .hero .hero-apresentacao {
+      display:grid !important;
+      grid-template-columns:minmax(125px, 35%) minmax(0, 1fr) !important;
+      align-items:center !important;
+      gap:22px !important;
+      min-width:0 !important;
+      position:relative !important;
     }
-
-    .modal-acoes .botao[hidden] {
-      display: none;
+    .hero .hero-mione {
+      grid-column:1 !important;
+      grid-row:1 !important;
+      position:static !important;
+      inset:auto !important;
+      transform:none !important;
+      float:none !important;
+      display:block !important;
+      width:100% !important;
+      max-width:100% !important;
+      height:auto !important;
+      max-height:360px !important;
+      object-fit:contain !important;
+      margin:0 !important;
     }
-
-    .botao-google-agenda {
-      background: transparent;
-      border: 1px solid #b66cff;
-      color: #f7f1ff;
+    .hero .hero-texto {
+      grid-column:2 !important;
+      grid-row:1 !important;
+      position:relative !important;
+      z-index:1 !important;
+      width:auto !important;
+      max-width:none !important;
+      min-width:0 !important;
+      padding:0 !important;
+      margin:0 !important;
     }
-
-    .botao-google-agenda:hover {
-      background: #392650;
+    .hero .hero-texto h1 { overflow-wrap:break-word; }
+    @media (max-width:1100px) {
+      .hero .hero-apresentacao { grid-template-columns:minmax(110px, 30%) minmax(0,1fr) !important; gap:16px !important; }
     }
-
-    @media (max-width: 500px) {
-      .modal-acoes {
-        flex-direction: column;
-      }
-
-      .modal-acoes .botao {
-        flex: none;
-        width: 100%;
-      }
+    @media (max-width:700px) {
+      .hero .hero-apresentacao { grid-template-columns:minmax(0,1fr) !important; justify-items:center !important; gap:20px !important; }
+      .hero .hero-texto { grid-column:1 !important; grid-row:1 !important; width:100% !important; }
+      .hero .hero-mione { grid-column:1 !important; grid-row:2 !important; width:min(260px,75%) !important; max-height:320px !important; margin:0 auto !important; }
     }
   </style>
 </head>
-
 <body>
-
   <header class="topo">
-    <a class="logo" href="#inicio">
-      ✦ MIONE LE FAY
-    </a>
-
+    <a class="logo" href="#inicio">✦ MIONE LE FAY</a>
     <nav aria-label="Menu principal">
       <a href="#inicio">Início</a>
       <a href="#agenda">Agenda</a>
@@ -82,365 +79,105 @@
       <a href="#redes">Redes sociais</a>
     </nav>
   </header>
-
   <main>
-
     <section class="hero" id="inicio">
-
       <div class="hero-layout">
-
-        <!-- COLUNA ESQUERDA: APRESENTAÇÃO -->
-
         <div class="hero-apresentacao">
-
           <div class="hero-texto">
-
-            <p class="destaque">
-              🎮 RPG • GAMEPLAY • PODCASTS
-            </p>
-
-            <h1>
-              Seu próximo encontro com a Mione
-              começa aqui.
-            </h1>
-
-            <p>
-              Confira minhas lives, participações em
-              outros canais e novos vídeos.
-              Tudo em um só lugar!
-            </p>
-
-            <a class="botao" href="#agenda">
-              Explorar agenda
-            </a>
-
+            <p class="destaque">🎮 RPG • GAMEPLAY • PODCASTS</p>
+            <h1>Seu próximo encontro com a Mione começa aqui.</h1>
+            <p>Confira minhas lives, participações em outros canais e novos vídeos. Tudo em um só lugar!</p>
+            <a class="botao" href="#agenda">Explorar agenda</a>
           </div>
-
-          <img
-            class="hero-mione"
-            src="mione-hero.png"
-            alt="Ilustração da Mione Le Fay"
-            width="1200"
-            height="1600"
-            fetchpriority="high">
-
+          <img class="hero-mione" src="mione-hero.png" alt="Ilustração da Mione Le Fay" width="1200" height="1600" fetchpriority="high">
         </div>
-
-        <!-- COLUNA DIREITA: AGENDA SEMANAL -->
-
-        <aside
-          class="hero-agenda"
-          aria-labelledby="agenda-semanal-titulo">
-
+        <aside class="hero-agenda" aria-labelledby="agenda-semanal-titulo">
           <div class="hero-agenda-cabecalho">
-
             <div>
-              <p class="destaque">
-                SUA PROGRAMAÇÃO
-              </p>
-
-              <h2 id="agenda-semanal-titulo">
-                📅 Esta semana
-              </h2>
+              <p class="destaque">SUA PROGRAMAÇÃO</p>
+              <h2 id="agenda-semanal-titulo">📅 Esta semana</h2>
             </div>
-
-            <a
-              class="hero-agenda-link"
-              href="#agenda">
-              Ver calendário completo
-            </a>
-
+            <a class="hero-agenda-link" href="#agenda">Ver calendário completo</a>
           </div>
-
-          <div
-            id="agenda-semanal"
-            class="agenda-semanal"
-            aria-live="polite">
-          </div>
-
+          <div id="agenda-semanal" class="agenda-semanal" aria-live="polite"></div>
         </aside>
-
       </div>
-
     </section>
 
-    <!-- ==========================================
-         AGENDA DE LIVES
-    ========================================== -->
-
+    <!-- AGENDA DE LIVES -->
     <section class="secao" id="agenda">
-
       <div class="cabecalho-secao">
-
         <div>
           <p class="destaque">PROGRAMAÇÃO</p>
-
           <h2>📅 Agenda de Lives</h2>
-
-          <p>
-            Um mural de post-its para não perder nada!
-          </p>
+          <p>Um mural de post-its para não perder nada!</p>
         </div>
-
         <div class="navegacao-mes">
-
-          <button
-            id="mes-anterior"
-            aria-label="Mês anterior">
-            ❮
-          </button>
-
+          <button id="mes-anterior" aria-label="Mês anterior">❮</button>
           <h3 id="mes-atual"></h3>
-
-          <button
-            id="mes-proximo"
-            aria-label="Próximo mês">
-            ❯
-          </button>
-
+          <button id="mes-proximo" aria-label="Próximo mês">❯</button>
         </div>
-
       </div>
-
       <div class="filtros" id="filtros">
-
-        <button
-          class="filtro ativo"
-          data-categoria="todas">
-          Todas
-        </button>
-
-        <button
-          class="filtro"
-          data-categoria="rpg-proprio">
-          🎲 RPG no meu canal
-        </button>
-
-        <button
-          class="filtro"
-          data-categoria="rpg-externo">
-          🧙 RPG em outros canais
-        </button>
-
-        <button
-          class="filtro"
-          data-categoria="podcast">
-          🎙️ Podcasts
-        </button>
-
-        <button
-          class="filtro"
-          data-categoria="jogos">
-          🎮 Jogos
-        </button>
-
-        <button
-          class="filtro"
-          data-categoria="video">
-          🎬 Vídeos
-        </button>
-
+        <button class="filtro ativo" data-categoria="todas">Todas</button>
+        <button class="filtro" data-categoria="rpg-proprio">🎲 RPG no meu canal</button>
+        <button class="filtro" data-categoria="rpg-externo">🧙 RPG em outros canais</button>
+        <button class="filtro" data-categoria="podcast">🎙️ Podcasts</button>
+        <button class="filtro" data-categoria="jogos">🎮 Jogos</button>
+        <button class="filtro" data-categoria="video">🎬 Vídeos</button>
       </div>
-
-      <div
-        class="calendario"
-        id="calendario">
-      </div>
-
+      <div class="calendario" id="calendario"></div>
     </section>
 
-    <!-- ==========================================
-         BIBLIOTECA DE CAMPANHAS
-    ========================================== -->
-
+    <!-- BIBLIOTECA DE CAMPANHAS -->
     <section class="secao" id="campanhas">
-
       <div class="campanhas-cabecalho">
-
         <div>
-
-          <p class="destaque">
-            AVENTURAS E PROGRAMAS
-          </p>
-
+          <p class="destaque">AVENTURAS E PROGRAMAS</p>
           <h2>✨ Biblioteca de Campanhas</h2>
-
-          <p>
-            Explore as aventuras e histórias
-            que fazem parte do canal.
-          </p>
-
+          <p>Explore as aventuras e histórias que fazem parte do canal.</p>
         </div>
-
-        <!-- CONTROLES DO CARROSSEL -->
-
-        <div
-          class="campanhas-controles"
-          aria-label="Navegação das campanhas">
-
-          <button
-            type="button"
-            id="campanhas-anterior"
-            class="campanhas-seta"
-            aria-label="Ver campanhas anteriores"
-            aria-controls="lista-campanhas">
-            ❮
-          </button>
-
-          <button
-            type="button"
-            id="campanhas-proximo"
-            class="campanhas-seta"
-            aria-label="Ver próximas campanhas"
-            aria-controls="lista-campanhas">
-            ❯
-          </button>
-
+        <div class="campanhas-controles" aria-label="Navegação das campanhas">
+          <button type="button" id="campanhas-anterior" class="campanhas-seta" aria-label="Ver campanhas anteriores" aria-controls="lista-campanhas">❮</button>
+          <button type="button" id="campanhas-proximo" class="campanhas-seta" aria-label="Ver próximas campanhas" aria-controls="lista-campanhas">❯</button>
         </div>
-
       </div>
-
-      <!-- ÁREA DE ROLAGEM HORIZONTAL -->
-
       <div class="campanhas-carrossel">
-
-        <div
-          class="grade-campanhas"
-          id="lista-campanhas"
-          aria-label="Biblioteca de campanhas">
-
+        <div class="grade-campanhas" id="lista-campanhas" aria-label="Biblioteca de campanhas">
           <p>Carregando campanhas...</p>
-
         </div>
-
       </div>
-
     </section>
 
-    <!-- ==========================================
-         REDES SOCIAIS
-    ========================================== -->
-
+    <!-- REDES SOCIAIS -->
     <section class="secao" id="redes">
-
-      <p class="destaque">
-        ENCONTRE A MIONE
-      </p>
-
+      <p class="destaque">ENCONTRE A MIONE</p>
       <h2>💜 Redes sociais</h2>
-
       <div class="redes">
-
-        <a
-          class="botao"
-          href="https://www.youtube.com/@MioneLeFay"
-          target="_blank"
-          rel="noopener noreferrer">
-          YouTube
-        </a>
-
-        <a
-          class="botao"
-          href="https://www.twitch.tv/mionelefay"
-          target="_blank"
-          rel="noopener noreferrer">
-          Twitch
-        </a>
-
-        <a
-          class="botao"
-          href="https://x.com/mionelefay"
-          target="_blank"
-          rel="noopener noreferrer">
-          X
-        </a>
-
-        <a
-          class="botao"
-          href="https://www.instagram.com/mionelefay/"
-          target="_blank"
-          rel="noopener noreferrer">
-          Instagram
-        </a>
-
+        <a class="botao" href="https://www.youtube.com/@MioneLeFay" target="_blank" rel="noopener noreferrer">YouTube</a>
+        <a class="botao" href="https://www.twitch.tv/mionelefay" target="_blank" rel="noopener noreferrer">Twitch</a>
+        <a class="botao" href="https://x.com/mionelefay" target="_blank" rel="noopener noreferrer">X</a>
+        <a class="botao" href="https://www.instagram.com/mionelefay/" target="_blank" rel="noopener noreferrer">Instagram</a>
       </div>
-
     </section>
-
   </main>
 
-  <!-- ==========================================
-       JANELA DE DETALHES
-  ========================================== -->
-
-  <div
-    class="modal oculto"
-    id="modal"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="modal-titulo">
-
+  <!-- JANELA DE DETALHES -->
+  <div class="modal oculto" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
     <div class="modal-conteudo">
-
-      <button
-        id="fechar-modal"
-        class="fechar"
-        aria-label="Fechar">
-        ✕
-      </button>
-
-      <img
-        id="modal-imagem"
-        alt="Arte da transmissão"
-        hidden>
-
-      <p
-        id="modal-categoria"
-        class="destaque">
-      </p>
-
+      <button id="fechar-modal" class="fechar" aria-label="Fechar">✕</button>
+      <img id="modal-imagem" alt="Arte da transmissão" hidden>
+      <p id="modal-categoria" class="destaque"></p>
       <h2 id="modal-titulo"></h2>
-
       <p id="modal-canal"></p>
-
       <p id="modal-data"></p>
-
       <p id="modal-sinopse"></p>
-
       <div class="modal-acoes">
-
-        <a
-          id="modal-link"
-          class="botao"
-          target="_blank"
-          rel="noopener noreferrer">
-          Assistir transmissão
-        </a>
-
-        <a
-          id="modal-google-agenda"
-          class="botao botao-google-agenda"
-          target="_blank"
-          rel="noopener noreferrer"
-          hidden>
-          📅 Adicionar ao Google Agenda
-        </a>
-
+        <a id="modal-link" class="botao" target="_blank" rel="noopener noreferrer">Assistir transmissão</a>
+        <a id="modal-google-agenda" class="botao botao-google-agenda" target="_blank" rel="noopener noreferrer" hidden>📅 Adicionar ao Google Agenda</a>
       </div>
-
     </div>
-
   </div>
-
-  <!-- ==========================================
-       RODAPÉ
-  ========================================== -->
-
-  <footer>
-    <p>
-      💜 Mione Le Fay • RPG, jogos e muitas histórias
-    </p>
-  </footer>
-
+  <footer><p>💜 Mione Le Fay • RPG, jogos e muitas histórias</p></footer>
 </body>
 </html>
