@@ -935,13 +935,15 @@ function renderizarCampanhas() {
     return;
   }
 
-  const campanhasOrdenadas = [...campanhas].sort(
-    (a, b) =>
-      (a.titulo || "").localeCompare(
-        b.titulo || "",
-        "pt-BR"
-      )
-  );
+  const campanhasOrdenadas = campanhas
+    .filter(campanha => campanha.status === "em_andamento")
+    .sort(
+      (a, b) =>
+        (a.titulo || "").localeCompare(
+          b.titulo || "",
+          "pt-BR"
+        )
+    );
 
   campanhasOrdenadas.forEach(campanha => {
     const card = criarElemento(
@@ -1130,7 +1132,7 @@ async function carregarAgenda() {
       supabaseClient
         .from("campanhas")
         .select(
-          "id, titulo, categoria, narrador, canal, sinopse, imagem, link"
+          "id, titulo, categoria, narrador, canal, sinopse, imagem, link, status"
         ),
 
       supabaseClient
