@@ -498,11 +498,19 @@
   <script>
     "use strict";
 
+    // ==========================================
+    // CONEXÃO COM O SUPABASE
+    // ==========================================
+
     const SUPABASE_URL =
       "https://gevkvjuaurcxokudlblc.supabase.co";
 
     const SUPABASE_KEY =
       "sb_publishable_4mIXjg7273CgkxJzNGILow_0GyQ6yTd";
+
+    // ==========================================
+    // FUNÇÕES AUXILIARES
+    // ==========================================
 
     function elemento(id) {
       return document.getElementById(id);
@@ -569,13 +577,29 @@
       return true;
     }
 
+    // ==========================================
+    // PREENCHER DADOS DA CAMPANHA
+    // ==========================================
+
     function preencherCampanha(campanha) {
       const detalhes = campanha.detalhes || {};
       const personagem = detalhes.personagem || {};
       const universo = detalhes.universo || {};
       const papel = detalhes.papel || "";
 
+      // ========================================
+      // MODALIDADE: TRANSMITIDA OU OFFLINE
+      // ========================================
+
+      const offline =
+        detalhes.modalidade === "offline";
+
+      // Campanhas antigas, sem modalidade
+      // cadastrada, são consideradas transmitidas.
+
+      // ========================================
       // APRESENTAÇÃO PRINCIPAL
+      // ========================================
 
       mostrarTexto(
         "campanha-titulo",
@@ -584,11 +608,13 @@
 
       mostrarTexto(
         "campanha-categoria",
-        campanha.categoria === "rpg-proprio"
-          ? "🎲 RPG no meu canal"
-          : campanha.categoria === "rpg-externo"
-            ? "🧙 RPG em outros canais"
-            : ""
+        offline
+          ? "🎲 Campanha offline"
+          : campanha.categoria === "rpg-proprio"
+            ? "🎲 RPG no meu canal"
+            : campanha.categoria === "rpg-externo"
+              ? "🧙 RPG em outros canais"
+              : ""
       );
 
       mostrarTexto(
@@ -598,9 +624,11 @@
           : ""
       );
 
+      // Campanhas offline não mostram canal.
+
       mostrarTexto(
         "campanha-canal",
-        campanha.canal
+        !offline && campanha.canal
           ? "📺 Canal: " + campanha.canal
           : ""
       );
@@ -616,11 +644,16 @@
         "Capa de " + (campanha.titulo || "campanha")
       );
 
-      adicionarLink(
-        "campanha-links-principais",
-        campanha.link,
-        "▶ Acompanhar campanha"
-      );
+      // Campanhas offline não exibem
+      // botão de transmissão.
+
+      if (!offline) {
+        adicionarLink(
+          "campanha-links-principais",
+          campanha.link,
+          "▶ Acompanhar campanha"
+        );
+      }
 
       document.title =
         (campanha.titulo || "Campanha") +
@@ -753,9 +786,17 @@
         );
       }
 
+      // ========================================
+      // EXIBIR CONTEÚDO
+      // ========================================
+
       elemento("campanha-carregando").hidden = true;
       elemento("campanha-conteudo").hidden = false;
     }
+
+    // ==========================================
+    // CARREGAR CAMPANHA DO SUPABASE
+    // ==========================================
 
     async function carregarCampanha() {
       const parametros = new URLSearchParams(
