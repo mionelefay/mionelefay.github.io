@@ -5,9 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#100b1d">
-
   <title>Painel Administrativo | Mione Le Fay</title>
-
   <link rel="stylesheet" href="style.css">
 
   <script
@@ -18,13 +16,8 @@
   <script src="situacoes-admin.js" defer></script>
 
   <style>
-    [hidden] {
-      display: none !important;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
+    [hidden] { display: none !important; }
+    * { box-sizing: border-box; }
 
     .admin-container {
       max-width: 1000px;
@@ -35,34 +28,27 @@
       border-radius: 18px;
       color: #fff;
     }
-
     .admin-container h1 {
       margin-bottom: 12px;
       color: #e8c7ff;
     }
-
     .admin-container h2,
     .admin-container h3 {
       color: #e8c7ff;
       margin: 24px 0 16px;
     }
-
-    .admin-container p {
-      margin-bottom: 20px;
-    }
+    .admin-container p { margin-bottom: 20px; }
 
     .admin-form {
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
-
     .admin-form label {
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
-
     .admin-form input,
     .admin-form select,
     .admin-form textarea {
@@ -74,19 +60,16 @@
       color: white;
       font: inherit;
     }
-
     .admin-form textarea {
       resize: vertical;
       min-height: 100px;
     }
-
     .admin-form input:focus,
     .admin-form select:focus,
     .admin-form textarea:focus {
       outline: 2px solid #a66de0;
       outline-offset: 2px;
     }
-
     .admin-form button,
     .admin-botao {
       padding: 13px 18px;
@@ -98,30 +81,23 @@
       font-weight: bold;
       cursor: pointer;
     }
-
     .admin-form button:hover,
-    .admin-botao:hover {
-      background: #c39af0;
-    }
-
+    .admin-botao:hover { background: #c39af0; }
     button:disabled {
       opacity: 0.6;
       cursor: wait;
     }
-
     .admin-mensagem,
     .mensagem-formulario {
       margin-top: 16px;
       color: #e8c7ff;
     }
-
     .admin-abas {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       margin: 28px 0;
     }
-
     .admin-abas button {
       padding: 12px 16px;
       border: 1px solid #7956a0;
@@ -131,13 +107,11 @@
       font: inherit;
       cursor: pointer;
     }
-
     .admin-abas button.ativo {
       background: #a66de0;
       color: #100b1d;
       font-weight: bold;
     }
-
     .admin-secao {
       padding: 24px;
       border: 1px solid #68458a;
@@ -145,17 +119,12 @@
       background: #291b3b;
       margin-bottom: 24px;
     }
-
     .admin-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 16px;
     }
-
-    .admin-campo-inteiro {
-      grid-column: 1 / -1;
-    }
-
+    .admin-campo-inteiro { grid-column: 1 / -1; }
     .admin-checkbox {
       display: flex !important;
       flex-direction: row !important;
@@ -163,37 +132,31 @@
       gap: 10px;
       cursor: pointer;
     }
-
     .admin-checkbox input {
       width: auto;
       accent-color: #a66de0;
     }
-
     .admin-ajuda {
       font-size: 0.9rem;
       color: #c9b6dd;
     }
-
     .admin-lista {
       display: grid;
       gap: 12px;
       margin-top: 20px;
     }
-
     .admin-item {
       padding: 18px;
       background: #100b1d;
       border: 1px solid #68458a;
       border-radius: 10px;
     }
-
     .admin-acoes {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       margin-top: 14px;
     }
-
     .admin-acoes button {
       padding: 9px 13px;
       border: 1px solid #7956a0;
@@ -202,18 +165,15 @@
       color: white;
       cursor: pointer;
     }
-
     .admin-perigo {
       border-color: #bc6574 !important;
       color: #ffbec7 !important;
     }
-
     .admin-divisor {
       margin: 28px 0;
       border: none;
       border-top: 1px solid #68458a;
     }
-
     #sair {
       margin-top: 24px;
       padding: 12px 18px;
@@ -224,12 +184,7 @@
       font: inherit;
       cursor: pointer;
     }
-
-    #sair:hover {
-      background: #342348;
-    }
-
-    /* NOVOS FILTROS DO GERENCIAR */
+    #sair:hover { background: #342348; }
 
     .gerenciar-filtros {
       padding: 20px;
@@ -237,20 +192,17 @@
       border-radius: 12px;
       background: #211631;
     }
-
     .gerenciar-filtros-titulo {
       margin: 0 0 16px !important;
       color: #e8c7ff;
       font-size: 1rem;
       font-weight: bold;
     }
-
     .gerenciar-filtros-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 16px;
     }
-
     .gerenciar-filtros label {
       display: flex;
       flex-direction: column;
@@ -258,7 +210,6 @@
       color: #e8c7ff;
       font-size: 0.95rem;
     }
-
     .gerenciar-filtros input,
     .gerenciar-filtros select {
       width: 100%;
@@ -270,29 +221,22 @@
       color: #fff;
       font: inherit;
     }
-
     .gerenciar-filtros input:focus,
     .gerenciar-filtros select:focus {
       outline: 2px solid #a66de0;
       outline-offset: 2px;
     }
-
     .gerenciar-filtros select:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
-
-    .gerenciar-busca {
-      margin-top: 16px;
-    }
-
+    .gerenciar-busca { margin-top: 16px; }
     .gerenciar-filtros-acoes {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       margin-top: 18px;
     }
-
     .gerenciar-filtros-acoes button {
       padding: 12px 16px;
       border: 1px solid #7956a0;
@@ -303,26 +247,21 @@
       font-weight: bold;
       cursor: pointer;
     }
-
     .gerenciar-filtros-acoes button:hover {
       background: #c39af0;
     }
-
     .gerenciar-filtros-acoes .gerenciar-botao-secundario {
       background: #342348;
       color: #fff;
     }
-
     .gerenciar-filtros-acoes .gerenciar-botao-secundario:hover {
       background: #50366b;
     }
-
     .gerenciar-resumo {
       margin: 20px 0 0 !important;
       color: #c9b6dd;
       font-size: 0.9rem;
     }
-
     .gerenciar-paginacao {
       display: flex;
       justify-content: center;
@@ -331,7 +270,6 @@
       gap: 12px;
       margin-top: 24px;
     }
-
     .gerenciar-paginacao button {
       padding: 10px 15px;
       border: 1px solid #7956a0;
@@ -341,16 +279,13 @@
       font: inherit;
       cursor: pointer;
     }
-
     .gerenciar-paginacao button:hover:not(:disabled) {
       background: #50366b;
     }
-
     .gerenciar-paginacao button:disabled {
       opacity: 0.4;
       cursor: not-allowed;
     }
-
     .gerenciar-pagina-atual {
       color: #e8c7ff;
       font-size: 0.95rem;
@@ -362,42 +297,22 @@
         margin: 24px 12px;
         padding: 18px;
       }
-
-      .admin-secao {
-        padding: 16px;
-      }
-
+      .admin-secao { padding: 16px; }
       .admin-grid,
       .gerenciar-filtros-grid {
         grid-template-columns: 1fr;
       }
-
-      .admin-campo-inteiro {
-        grid-column: auto;
-      }
-
-      .admin-abas button {
-        flex: 1 1 45%;
-      }
-
-      .gerenciar-filtros {
-        padding: 14px;
-      }
-
-      .gerenciar-filtros-acoes button {
-        flex: 1 1 100%;
-      }
+      .admin-campo-inteiro { grid-column: auto; }
+      .admin-abas button { flex: 1 1 45%; }
+      .gerenciar-filtros { padding: 14px; }
+      .gerenciar-filtros-acoes button { flex: 1 1 100%; }
     }
   </style>
 </head>
 
 <body>
-
   <header class="topo">
-    <a class="logo" href="index.html">
-      ✦ MIONE LE FAY
-    </a>
-
+    <a class="logo" href="index.html">✦ MIONE LE FAY</a>
     <nav aria-label="Menu principal">
       <a href="index.html">Voltar ao site</a>
     </nav>
@@ -405,123 +320,77 @@
 
   <main>
     <section class="admin-container">
-
       <p class="destaque">ÁREA RESTRITA</p>
-
       <h1>🔐 Painel Administrativo</h1>
-
-      <p>
-        Gerencie sua agenda, campanhas e disponibilidade.
-      </p>
+      <p>Gerencie sua agenda, campanhas e disponibilidade.</p>
 
       <!-- LOGIN -->
-
       <form id="login-form" class="admin-form">
-
         <label for="admin-email">
           E-mail
-          <input
-            type="email"
-            id="admin-email"
-            autocomplete="username"
-            required
-          >
+          <input type="email" id="admin-email"
+                 autocomplete="username" required>
         </label>
 
         <label for="admin-senha">
           Senha
-          <input
-            type="password"
-            id="admin-senha"
-            autocomplete="current-password"
-            required
-          >
+          <input type="password" id="admin-senha"
+                 autocomplete="current-password" required>
         </label>
 
         <button type="submit" id="entrar">
           Entrar no painel
         </button>
-
       </form>
 
-      <p
-        id="admin-mensagem"
-        class="admin-mensagem"
-        role="status"
-        aria-live="polite"
-        hidden
-      ></p>
+      <p id="admin-mensagem" class="admin-mensagem"
+         role="status" aria-live="polite" hidden></p>
 
       <!-- ÁREA ADMINISTRATIVA -->
-
       <section id="area-admin" hidden>
-
         <h2>Bem-vinda ao painel! 💜</h2>
+        <p>Escolha o que deseja administrar.</p>
 
-        <p>
-          Escolha o que deseja administrar.
-        </p>
-
-        <!-- NAVEGAÇÃO -->
-
-        <nav class="admin-abas" aria-label="Seções administrativas">
-
-          <button
-            type="button"
-            class="ativo"
-            data-aba="aba-eventos"
-            aria-controls="aba-eventos"
-          >
+        <nav class="admin-abas"
+             aria-label="Seções administrativas">
+          <button type="button" class="ativo"
+                  data-aba="aba-eventos"
+                  aria-controls="aba-eventos">
             📅 Compromissos
           </button>
 
-          <button
-            type="button"
-            data-aba="aba-campanhas"
-            aria-controls="aba-campanhas"
-          >
+          <button type="button"
+                  data-aba="aba-campanhas"
+                  aria-controls="aba-campanhas">
             🎲 Campanhas
           </button>
 
-          <button
-            type="button"
-            data-aba="aba-recorrencia"
-            aria-controls="aba-recorrencia"
-          >
+          <button type="button"
+                  data-aba="aba-recorrencia"
+                  aria-controls="aba-recorrencia">
             🔁 Recorrência
           </button>
 
-          <button
-            type="button"
-            data-aba="aba-gerenciar"
-            aria-controls="aba-gerenciar"
-          >
+          <button type="button"
+                  data-aba="aba-gerenciar"
+                  aria-controls="aba-gerenciar">
             🗂️ Gerenciar
           </button>
-
         </nav>
 
         <!-- CADASTRO DE COMPROMISSOS -->
-
-        <section
-          id="aba-eventos"
-          class="admin-secao"
-        >
-
+        <section id="aba-eventos" class="admin-secao">
           <h3>📅 Cadastrar compromisso</h3>
-
           <p class="admin-ajuda">
             Cadastre uma live, participação, cobertura de
             evento, trabalho ou período de indisponibilidade.
           </p>
 
           <form id="evento-form" class="admin-form">
-
             <div class="admin-grid">
-
-              <label class="admin-campo-inteiro" for="evento-campanha">
+              <label class="admin-campo-inteiro"
+                     for="evento-campanha">
                 Usar campanha cadastrada (opcional)
-
                 <select id="evento-campanha">
                   <option value="">
                     Nenhuma, compromisso independente
@@ -529,212 +398,132 @@
                 </select>
               </label>
 
-              <label class="admin-campo-inteiro" for="evento-titulo">
+              <label class="admin-campo-inteiro"
+                     for="evento-titulo">
                 Título
-
-                <input
-                  type="text"
-                  id="evento-titulo"
-                  required
-                >
+                <input type="text" id="evento-titulo" required>
               </label>
 
               <label for="evento-categoria">
                 Categoria
-
                 <select id="evento-categoria" required>
                   <option value="">Selecione</option>
-
                   <option value="rpg-proprio">
                     🎲 RPG no meu canal
                   </option>
-
                   <option value="rpg-externo">
                     🧙 RPG em outros canais
                   </option>
-
-                  <option value="podcast">
-                    🎙️ Podcasts
-                  </option>
-
-                  <option value="jogos">
-                    🎮 Jogos
-                  </option>
-
-                  <option value="video">
-                    🎬 Vídeos
-                  </option>
-
-                  <option value="evento">
-                    🎪 Evento externo
-                  </option>
-
-                  <option value="trabalho">
-                    💼 Trabalho
-                  </option>
-
-                  <option value="ocupado">
-                    🔴 Ocupado
-                  </option>
-
-                  <option value="livre">
-                    🟢 Livre
-                  </option>
+                  <option value="podcast">🎙️ Podcasts</option>
+                  <option value="jogos">🎮 Jogos</option>
+                  <option value="video">🎬 Vídeos</option>
+                  <option value="evento">🎪 Evento externo</option>
+                  <option value="trabalho">💼 Trabalho</option>
+                  <option value="ocupado">🔴 Ocupado</option>
+                  <option value="livre">🟢 Livre</option>
                 </select>
               </label>
 
               <label for="evento-data">
                 Data
-
-                <input
-                  type="date"
-                  id="evento-data"
-                  required
-                >
+                <input type="date" id="evento-data" required>
               </label>
 
               <label for="evento-hora">
                 Horário
-
-                <input
-                  type="time"
-                  id="evento-hora"
-                  required
-                >
+                <input type="time" id="evento-hora" required>
               </label>
 
               <label for="evento-turno">
                 Turno
-
                 <select id="evento-turno">
                   <option value="">
                     Automático pelo horário
                   </option>
-
                   <option value="manha">
                     ☀️ Manhã (06h às 12h)
                   </option>
-
                   <option value="tarde">
                     🌤️ Tarde (12h às 18h)
                   </option>
-
                   <option value="noite">
                     🌙 Noite (18h à meia-noite)
                   </option>
                 </select>
               </label>
 
-              <label
-                class="admin-checkbox admin-campo-inteiro"
-                for="evento-bloqueia-turno"
-              >
-                <input
-                  type="checkbox"
-                  id="evento-bloqueia-turno"
-                  checked
-                >
-
+              <label class="admin-checkbox admin-campo-inteiro"
+                     for="evento-bloqueia-turno">
+                <input type="checkbox"
+                       id="evento-bloqueia-turno" checked>
                 Este compromisso ocupa o turno inteiro
               </label>
 
               <label for="evento-canal">
                 Canal ou local
-
-                <input
-                  type="text"
-                  id="evento-canal"
-                >
+                <input type="text" id="evento-canal">
               </label>
 
               <label for="evento-narrador">
                 Narrador(a), se for RPG
-
-                <input
-                  type="text"
-                  id="evento-narrador"
-                >
+                <input type="text" id="evento-narrador">
               </label>
 
-              <label class="admin-campo-inteiro" for="evento-sinopse">
+              <label class="admin-campo-inteiro"
+                     for="evento-sinopse">
                 Sinopse ou descrição
-
-                <textarea
-                  id="evento-sinopse"
-                  rows="4"
-                ></textarea>
+                <textarea id="evento-sinopse"
+                          rows="4"></textarea>
               </label>
 
-              <label class="admin-campo-inteiro" for="evento-imagem">
+              <label class="admin-campo-inteiro"
+                     for="evento-imagem">
                 URL da imagem
-
-                <input
-                  type="url"
-                  id="evento-imagem"
-                  placeholder="https://..."
-                >
+                <input type="url" id="evento-imagem"
+                       placeholder="https://...">
               </label>
 
-              <label class="admin-campo-inteiro" for="evento-link">
+              <label class="admin-campo-inteiro"
+                     for="evento-link">
                 Link da transmissão ou evento
-
-                <input
-                  type="url"
-                  id="evento-link"
-                  placeholder="https://..."
-                >
+                <input type="url" id="evento-link"
+                       placeholder="https://...">
               </label>
 
-              <label class="admin-campo-inteiro" for="evento-status">
+              <label class="admin-campo-inteiro"
+                     for="evento-status">
                 Situação
-
                 <select id="evento-status">
                   <option value="agendada">
                     Rascunho (não publicado)
                   </option>
-
                   <option value="publicada">
                     Publicado no calendário
                   </option>
                 </select>
               </label>
-
             </div>
 
             <button type="submit" id="salvar-evento">
               💾 Salvar compromisso
             </button>
 
-            <button
-              type="button"
-              id="cancelar-edicao-evento"
-              class="admin-botao"
-              hidden
-            >
+            <button type="button"
+                    id="cancelar-edicao-evento"
+                    class="admin-botao" hidden>
               Cancelar edição
             </button>
-
           </form>
 
-          <p
-            id="evento-mensagem"
-            class="mensagem-formulario"
-            role="status"
-            aria-live="polite"
-          ></p>
-
+          <p id="evento-mensagem"
+             class="mensagem-formulario"
+             role="status" aria-live="polite"></p>
         </section>
 
         <!-- BIBLIOTECA DE CAMPANHAS -->
-
-        <section
-          id="aba-campanhas"
-          class="admin-secao"
-          hidden
-        >
-
+        <section id="aba-campanhas"
+                 class="admin-secao" hidden>
           <h3>🎲 Biblioteca de campanhas</h3>
-
           <p class="admin-ajuda">
             Cadastre uma campanha uma única vez.
             Suas sessões futuras poderão reutilizar
@@ -742,293 +531,242 @@
           </p>
 
           <form id="campanha-form" class="admin-form">
-
             <label for="campanha-titulo">
               Nome da campanha
-
-              <input
-                type="text"
-                id="campanha-titulo"
-                required
-              >
+              <input type="text"
+                     id="campanha-titulo" required>
             </label>
 
             <label for="campanha-categoria">
               Categoria
-
               <select id="campanha-categoria" required>
                 <option value="">Selecione</option>
-
                 <option value="rpg-proprio">
                   🎲 RPG no meu canal
                 </option>
-
                 <option value="rpg-externo">
                   🧙 RPG em outros canais
                 </option>
               </select>
             </label>
-            <label for="campanha-papel">
-  Meu papel na campanha
 
-  <select id="campanha-papel">
-    <option value="">Selecione seu papel</option>
-    <option value="narradora">🎲 Narradora</option>
-    <option value="jogadora">🧙 Jogadora</option>
-    <option value="ambos">✨ Narradora e jogadora</option>
-  </select>
-</label>
+            <label for="campanha-papel">
+              Meu papel na campanha
+              <select id="campanha-papel">
+                <option value="">Selecione seu papel</option>
+                <option value="narradora">
+                  🎲 Narradora
+                </option>
+                <option value="jogadora">
+                  🧙 Jogadora
+                </option>
+                <option value="ambos">
+                  ✨ Narradora e jogadora
+                </option>
+              </select>
+            </label>
+
+            <!-- NOVO: STATUS DA CAMPANHA -->
+            <label for="campanha-status">
+              Status da campanha
+              <select id="campanha-status" required>
+                <option value="em_andamento">
+                  🟢 Em andamento
+                </option>
+                <option value="pausada">
+                  🟡 Pausada
+                </option>
+                <option value="finalizada">
+                  🏁 Finalizada
+                </option>
+              </select>
+            </label>
+
+            <p class="admin-ajuda">
+              Somente campanhas em andamento aparecerão
+              no carrossel do site. Campanhas pausadas
+              ou finalizadas continuarão cadastradas
+              e terão suas páginas individuais preservadas.
+            </p>
 
             <label for="campanha-narrador">
               Narrador(a)
-
-              <input
-                type="text"
-                id="campanha-narrador"
-              >
+              <input type="text" id="campanha-narrador">
             </label>
 
             <label for="campanha-canal">
               Canal
-
-              <input
-                type="text"
-                id="campanha-canal"
-              >
+              <input type="text" id="campanha-canal">
             </label>
 
             <label for="campanha-sinopse">
               Sinopse
-
-              <textarea
-                id="campanha-sinopse"
-                rows="5"
-              ></textarea>
+              <textarea id="campanha-sinopse"
+                        rows="5"></textarea>
             </label>
 
             <label for="campanha-imagem">
               URL da imagem
-
-              <input
-                type="url"
-                id="campanha-imagem"
-                placeholder="https://..."
-              >
+              <input type="url" id="campanha-imagem"
+                     placeholder="https://...">
             </label>
 
             <label for="campanha-link">
               Link principal
-
-              <input
-                type="url"
-                id="campanha-link"
-                placeholder="https://..."
-              >
+              <input type="url" id="campanha-link"
+                     placeholder="https://...">
             </label>
-            
-<div
-  id="campanha-secao-personagem"
-  class="admin-campo-inteiro"
-  hidden
->
-  <hr class="admin-divisor">
 
-  <h3>🧙 Minha Personagem</h3>
+            <!-- MINHA PERSONAGEM -->
+            <div id="campanha-secao-personagem"
+                 class="admin-campo-inteiro" hidden>
+              <hr class="admin-divisor">
+              <h3>🧙 Minha Personagem</h3>
 
-  <p class="admin-ajuda">
-    Informações sobre sua personagem nesta campanha.
-    O resumo aparecerá no site, enquanto a história
-    completa poderá ser acessada por um link externo.
-  </p>
+              <p class="admin-ajuda">
+                Informações sobre sua personagem nesta campanha.
+                O resumo aparecerá no site, enquanto a história
+                completa poderá ser acessada por um link externo.
+              </p>
 
-  <div class="admin-form">
+              <div class="admin-form">
+                <label for="campanha-personagem-nome">
+                  Nome da personagem
+                  <input type="text"
+                         id="campanha-personagem-nome">
+                </label>
 
-    <label for="campanha-personagem-nome">
-      Nome da personagem
-      <input
-        type="text"
-        id="campanha-personagem-nome"
-      >
-    </label>
+                <label for="campanha-personagem-imagem">
+                  URL da imagem da personagem
+                  <input type="url"
+                         id="campanha-personagem-imagem"
+                         placeholder="https://...">
+                </label>
 
-    <label for="campanha-personagem-imagem">
-      URL da imagem da personagem
-      <input
-        type="url"
-        id="campanha-personagem-imagem"
-        placeholder="https://..."
-      >
-    </label>
+                <label for="campanha-personagem-raca">
+                  Raça ou espécie
+                  <input type="text"
+                         id="campanha-personagem-raca">
+                </label>
 
-    <label for="campanha-personagem-raca">
-      Raça ou espécie
-      <input
-        type="text"
-        id="campanha-personagem-raca"
-      >
-    </label>
+                <label for="campanha-personagem-classe">
+                  Classe ou profissão
+                  <input type="text"
+                         id="campanha-personagem-classe">
+                </label>
 
-    <label for="campanha-personagem-classe">
-      Classe ou profissão
-      <input
-        type="text"
-        id="campanha-personagem-classe"
-      >
-    </label>
+                <label for="campanha-personagem-apresentacao">
+                  Apresentação da personagem
+                  <textarea
+                    id="campanha-personagem-apresentacao"
+                    rows="3"></textarea>
+                </label>
 
-    <label for="campanha-personagem-apresentacao">
-      Apresentação da personagem
-      <textarea
-        id="campanha-personagem-apresentacao"
-        rows="3"
-      ></textarea>
-    </label>
+                <label for="campanha-personagem-resumo">
+                  Resumo da história
+                  <textarea
+                    id="campanha-personagem-resumo"
+                    rows="6"></textarea>
+                </label>
 
-    <label for="campanha-personagem-resumo">
-      Resumo da história
-      <textarea
-        id="campanha-personagem-resumo"
-        rows="6"
-      ></textarea>
-    </label>
+                <label for="campanha-personagem-pdf">
+                  Link da história completa (PDF externo)
+                  <input type="url"
+                         id="campanha-personagem-pdf"
+                         placeholder="https://...">
+                </label>
+              </div>
+            </div>
 
-    <label for="campanha-personagem-pdf">
-      Link da história completa (PDF externo)
-      <input
-        type="url"
-        id="campanha-personagem-pdf"
-        placeholder="https://..."
-      >
-    </label>
+            <!-- UNIVERSO E MATERIAIS -->
+            <div id="campanha-secao-narradora"
+                 class="admin-campo-inteiro" hidden>
+              <hr class="admin-divisor">
+              <h3>📜 Universo e Materiais da Campanha</h3>
 
-  </div>
-</div>
+              <p class="admin-ajuda">
+                Apresente o universo da campanha e disponibilize
+                sistemas próprios, documentos e materiais extras
+                para quem acompanha suas aventuras.
+              </p>
 
+              <div class="admin-form">
+                <label for="campanha-universo-sistema">
+                  Sistema de RPG utilizado
+                  <input type="text"
+                         id="campanha-universo-sistema"
+                         placeholder="Ex.: Sistema próprio, Tormenta 20...">
+                </label>
 
-<div
-  id="campanha-secao-narradora"
-  class="admin-campo-inteiro"
-  hidden
->
-  <hr class="admin-divisor">
+                <label for="campanha-universo-lore">
+                  História e ambientação do universo
+                  <textarea id="campanha-universo-lore"
+                            rows="8"
+                            placeholder="Conte sobre o cenário, a história e os elementos importantes do universo..."></textarea>
+                </label>
 
-  <h3>📜 Universo e Materiais da Campanha</h3>
+                <label for="campanha-universo-sistema-url">
+                  Link para o sistema de RPG
+                  <input type="url"
+                         id="campanha-universo-sistema-url"
+                         placeholder="https://...">
+                </label>
 
-  <p class="admin-ajuda">
-    Apresente o universo da campanha e disponibilize
-    sistemas próprios, documentos e materiais extras
-    para quem acompanha suas aventuras.
-  </p>
+                <label for="campanha-universo-materiais-url">
+                  Link para materiais complementares
+                  <input type="url"
+                         id="campanha-universo-materiais-url"
+                         placeholder="https://...">
+                </label>
 
-  <div class="admin-form">
-
-    <label for="campanha-universo-sistema">
-      Sistema de RPG utilizado
-      <input
-        type="text"
-        id="campanha-universo-sistema"
-        placeholder="Ex.: Sistema próprio, Tormenta 20..."
-      >
-    </label>
-
-    <label for="campanha-universo-lore">
-      História e ambientação do universo
-      <textarea
-        id="campanha-universo-lore"
-        rows="8"
-        placeholder="Conte sobre o cenário, a história e os elementos importantes do universo..."
-      ></textarea>
-    </label>
-
-    <label for="campanha-universo-sistema-url">
-      Link para o sistema de RPG
-      <input
-        type="url"
-        id="campanha-universo-sistema-url"
-        placeholder="https://..."
-      >
-    </label>
-
-    <label for="campanha-universo-materiais-url">
-      Link para materiais complementares
-      <input
-        type="url"
-        id="campanha-universo-materiais-url"
-        placeholder="https://..."
-      >
-    </label>
-
-    <label for="campanha-universo-materiais-descricao">
-      Descrição dos materiais
-      <textarea
-        id="campanha-universo-materiais-descricao"
-        rows="3"
-        placeholder="Ex.: Mapas, fichas, documentos e arquivos extras..."
-      ></textarea>
-    </label>
-
-  </div>
-</div>
+                <label for="campanha-universo-materiais-descricao">
+                  Descrição dos materiais
+                  <textarea
+                    id="campanha-universo-materiais-descricao"
+                    rows="3"
+                    placeholder="Ex.: Mapas, fichas, documentos e arquivos extras..."></textarea>
+                </label>
+              </div>
+            </div>
 
             <button type="submit" id="salvar-campanha">
               💾 Salvar campanha
             </button>
 
-            <button
-              type="button"
-              id="cancelar-edicao-campanha"
-              hidden
-            >
+            <button type="button"
+                    id="cancelar-edicao-campanha"
+                    hidden>
               Cancelar edição
             </button>
-
           </form>
 
-          <p
-            id="campanha-mensagem"
-            class="mensagem-formulario"
-            role="status"
-            aria-live="polite"
-          ></p>
+          <p id="campanha-mensagem"
+             class="mensagem-formulario"
+             role="status" aria-live="polite"></p>
 
           <hr class="admin-divisor">
-
           <h3>Campanhas cadastradas</h3>
 
-          <div
-            id="lista-campanhas"
-            class="admin-lista"
-            aria-live="polite"
-          >
+          <div id="lista-campanhas"
+               class="admin-lista"
+               aria-live="polite">
             <p>Nenhuma campanha carregada.</p>
           </div>
-
         </section>
 
         <!-- AGENDAMENTO RECORRENTE -->
-
-        <section
-          id="aba-recorrencia"
-          class="admin-secao"
-          hidden
-        >
-
+        <section id="aba-recorrencia"
+                 class="admin-secao" hidden>
           <h3>🔁 Agendar várias sessões</h3>
-
           <p class="admin-ajuda">
             Selecione uma campanha e gere sessões
             semanais, quinzenais ou mensais.
           </p>
 
           <form id="recorrencia-form" class="admin-form">
-
             <label for="recorrencia-campanha">
               Campanha
-
-              <select
-                id="recorrencia-campanha"
-                required
-              >
+              <select id="recorrencia-campanha" required>
                 <option value="">
                   Selecione uma campanha cadastrada
                 </option>
@@ -1036,39 +774,27 @@
             </label>
 
             <div class="admin-grid">
-
               <label for="recorrencia-inicio">
                 Data da primeira sessão
-
-                <input
-                  type="date"
-                  id="recorrencia-inicio"
-                  required
-                >
+                <input type="date"
+                       id="recorrencia-inicio" required>
               </label>
 
               <label for="recorrencia-hora">
                 Horário
-
-                <input
-                  type="time"
-                  id="recorrencia-hora"
-                  required
-                >
+                <input type="time"
+                       id="recorrencia-hora" required>
               </label>
 
               <label for="recorrencia-frequencia">
                 Frequência
-
                 <select id="recorrencia-frequencia">
                   <option value="semanal">
                     Semanal (7 dias)
                   </option>
-
                   <option value="quinzenal">
                     Quinzenal (14 dias)
                   </option>
-
                   <option value="mensal">
                     Mensal
                   </option>
@@ -1077,33 +803,24 @@
 
               <label for="recorrencia-quantidade">
                 Quantidade de sessões
-
-                <input
-                  type="number"
-                  id="recorrencia-quantidade"
-                  min="1"
-                  max="52"
-                  value="6"
-                  required
-                >
+                <input type="number"
+                       id="recorrencia-quantidade"
+                       min="1" max="52"
+                       value="6" required>
               </label>
 
               <label for="recorrencia-turno">
                 Turno
-
                 <select id="recorrencia-turno">
                   <option value="">
                     Automático pelo horário
                   </option>
-
                   <option value="manha">
                     ☀️ Manhã
                   </option>
-
                   <option value="tarde">
                     🌤️ Tarde
                   </option>
-
                   <option value="noite">
                     🌙 Noite
                   </option>
@@ -1112,74 +829,49 @@
 
               <label for="recorrencia-status">
                 Situação das sessões
-
                 <select id="recorrencia-status">
                   <option value="agendada">
                     Rascunho
                   </option>
-
                   <option value="publicada">
                     Publicadas
                   </option>
                 </select>
               </label>
 
-              <label
-                class="admin-checkbox admin-campo-inteiro"
-                for="recorrencia-bloqueia-turno"
-              >
-                <input
-                  type="checkbox"
-                  id="recorrencia-bloqueia-turno"
-                  checked
-                >
-
+              <label class="admin-checkbox admin-campo-inteiro"
+                     for="recorrencia-bloqueia-turno">
+                <input type="checkbox"
+                       id="recorrencia-bloqueia-turno"
+                       checked>
                 Cada sessão ocupa o turno inteiro
               </label>
-
             </div>
 
-            <button
-              type="button"
-              id="previsualizar-recorrencia"
-              class="admin-botao"
-            >
+            <button type="button"
+                    id="previsualizar-recorrencia"
+                    class="admin-botao">
               👀 Conferir datas
             </button>
 
-            <div
-              id="recorrencia-previa"
-              class="admin-lista"
-              aria-live="polite"
-            ></div>
+            <div id="recorrencia-previa"
+                 class="admin-lista"
+                 aria-live="polite"></div>
 
-            <button
-              type="submit"
-              id="salvar-recorrencia"
-              disabled
-            >
+            <button type="submit"
+                    id="salvar-recorrencia" disabled>
               💾 Salvar sessões
             </button>
-
           </form>
 
-          <p
-            id="recorrencia-mensagem"
-            class="mensagem-formulario"
-            role="status"
-            aria-live="polite"
-          ></p>
-
+          <p id="recorrencia-mensagem"
+             class="mensagem-formulario"
+             role="status" aria-live="polite"></p>
         </section>
 
         <!-- GERENCIAMENTO DE EVENTOS -->
-
-        <section
-          id="aba-gerenciar"
-          class="admin-secao"
-          hidden
-        >
-
+        <section id="aba-gerenciar"
+                 class="admin-secao" hidden>
           <h3>🗂️ Gerenciar compromissos</h3>
 
           <p class="admin-ajuda">
@@ -1188,28 +880,19 @@
             ou exclua registros quando necessário.
           </p>
 
-          <!-- NOVOS FILTROS -->
-
           <div class="gerenciar-filtros">
-
             <p class="gerenciar-filtros-titulo">
               🔎 Filtrar compromissos
             </p>
 
             <div class="gerenciar-filtros-grid">
-
               <label for="gerenciar-filtro">
                 Situação
-
                 <select id="gerenciar-filtro">
-                  <option value="todos">
-                    Todos
-                  </option>
-
+                  <option value="todos">Todos</option>
                   <option value="publicada">
                     Publicados
                   </option>
-
                   <option value="agendada">
                     Rascunhos
                   </option>
@@ -1218,44 +901,34 @@
 
               <label for="gerenciar-categoria">
                 Categoria
-
                 <select id="gerenciar-categoria">
                   <option value="todos">
                     Todas as categorias
                   </option>
-
                   <option value="rpg-proprio">
                     🎲 RPG no meu canal
                   </option>
-
                   <option value="rpg-externo">
                     🧙 RPG em outros canais
                   </option>
-
                   <option value="podcast">
                     🎙️ Podcasts
                   </option>
-
                   <option value="jogos">
                     🎮 Jogos
                   </option>
-
                   <option value="video">
                     🎬 Vídeos
                   </option>
-
                   <option value="evento">
                     🎪 Evento externo
                   </option>
-
                   <option value="trabalho">
                     💼 Trabalho
                   </option>
-
                   <option value="ocupado">
                     🔴 Ocupado
                   </option>
-
                   <option value="livre">
                     🟢 Livre
                   </option>
@@ -1264,16 +937,13 @@
 
               <label for="gerenciar-periodo">
                 Período
-
                 <select id="gerenciar-periodo">
                   <option value="futuros" selected>
                     Próximos compromissos
                   </option>
-
                   <option value="passados">
                     Já realizados
                   </option>
-
                   <option value="todos">
                     Todos os períodos
                   </option>
@@ -1282,119 +952,76 @@
 
               <label for="gerenciar-campanha">
                 Campanha de RPG
-
-                <select
-                  id="gerenciar-campanha"
-                  disabled
-                >
+                <select id="gerenciar-campanha" disabled>
                   <option value="todas">
                     Todas as campanhas
                   </option>
                 </select>
               </label>
-
             </div>
 
-            <label
-              class="gerenciar-busca"
-              for="gerenciar-busca"
-            >
+            <label class="gerenciar-busca"
+                   for="gerenciar-busca">
               Buscar pelo título
-
-              <input
-                type="search"
-                id="gerenciar-busca"
-                placeholder="Digite o nome da sessão ou compromisso..."
-                autocomplete="off"
-              >
+              <input type="search"
+                     id="gerenciar-busca"
+                     placeholder="Digite o nome da sessão ou compromisso..."
+                     autocomplete="off">
             </label>
 
             <div class="gerenciar-filtros-acoes">
-
-              <button
-                type="button"
-                id="limpar-filtros"
-                class="gerenciar-botao-secundario"
-              >
+              <button type="button"
+                      id="limpar-filtros"
+                      class="gerenciar-botao-secundario">
                 ✖ Limpar filtros
               </button>
 
-              <button
-                type="button"
-                id="atualizar-eventos"
-              >
+              <button type="button"
+                      id="atualizar-eventos">
                 🔄 Atualizar lista
               </button>
-
             </div>
-
           </div>
 
-          <p
-            id="gerenciar-mensagem"
-            class="mensagem-formulario"
-            role="status"
-            aria-live="polite"
-          ></p>
+          <p id="gerenciar-mensagem"
+             class="mensagem-formulario"
+             role="status" aria-live="polite"></p>
 
-          <p
-            id="gerenciar-resumo"
-            class="gerenciar-resumo"
-            role="status"
-            aria-live="polite"
-          ></p>
+          <p id="gerenciar-resumo"
+             class="gerenciar-resumo"
+             role="status" aria-live="polite"></p>
 
-          <!-- LISTA DE COMPROMISSOS -->
-
-          <div
-            id="lista-eventos"
-            class="admin-lista"
-            aria-live="polite"
-          >
+          <div id="lista-eventos"
+               class="admin-lista"
+               aria-live="polite">
             <p>Nenhum compromisso carregado.</p>
           </div>
 
-          <!-- PAGINAÇÃO -->
-
-          <nav
-            id="gerenciar-paginacao"
-            class="gerenciar-paginacao"
-            aria-label="Navegação entre páginas de compromissos"
-            hidden
-          >
-
-            <button
-              type="button"
-              id="gerenciar-anterior"
-              disabled
-            >
+          <nav id="gerenciar-paginacao"
+               class="gerenciar-paginacao"
+               aria-label="Navegação entre páginas de compromissos"
+               hidden>
+            <button type="button"
+                    id="gerenciar-anterior" disabled>
               ← Anterior
             </button>
 
-            <span
-              id="gerenciar-pagina-atual"
-              class="gerenciar-pagina-atual"
-              aria-live="polite"
-            >
+            <span id="gerenciar-pagina-atual"
+                  class="gerenciar-pagina-atual"
+                  aria-live="polite">
               Página 1 de 1
             </span>
 
-            <button
-              type="button"
-              id="gerenciar-proxima"
-              disabled
-            >
+            <button type="button"
+                    id="gerenciar-proxima" disabled>
               Próxima →
             </button>
-
           </nav>
-
         </section>
 
         <button id="sair" type="button">
           Sair da conta
         </button>
-
       </section>
     </section>
   </main>
@@ -1402,6 +1029,5 @@
   <footer>
     <p>💜 Mione Le Fay • Área administrativa</p>
   </footer>
-
 </body>
 </html>
