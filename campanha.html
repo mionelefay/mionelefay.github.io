@@ -40,7 +40,7 @@
 
     .campanha-hero {
       display: grid;
-      grid-template-columns: minmax(240px, 360px) 1fr;
+      grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
       gap: 36px;
       align-items: start;
       margin-bottom: 36px;
@@ -48,6 +48,9 @@
 
     .campanha-capa {
       width: 100%;
+      max-width: 100%;
+      height: auto;
+      max-height: 520px;
       display: block;
       border-radius: 18px;
       border: 1px solid #68458a;
@@ -61,7 +64,8 @@
     }
 
     .campanha-titulo {
-      font-size: clamp(2rem, 5vw, 3.5rem);
+      overflow-wrap: anywhere;
+      font-size: clamp(1.7rem, 5vw, 3.5rem);
       line-height: 1.12;
       margin: 0 0 20px;
       color: #f0d7ff;
@@ -164,6 +168,8 @@
     .personagem-imagem {
       display: block;
       width: 100%;
+      height: auto;
+      max-width: 100%;
       max-height: 450px;
       object-fit: contain;
       border-radius: 10px;
@@ -236,6 +242,11 @@
        RESPONSIVIDADE
     ========================================== */
 
+    @media (max-width: 900px) {
+      .campanha-hero { gap: 22px; }
+      .personagem-layout { gap: 16px; }
+    }
+
     @media (max-width: 720px) {
       .pagina-campanha {
         padding: 28px 16px 60px;
@@ -246,12 +257,15 @@
       }
 
       .campanha-capa {
-        max-width: 440px;
+        max-width: min(100%, 440px);
+        max-height: 420px;
+        object-fit: contain;
         margin: 0 auto;
       }
 
       .campanha-bloco {
         padding: 22px 18px;
+        min-width: 0;
       }
 
       .personagem-layout {
@@ -284,6 +298,14 @@
       .campanha-links .botao {
         width: 100%;
       }
+    }
+    @media (max-width: 420px) {
+      .pagina-campanha { padding-inline: 12px; }
+      .campanha-titulo { font-size: clamp(1.6rem, 8vw, 2.2rem); }
+      .campanha-bloco { padding: 18px 14px; }
+      .personagem-identidade { padding: 18px 14px; }
+      .personagem-nome { font-size: 1.55rem; }
+      .campanha-hero { gap: 18px; }
     }
   </style>
 </head>
@@ -498,19 +520,11 @@
   <script>
     "use strict";
 
-    // ==========================================
-    // CONEXÃO COM O SUPABASE
-    // ==========================================
-
     const SUPABASE_URL =
       "https://gevkvjuaurcxokudlblc.supabase.co";
 
     const SUPABASE_KEY =
       "sb_publishable_4mIXjg7273CgkxJzNGILow_0GyQ6yTd";
-
-    // ==========================================
-    // FUNÇÕES AUXILIARES
-    // ==========================================
 
     function elemento(id) {
       return document.getElementById(id);
@@ -577,29 +591,14 @@
       return true;
     }
 
-    // ==========================================
-    // PREENCHER DADOS DA CAMPANHA
-    // ==========================================
-
     function preencherCampanha(campanha) {
       const detalhes = campanha.detalhes || {};
       const personagem = detalhes.personagem || {};
       const universo = detalhes.universo || {};
       const papel = detalhes.papel || "";
+      const offline = detalhes.modalidade === "offline";
 
-      // ========================================
-      // MODALIDADE: TRANSMITIDA OU OFFLINE
-      // ========================================
-
-      const offline =
-        detalhes.modalidade === "offline";
-
-      // Campanhas antigas, sem modalidade
-      // cadastrada, são consideradas transmitidas.
-
-      // ========================================
       // APRESENTAÇÃO PRINCIPAL
-      // ========================================
 
       mostrarTexto(
         "campanha-titulo",
@@ -611,10 +610,10 @@
         offline
           ? "🎲 Campanha offline"
           : campanha.categoria === "rpg-proprio"
-            ? "🎲 RPG no meu canal"
-            : campanha.categoria === "rpg-externo"
-              ? "🧙 RPG em outros canais"
-              : ""
+          ? "🎲 RPG no meu canal"
+          : campanha.categoria === "rpg-externo"
+            ? "🧙 RPG em outros canais"
+            : ""
       );
 
       mostrarTexto(
@@ -623,8 +622,6 @@
           ? "🎲 Narrador(a): " + campanha.narrador
           : ""
       );
-
-      // Campanhas offline não mostram canal.
 
       mostrarTexto(
         "campanha-canal",
@@ -644,9 +641,6 @@
         "Capa de " + (campanha.titulo || "campanha")
       );
 
-      // Campanhas offline não exibem
-      // botão de transmissão.
-
       if (!offline) {
         adicionarLink(
           "campanha-links-principais",
@@ -664,8 +658,9 @@
       // ========================================
 
       const mostrarPersonagem =
-        papel === "jogadora" ||
-        papel === "ambos";
+        typeof detalhes.exibir_personagem === "boolean"
+          ? detalhes.exibir_personagem
+          : papel === "jogadora" || papel === "ambos";
 
       if (mostrarPersonagem) {
         const temNome = mostrarTexto(
@@ -737,9 +732,8 @@
       // UNIVERSO E MATERIAIS
       // ========================================
 
-      const mostrarUniverso =
-        papel === "narradora" ||
-        papel === "ambos";
+      // Universo e materiais são opcionais e independem do papel.
+      const mostrarUniverso = true;
 
       if (mostrarUniverso) {
         const temSistema = mostrarTexto(
@@ -786,17 +780,9 @@
         );
       }
 
-      // ========================================
-      // EXIBIR CONTEÚDO
-      // ========================================
-
       elemento("campanha-carregando").hidden = true;
       elemento("campanha-conteudo").hidden = false;
     }
-
-    // ==========================================
-    // CARREGAR CAMPANHA DO SUPABASE
-    // ==========================================
 
     async function carregarCampanha() {
       const parametros = new URLSearchParams(
