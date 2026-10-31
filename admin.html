@@ -652,6 +652,13 @@
                      placeholder="https://...">
             </label>
 
+            <!-- PERSONAGEM OPCIONAL, INDEPENDENTE DO PAPEL -->
+            <label class="admin-checkbox" for="campanha-exibir-personagem">
+              <input type="checkbox" id="campanha-exibir-personagem">
+              🧙 Exibir minha personagem nesta campanha
+            </label>
+            <p class="admin-ajuda">Desmarque para ocultar a seção de personagem no site. Os dados cadastrados serão preservados.</p>
+
             <!-- MINHA PERSONAGEM -->
             <div id="campanha-secao-personagem"
                  class="admin-campo-inteiro" hidden>
@@ -713,14 +720,14 @@
               </div>
             </div>
 
-            <!-- UNIVERSO E MATERIAIS -->
+            <!-- UNIVERSO E MATERIAIS: disponível para qualquer papel -->
             <div id="campanha-secao-narradora"
                  class="admin-campo-inteiro" hidden>
               <hr class="admin-divisor">
               <h3>📜 Universo e Materiais da Campanha</h3>
 
               <p class="admin-ajuda">
-                Apresente o universo da campanha e disponibilize
+                Esta seção é opcional para narradoras e jogadoras. Apresente o universo e disponibilize
                 sistemas próprios, documentos e materiais extras
                 para quem acompanha suas aventuras.
               </p>
