@@ -15,6 +15,7 @@
 <script src="admin.js" defer></script>
 <script src="modalidade-admin.js" defer></script>
 <script src="situacoes-admin.js" defer></script>
+<script src="excecoes-admin.js" defer></script>
   
   <style>
     [hidden] { display: none !important; }
@@ -377,7 +378,40 @@
                   aria-controls="aba-gerenciar">
             🗂️ Gerenciar
           </button>
+          <button type="button" data-aba="aba-excecoes" aria-controls="aba-excecoes">🏖️ Disponibilidade</button>
         </nav>
+
+        <!-- EXCEÇÕES DE DISPONIBILIDADE -->
+        <section id="aba-excecoes" class="admin-secao" hidden>
+          <h3>🏖️ Exceções de disponibilidade</h3>
+          <p class="admin-ajuda">Libere turnos em férias, feriados, folgas, recessos e outros períodos. Compromissos publicados continuam ocupando seus turnos.</p>
+          <form id="excecao-form" class="admin-form">
+            <div class="admin-grid">
+              <label>Motivo
+                <select id="excecao-tipo" required>
+                  <option value="ferias">🏖️ Férias</option><option value="feriado">📅 Feriado</option>
+                  <option value="folga">🌿 Folga</option><option value="recesso">🏠 Recesso</option>
+                  <option value="outro">✨ Outro</option>
+                </select>
+              </label>
+              <label>Descrição (opcional)<input id="excecao-descricao" type="text" maxlength="160" placeholder="Ex.: recesso de fim de ano"></label>
+              <label>Data inicial<input id="excecao-inicio" type="date" required></label>
+              <label>Data final (inclusive)<input id="excecao-fim" type="date" required></label>
+            </div>
+            <fieldset style="border:1px solid #7956a0;border-radius:10px;padding:14px">
+              <legend>Turnos que serão liberados</legend>
+              <label class="admin-checkbox"><input type="checkbox" id="excecao-manha" checked> ☀️ Manhã</label>
+              <label class="admin-checkbox"><input type="checkbox" id="excecao-tarde" checked> 🌤️ Tarde</label>
+              <label class="admin-checkbox"><input type="checkbox" id="excecao-noite" checked> 🌙 Noite</label>
+            </fieldset>
+            <button type="submit" id="excecao-salvar">💾 Salvar exceção</button>
+            <button type="button" id="excecao-cancelar" hidden>Cancelar edição</button>
+          </form>
+          <p id="excecao-mensagem" class="mensagem-formulario" role="status" aria-live="polite"></p>
+          <hr class="admin-divisor">
+          <h3>Períodos cadastrados</h3>
+          <div id="excecao-lista" class="admin-lista" aria-live="polite"></div>
+        </section>
 
         <!-- CADASTRO DE COMPROMISSOS -->
         <section id="aba-eventos" class="admin-secao">
