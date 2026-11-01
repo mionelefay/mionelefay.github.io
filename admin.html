@@ -781,10 +781,19 @@
   </select>
 </label>
 
-            <label for="campanha-exibir-personagem" class="admin-campo-inteiro">
-              <input type="checkbox" id="campanha-exibir-personagem">
-              Exibir minha personagem nesta campanha
-            </label>
+            <div class="admin-campo-inteiro">
+  <label for="campanha-exibir-personagem"
+         style="display: flex; flex-direction: row; align-items: center; justify-content: flex-start; gap: 10px; cursor: pointer;">
+
+    <input
+      type="checkbox"
+      id="campanha-exibir-personagem"
+      style="width: 18px; height: 18px; margin: 0; flex: 0 0 18px;"
+    >
+
+    <span>Exibir minha personagem nesta campanha</span>
+  </label>
+</div>
 
             <label for="campanha-status">
               Status da campanha
