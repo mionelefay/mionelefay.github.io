@@ -611,7 +611,7 @@
       const personagem = detalhes.personagem || {};
       const universo = detalhes.universo || {};
       const papel = detalhes.papel || "";
-      const offline = detalhes.modalidade === "offline";
+      const offline = campanha.categoria === "rpg-offline" || detalhes.modalidade === "offline";
 
       // APRESENTAÇÃO PRINCIPAL
 
