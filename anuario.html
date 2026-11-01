@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#100b1d">
+  <title>Anuário de RPG | Mione Le Fay</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="apple-touch-icon" href="favicon-180.png">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js" defer></script>
+  <script src="script.js" defer></script>
+  <script src="google-agenda.js" defer></script>
+  <script src="situacoes-calendario.js" defer></script>
+  <script src="agenda-semanal.js" defer></script>
+  <style>
+    /* Botões da janela de detalhes */
+    .modal-acoes { display:flex; flex-wrap:wrap; align-items:stretch; gap:10px; margin-top:20px; }
+    .modal-acoes .botao { display:inline-flex; justify-content:center; align-items:center; text-align:center; flex:1 1 190px; margin-top:0; min-height:48px; }
+    .modal-acoes .botao[hidden] { display:none; }
+    .botao-google-agenda { background:transparent; border:1px solid #b66cff; color:#f7f1ff; }
+    .botao-google-agenda:hover { background:#392650; }
+    @media (max-width:500px) {
+      .modal-acoes { flex-direction:column; }
+      .modal-acoes .botao { flex:none; width:100%; }
+    }
+
+    /* Banner: mascote e apresentação em áreas separadas, sem sobreposição. */
+    .hero .hero-apresentacao {
+      display:grid !important;
+      grid-template-columns:minmax(125px, 35%) minmax(0, 1fr) !important;
+      align-items:center !important;
+      gap:22px !important;
+      min-width:0 !important;
+      position:relative !important;
+    }
+    .hero .hero-mione {
+      grid-column:1 !important;
+      grid-row:1 !important;
+      position:static !important;
+      inset:auto !important;
+      transform:none !important;
+      float:none !important;
+      display:block !important;
+      width:100% !important;
+      max-width:100% !important;
+      height:auto !important;
+      max-height:360px !important;
+      object-fit:contain !important;
+      margin:0 !important;
+    }
+    .hero .hero-texto {
+      grid-column:2 !important;
+      grid-row:1 !important;
+      position:relative !important;
+      z-index:1 !important;
+      width:auto !important;
+      max-width:none !important;
+      min-width:0 !important;
+      padding:0 !important;
+      margin:0 !important;
+    }
+    .hero .hero-texto h1 { overflow-wrap:break-word; }
+    @media (max-width:1100px) {
+      .hero .hero-apresentacao { grid-template-columns:minmax(110px, 30%) minmax(0,1fr) !important; gap:16px !important; }
+    }
+    @media (max-width:700px) {
+      .hero .hero-apresentacao { grid-template-columns:minmax(0,1fr) !important; justify-items:center !important; gap:20px !important; }
+      .hero .hero-texto { grid-column:1 !important; grid-row:1 !important; width:100% !important; }
+      .hero .hero-mione { grid-column:1 !important; grid-row:2 !important; width:min(260px,75%) !important; max-height:320px !important; margin:0 auto !important; }
+    }
+  </style>
+</head>
+<body>
+<header class="topo">
+    <a class="logo" href="index.html#inicio">✦ MIONE LE FAY</a>
+    <nav aria-label="Menu principal">
+      <a href="index.html#inicio">Início</a>
+      <a href="index.html#agenda">Agenda</a>
+      <a href="index.html#campanhas">Campanhas</a>
+      <a href="anuario.html">🎲 Anuário RPG</a>
+      <a href="index.html#redes">Redes sociais</a>
+      <a href="media-kit.html">Media Kit</a>
+    </nav>
+  </header>
+<main style="max-width:1150px;margin:0 auto;padding:36px 20px 70px">
+<section class="secao" id="anuario-rpg">
+      <p class="destaque">MINHAS AVENTURAS EM NÚMEROS</p>
+      <h2>🎲 Anuário de RPG</h2>
+      <p>Estatísticas automáticas das sessões registradas na agenda.</p>
+      <div id="anuario-rpg-publico" aria-live="polite"><p>Carregando anuário...</p></div>
+    </section>
+</main>
+<footer class="rodape-mione">
+  <div class="rodape-conteudo">
+    <section class="rodape-parceiros" aria-labelledby="rodape-parceiros-titulo">
+      <h2 id="rodape-parceiros-titulo">Coletivo e parceiros</h2>
+      <p class="rodape-legenda">Faço parte do coletivo de criadores de conteúdo <strong>Dados Mágicos</strong>.</p>
+      <div class="rodape-coletivo"><img src="dados-magicos.png" alt="Logo do coletivo Dados Mágicos" loading="lazy" width="230"></div>
+      <p class="rodape-legenda">Marcas parceiras por meio do coletivo</p>
+      <div class="rodape-marcas" aria-label="Marcas parceiras por meio do coletivo Dados Mágicos">
+        <a class="rodape-marca" href="https://newordereditora.com/" target="_blank" rel="noopener noreferrer" aria-label="Visitar Editora New Order"><img src="new-order.png" alt="Logo Editora New Order" loading="lazy"></a>
+        <a class="rodape-marca" href="https://www.huginnemuninn.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Visitar Huginn &amp; Muninn"><img src="huginn-muninn.png" alt="Logo Huginn &amp; Muninn" loading="lazy"></a>
+        <a class="rodape-marca" href="https://triaeditora.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Visitar Tria Editora"><img src="tria-editora.png" alt="Logo Tria Editora" loading="lazy"></a>
+        <a class="rodape-marca" href="https://gyngaeditora.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Visitar Gynga Editora"><img src="gynga-editora.png" alt="Logo Gynga Editora" loading="lazy"></a>
+        <a class="rodape-marca" href="https://worldcraft.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Visitar World of Craft"><img src="world-of-craft.png" alt="Logo World of Craft" loading="lazy"></a>
+      </div>
+    </section>
+    <p class="rodape-assinatura">💜 Mione Le Fay • RPG, jogos e muitas histórias</p>
+  </div>
+</footer>
+<script src="anuario-rpg.js" defer></script>
+</body>
+</html>
