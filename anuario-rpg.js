@@ -7,7 +7,7 @@
   'use strict';
   const URL = 'https://gevkvjuaurcxokudlblc.supabase.co';
   const KEY = 'sb_publishable_4mIXjg7273CgkxJzNGILow_0GyQ6yTd';
-  const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];ac
+  const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   const css = `
     .ar-controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:16px 0}
     .ar-controls select,.ar-edit select{background:#291b3e;color:white;border:1px solid #a778c5;border-radius:8px;padding:9px}
@@ -121,7 +121,7 @@
       const publicados=eventos.filter(e=>e.status==='publicada');const ano=new Date().getFullYear();
       if(publico)montar(publico,campanhas,publicados,ano,false,client);
       if(admin)montar(admin,campanhas,publicados,ano,true,client);
-    }catch(e){console.error('Anuário RPG:',e);(publico||admin).textContent='Não foi possível carregar o anuário. Confira as permissões de leitura e os nomes dos campos no Supabase.';}
+    }catch(e){console.error('Anuário RPG:',e);const msg='Não foi possível carregar o anuário: '+(e?.message||String(e));if(publico)publico.textContent=msg;if(admin)admin.textContent=msg;}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
