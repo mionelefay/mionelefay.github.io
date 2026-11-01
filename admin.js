@@ -32,6 +32,7 @@ const TURNOS = {
 const CATEGORIAS = {
   "rpg-proprio": "🎲 RPG no meu canal",
   "rpg-externo": "🧙 RPG em outros canais",
+  "rpg-offline": "🎲 RPG offline (mesa presencial ou privada)",
   podcast: "🎙️ Podcasts",
   jogos: "🎮 Jogos",
   video: "🎬 Vídeos",
@@ -1817,7 +1818,8 @@ function atualizarCampanhasGerenciar() {
 
   const categoriaRPG =
     categoria === "rpg-proprio" ||
-    categoria === "rpg-externo";
+    categoria === "rpg-externo" ||
+    categoria === "rpg-offline";
 
   seletor.disabled = !categoriaRPG;
 
