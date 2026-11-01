@@ -1740,7 +1740,7 @@ async function iniciarPainel() {
   }
 }
 
-iniciarPainel();
+// A inicialização ocorre após as constantes e funções de gerenciamento.
 
 
 /* ==========================================
@@ -2164,3 +2164,7 @@ carregarCampanhas = async function() {
   await carregarCampanhasOriginal();
   atualizarCampanhasGerenciar();
 };
+
+
+// Inicializa apenas depois de declarar LOTE_CONSULTA e configurar o gerenciamento.
+iniciarPainel();
