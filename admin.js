@@ -409,128 +409,145 @@ campo("login-form").addEventListener(
 );
 
 // ==========================================
-// CATÁLOGO DE SISTEMAS DE RPG
+// OPÇÕES DE CAMPANHAS: SISTEMAS, NARRADORES E CANAIS
 // ==========================================
 let sistemasRpg = [];
+let opcoesCadastradas = [];
 let catalogoSistemasDisponivel = false;
-function chaveSistema(nome) {
-  return String(nome || "").trim().toLocaleLowerCase("pt-BR");
+let catalogoOpcoesDisponivel = false;
+const TIPOS_OPCOES = {
+  sistemas: {campo: 'detalhes.universo.sistema', tabela: 'sistemas_rpg', tipo: 'sistema'},
+  narradores: {campo: 'narrador', tabela: 'opcoes_campanhas', tipo: 'narrador'},
+  canais: {campo: 'canal', tabela: 'opcoes_campanhas', tipo: 'canal'}
+};
+function chaveSistema(nome) { return String(nome || '').trim().toLocaleLowerCase('pt-BR'); }
+function valorOpcao(c, tipo) {
+  if (tipo === 'sistemas') return String(c.detalhes?.universo?.sistema || '').trim();
+  return String(c[tipo === 'narradores' ? 'narrador' : 'canal'] || '').trim();
 }
-function sistemasConhecidos() {
-  const nomes = new Map();
-  for (const sistema of sistemasRpg) {
-    if (sistema.nome) nomes.set(chaveSistema(sistema.nome), sistema.nome);
-  }
-  for (const campanha of campanhas) {
-    const nome = String(campanha.detalhes?.universo?.sistema || "").trim();
-    if (nome && !nomes.has(chaveSistema(nome))) nomes.set(chaveSistema(nome), nome);
-  }
-  return [...nomes.values()].sort((a, b) => a.localeCompare(b, "pt-BR"));
+function catalogoTipo(tipo) {
+  return tipo === 'sistemas' ? sistemasRpg : opcoesCadastradas.filter(o => o.tipo === TIPOS_OPCOES[tipo].tipo);
 }
+function nomesTipo(tipo) {
+  const mapa = new Map();
+  for (const o of catalogoTipo(tipo)) if (o.nome) mapa.set(chaveSistema(o.nome),o.nome);
+  for (const c of campanhas) {
+    const nome = valorOpcao(c,tipo);
+    if (nome && !mapa.has(chaveSistema(nome))) mapa.set(chaveSistema(nome),nome);
+  }
+  return [...mapa.values()].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+}
+function sistemasConhecidos() { return nomesTipo('sistemas'); }
 function atualizarSeletorSistemas(selecionado = null) {
-  const seletor = campo("campanha-universo-sistema");
+  const seletor = campo('campanha-universo-sistema');
   const atual = selecionado === null ? seletor.value : selecionado;
-  seletor.replaceChildren(new Option("Selecione um sistema", ""));
-  for (const nome of sistemasConhecidos()) seletor.add(new Option(nome, nome));
-  // Preserva um valor histórico, mesmo que não esteja mais no catálogo.
-  if (atual && ![...seletor.options].some(o => o.value === atual)) {
-    seletor.add(new Option(atual + " (histórico)", atual));
-  }
-  seletor.value = atual || "";
+  seletor.replaceChildren(new Option('Selecione um sistema',''));
+  for (const nome of sistemasConhecidos()) seletor.add(new Option(nome,nome));
+  if (atual && ![...seletor.options].some(o=>o.value===atual)) seletor.add(new Option(atual+' (histórico)',atual));
+  seletor.value = atual || '';
 }
-function renderizarSistemas() {
-  const lista = campo("sistemas-lista");
-  lista.replaceChildren();
-  for (const sistema of sistemasRpg) {
-    const item = criarElemento("div", undefined, "admin-item");
-    item.append(criarElemento("strong", sistema.nome));
-    const acoes = criarElemento("div", undefined, "admin-acoes");
-    acoes.append(criarBotao("✏️ Renomear", async () => {
-      const novo = prompt("Novo nome do sistema:", sistema.nome)?.trim();
-      if (!novo || novo === sistema.nome) return;
-      if (sistemasConhecidos().some(n => chaveSistema(n) === chaveSistema(novo))) {
-        mensagem("sistemas-mensagem", "Esse nome já existe."); return;
-      }
-      try {
-        await exigirAdministrador();
-        const {error} = await supabaseClient.from("sistemas_rpg")
-          .update({nome: novo}).eq("id", sistema.id);
-        if (error) throw error;
-        // Mesas antigas mantêm o nome histórico até serem editadas individualmente.
-        await carregarSistemasRpg();
-        mensagem("sistemas-mensagem", "Sistema renomeado. Mesas antigas não foram alteradas.");
-      } catch (e) { mensagem("sistemas-mensagem", "Erro: " + e.message); }
-    }));
-    item.append(acoes); lista.append(item);
-  }
-  if (!sistemasRpg.length) lista.append(criarElemento("p", "Nenhum sistema adicionado ao catálogo ainda."));
-
-  // Sistemas antigos podem existir apenas nas campanhas, sem registro no catálogo.
-  const cadastrados = new Set(sistemasRpg.map(s => chaveSistema(s.nome)));
-  const historicos = sistemasConhecidos().filter(nome => !cadastrados.has(chaveSistema(nome)));
-  if (historicos.length) {
-    lista.append(criarElemento("h4", "Sistemas usados em campanhas antigas"));
-    lista.append(criarElemento("p", "Você pode unificar nomes históricos. Isso altera somente o nome do sistema nas campanhas correspondentes, preservando os demais dados."));
-  }
-  for (const nome of historicos) {
-    const item = criarElemento("div", undefined, "admin-item");
-    item.append(criarElemento("strong", nome));
-    const quantidade = campanhas.filter(c => chaveSistema(c.detalhes?.universo?.sistema) === chaveSistema(nome)).length;
-    item.append(criarElemento("small", `${quantidade} campanha(s) com este nome`));
-    item.append(criarBotao("✏️ Renomear / unificar", async () => {
-      const novo = prompt(`Novo nome para “${nome}” (pode ser um sistema que já existe):`, nome)?.trim();
-      if (!novo || chaveSistema(novo) === chaveSistema(nome)) return;
-      const afetadas = campanhas.filter(c => chaveSistema(c.detalhes?.universo?.sistema) === chaveSistema(nome));
-      if (!confirm(`Alterar “${nome}” para “${novo}” em ${afetadas.length} campanha(s)? Os demais dados serão preservados.`)) return;
-      try {
-        await exigirAdministrador();
-        let atualizadas = 0;
-        for (const c of afetadas) {
-          const detalhes = { ...(c.detalhes || {}) };
-          detalhes.universo = { ...(detalhes.universo || {}), sistema: novo };
-          const { error } = await supabaseClient.from("campanhas").update({ detalhes }).eq("id", c.id);
-          if (error) throw new Error(`${atualizadas} campanha(s) atualizada(s). Falha em “${c.titulo}”: ${error.message}`);
-          c.detalhes = detalhes;
-          atualizadas++;
-        }
-        renderizarSistemas();
-        atualizarSeletorSistemas();
-        renderizarCampanhas();
-        mensagem("sistemas-mensagem", `${atualizadas} campanha(s) atualizada(s): “${nome}” → “${novo}”.`);
-      } catch (erro) {
-        mensagem("sistemas-mensagem", "Erro ao unificar: " + erro.message + ". Recarregue a página para conferir os dados.");
-      }
-    }));
-    lista.append(item);
+function atualizarSugestoesOpcoes() {
+  for (const tipo of ['narradores','canais']) {
+    const datalist = campo(`opcoes-${tipo}-sugestoes`);
+    datalist.replaceChildren();
+    for (const nome of nomesTipo(tipo)) datalist.append(new Option(nome,nome));
   }
 }
-async function carregarSistemasRpg() {
-  const {data, error} = await supabaseClient.from("sistemas_rpg")
-    .select("id,nome").order("nome");
-  catalogoSistemasDisponivel = !error;
-  sistemasRpg = error ? [] : (data || []);
-  mensagem("sistemas-mensagem", error
-    ? "Catálogo indisponível. Execute o SQL fornecido no Supabase para habilitar novos sistemas. Os sistemas já usados continuam disponíveis."
-    : "");
-  campo("sistemas-salvar").disabled = !catalogoSistemasDisponivel;
-  renderizarSistemas();
-  atualizarSeletorSistemas();
+function criarCartaoOpcao(nome, quantidade, acao) {
+  const item = criarElemento('div',undefined,'opcao-item');
+  const info = criarElemento('div',undefined,'opcao-item-info');
+  info.append(criarElemento('strong',nome),criarElemento('small',`${quantidade} campanha(s) vinculada(s)`));
+  const botao = criarElemento('button','✏️ Renomear / unificar','opcao-acao');
+  botao.type = 'button'; botao.addEventListener('click',acao);
+  item.append(info,botao); return item;
 }
-campo("sistemas-form").addEventListener("submit", async e => {
-  e.preventDefault();
-  const nome = valor("sistemas-nome");
-  if (!nome) return;
-  if (sistemasConhecidos().some(n => chaveSistema(n) === chaveSistema(nome))) {
-    mensagem("sistemas-mensagem", "Esse sistema já está na lista. Evite nomes duplicados."); return;
-  }
+async function renomearOpcao(tipo,nome) {
+  const novo = prompt(`Novo nome para “${nome}” (pode ser um nome já existente):`,nome)?.trim();
+  if (!novo || chaveSistema(novo) === chaveSistema(nome)) return;
+  const afetadas = campanhas.filter(c=>chaveSistema(valorOpcao(c,tipo))===chaveSistema(nome));
+  const catalogo = catalogoTipo(tipo).find(o=>chaveSistema(o.nome)===chaveSistema(nome));
+  const existente = catalogoTipo(tipo).find(o=>chaveSistema(o.nome)===chaveSistema(novo));
+  if (!confirm(`Alterar “${nome}” para “${novo}” em ${afetadas.length} campanha(s)?${catalogo?' O cadastro do catálogo também será ajustado.':''} Os demais dados serão preservados.`)) return;
   try {
     await exigirAdministrador();
-    const {error} = await supabaseClient.from("sistemas_rpg").insert([{nome}]);
-    if (error) throw error;
-    campo("sistemas-nome").value = "";
+    let atualizadas = 0;
+    for (const c of afetadas) {
+      let alteracao;
+      if (tipo === 'sistemas') {
+        const detalhes = {...(c.detalhes || {})};
+        detalhes.universo = {...(detalhes.universo || {}),sistema:novo};
+        alteracao = {detalhes};
+      } else alteracao = {[tipo === 'narradores' ? 'narrador' : 'canal']:novo};
+      const {error} = await supabaseClient.from('campanhas').update(alteracao).eq('id',c.id);
+      if (error) throw new Error(`${atualizadas} campanha(s) alterada(s); falha em “${c.titulo}”: ${error.message}`);
+      Object.assign(c,alteracao); atualizadas++;
+    }
+    if (catalogo) {
+      const tabela = TIPOS_OPCOES[tipo].tabela;
+      const query = supabaseClient.from(tabela);
+      const {error} = existente ? await query.delete().eq('id',catalogo.id) : await query.update({nome:novo}).eq('id',catalogo.id);
+      if (error) throw error;
+    }
     await carregarSistemasRpg();
-    mensagem("sistemas-mensagem", "Sistema adicionado com sucesso.");
-  } catch (erro) { mensagem("sistemas-mensagem", "Erro: " + erro.message); }
+    renderizarCampanhas();
+    mensagem(`${tipo}-mensagem`,`${atualizadas} campanha(s) atualizada(s): “${nome}” → “${novo}”.`);
+  } catch(e) {
+    mensagem(`${tipo}-mensagem`,'Erro: '+e.message+'. Se algumas campanhas foram alteradas, recarregue a página para conferir.');
+  }
+}
+function renderizarTipoOpcao(tipo) {
+  const lista = campo(`${tipo}-lista`); lista.replaceChildren();
+  const nomes = nomesTipo(tipo);
+  if (!nomes.length) { lista.append(criarElemento('p','Nenhum nome cadastrado ou utilizado em campanhas.','opcao-vazio'));return; }
+  for (const nome of nomes) {
+    const quantidade = campanhas.filter(c=>chaveSistema(valorOpcao(c,tipo))===chaveSistema(nome)).length;
+    lista.append(criarCartaoOpcao(nome,quantidade,()=>renomearOpcao(tipo,nome)));
+  }
+}
+function renderizarSistemas() { renderizarTipoOpcao('sistemas'); }
+function renderizarTodasOpcoes() {
+  for (const tipo of Object.keys(TIPOS_OPCOES)) renderizarTipoOpcao(tipo);
+  atualizarSeletorSistemas(); atualizarSugestoesOpcoes();
+}
+async function carregarSistemasRpg() {
+  const [s,o] = await Promise.all([
+    supabaseClient.from('sistemas_rpg').select('id,nome').order('nome'),
+    supabaseClient.from('opcoes_campanhas').select('id,tipo,nome').order('nome')
+  ]);
+  catalogoSistemasDisponivel = !s.error; catalogoOpcoesDisponivel = !o.error;
+  sistemasRpg = s.error ? [] : (s.data || []);
+  opcoesCadastradas = o.error ? [] : (o.data || []);
+  campo('sistemas-salvar').disabled = !catalogoSistemasDisponivel;
+  for (const tipo of ['narradores','canais']) campo(`${tipo}-salvar`).disabled = !catalogoOpcoesDisponivel;
+  if (s.error) mensagem('sistemas-mensagem','Catálogo de sistemas indisponível: '+s.error.message);
+  if (o.error) for (const tipo of ['narradores','canais']) mensagem(`${tipo}-mensagem`,'Para adicionar nomes, execute o arquivo TXT de configuração no SQL Editor do Supabase. Os nomes históricos continuam visíveis.');
+  renderizarTodasOpcoes();
+}
+for (const tipo of Object.keys(TIPOS_OPCOES)) {
+  campo(`${tipo}-form`).addEventListener('submit',async e=>{
+    e.preventDefault(); const nome = valor(`${tipo}-nome`);
+    if (!nome) return;
+    if (nomesTipo(tipo).some(n=>chaveSistema(n)===chaveSistema(nome))) {
+      mensagem(`${tipo}-mensagem`,'Esse nome já está disponível. Evite duplicações.');return;
+    }
+    try {
+      await exigirAdministrador();
+      const tabela = TIPOS_OPCOES[tipo].tabela;
+      const registro = tipo==='sistemas' ? {nome} : {tipo:TIPOS_OPCOES[tipo].tipo,nome};
+      const {error} = await supabaseClient.from(tabela).insert([registro]);
+      if (error) throw error;
+      campo(`${tipo}-nome`).value='';
+      await carregarSistemasRpg();
+      mensagem(`${tipo}-mensagem`,'Nome adicionado com sucesso.');
+    } catch(err) { mensagem(`${tipo}-mensagem`,'Erro: '+err.message); }
+  });
+}
+document.querySelectorAll('.opcoes-abas button[data-opcao]').forEach(botao=>{
+  botao.addEventListener('click',()=>{
+    const tipo = botao.dataset.opcao;
+    for (const nome of Object.keys(TIPOS_OPCOES)) campo(`opcoes-${nome}`).hidden = nome!==tipo;
+    document.querySelectorAll('.opcoes-abas button[data-opcao]').forEach(b=>b.classList.toggle('opcoes-ativo',b===botao));
+  });
 });
 
 // ==========================================
