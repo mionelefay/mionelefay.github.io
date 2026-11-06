@@ -464,6 +464,45 @@ function renderizarSistemas() {
     item.append(acoes); lista.append(item);
   }
   if (!sistemasRpg.length) lista.append(criarElemento("p", "Nenhum sistema adicionado ao catálogo ainda."));
+
+  // Sistemas antigos podem existir apenas nas campanhas, sem registro no catálogo.
+  const cadastrados = new Set(sistemasRpg.map(s => chaveSistema(s.nome)));
+  const historicos = sistemasConhecidos().filter(nome => !cadastrados.has(chaveSistema(nome)));
+  if (historicos.length) {
+    lista.append(criarElemento("h4", "Sistemas usados em campanhas antigas"));
+    lista.append(criarElemento("p", "Você pode unificar nomes históricos. Isso altera somente o nome do sistema nas campanhas correspondentes, preservando os demais dados."));
+  }
+  for (const nome of historicos) {
+    const item = criarElemento("div", undefined, "admin-item");
+    item.append(criarElemento("strong", nome));
+    const quantidade = campanhas.filter(c => chaveSistema(c.detalhes?.universo?.sistema) === chaveSistema(nome)).length;
+    item.append(criarElemento("small", `${quantidade} campanha(s) com este nome`));
+    item.append(criarBotao("✏️ Renomear / unificar", async () => {
+      const novo = prompt(`Novo nome para “${nome}” (pode ser um sistema que já existe):`, nome)?.trim();
+      if (!novo || chaveSistema(novo) === chaveSistema(nome)) return;
+      const afetadas = campanhas.filter(c => chaveSistema(c.detalhes?.universo?.sistema) === chaveSistema(nome));
+      if (!confirm(`Alterar “${nome}” para “${novo}” em ${afetadas.length} campanha(s)? Os demais dados serão preservados.`)) return;
+      try {
+        await exigirAdministrador();
+        let atualizadas = 0;
+        for (const c of afetadas) {
+          const detalhes = { ...(c.detalhes || {}) };
+          detalhes.universo = { ...(detalhes.universo || {}), sistema: novo };
+          const { error } = await supabaseClient.from("campanhas").update({ detalhes }).eq("id", c.id);
+          if (error) throw new Error(`${atualizadas} campanha(s) atualizada(s). Falha em “${c.titulo}”: ${error.message}`);
+          c.detalhes = detalhes;
+          atualizadas++;
+        }
+        renderizarSistemas();
+        atualizarSeletorSistemas();
+        renderizarCampanhas();
+        mensagem("sistemas-mensagem", `${atualizadas} campanha(s) atualizada(s): “${nome}” → “${novo}”.`);
+      } catch (erro) {
+        mensagem("sistemas-mensagem", "Erro ao unificar: " + erro.message + ". Recarregue a página para conferir os dados.");
+      }
+    }));
+    lista.append(item);
+  }
 }
 async function carregarSistemasRpg() {
   const {data, error} = await supabaseClient.from("sistemas_rpg")
