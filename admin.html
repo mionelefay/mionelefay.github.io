@@ -1077,6 +1077,24 @@
               <button id="sistemas-salvar" type="submit">➕ Adicionar sistema</button>
             </form>
             <p id="sistemas-mensagem" class="mensagem-formulario" role="status"></p>
+            <div class="opcoes-predefinicoes" style="margin:20px 0;padding:18px;border:1px solid #68458a;border-radius:12px;display:grid;gap:12px">
+              <h4 style="margin:0">🔗 Links e materiais padrão por sistema</h4>
+              <p class="admin-ajuda">Escolha um sistema e salve os textos que deseja reutilizar. Ao selecionar esse sistema em uma nova campanha, os campos vazios serão preenchidos automaticamente. Os dados das campanhas já cadastradas não serão modificados.</p>
+              <label for="padrao-sistema">Sistema de RPG
+                <select id="padrao-sistema"><option value="">Selecione um sistema</option></select>
+              </label>
+              <label for="padrao-sistema-url">Link para o sistema de RPG
+                <input id="padrao-sistema-url" type="url" placeholder="https://...">
+              </label>
+              <label for="padrao-materiais-url">Link para materiais complementares
+                <input id="padrao-materiais-url" type="url" placeholder="https://...">
+              </label>
+              <label for="padrao-materiais-descricao">Descrição dos materiais
+                <textarea id="padrao-materiais-descricao" rows="4" placeholder="Descrição que aparecerá nas novas campanhas..."></textarea>
+              </label>
+              <button id="padrao-salvar" type="button">💾 Salvar informações padrão</button>
+              <p id="padrao-mensagem" class="mensagem-formulario" role="status"></p>
+            </div>
             <div id="sistemas-lista" class="opcoes-lista"></div>
           </div>
           <div id="opcoes-narradores" hidden>
