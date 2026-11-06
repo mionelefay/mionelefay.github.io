@@ -409,6 +409,92 @@ campo("login-form").addEventListener(
 );
 
 // ==========================================
+// CATÁLOGO DE SISTEMAS DE RPG
+// ==========================================
+let sistemasRpg = [];
+let catalogoSistemasDisponivel = false;
+function chaveSistema(nome) {
+  return String(nome || "").trim().toLocaleLowerCase("pt-BR");
+}
+function sistemasConhecidos() {
+  const nomes = new Map();
+  for (const sistema of sistemasRpg) {
+    if (sistema.nome) nomes.set(chaveSistema(sistema.nome), sistema.nome);
+  }
+  for (const campanha of campanhas) {
+    const nome = String(campanha.detalhes?.universo?.sistema || "").trim();
+    if (nome && !nomes.has(chaveSistema(nome))) nomes.set(chaveSistema(nome), nome);
+  }
+  return [...nomes.values()].sort((a, b) => a.localeCompare(b, "pt-BR"));
+}
+function atualizarSeletorSistemas(selecionado = null) {
+  const seletor = campo("campanha-universo-sistema");
+  const atual = selecionado === null ? seletor.value : selecionado;
+  seletor.replaceChildren(new Option("Selecione um sistema", ""));
+  for (const nome of sistemasConhecidos()) seletor.add(new Option(nome, nome));
+  // Preserva um valor histórico, mesmo que não esteja mais no catálogo.
+  if (atual && ![...seletor.options].some(o => o.value === atual)) {
+    seletor.add(new Option(atual + " (histórico)", atual));
+  }
+  seletor.value = atual || "";
+}
+function renderizarSistemas() {
+  const lista = campo("sistemas-lista");
+  lista.replaceChildren();
+  for (const sistema of sistemasRpg) {
+    const item = criarElemento("div", undefined, "admin-item");
+    item.append(criarElemento("strong", sistema.nome));
+    const acoes = criarElemento("div", undefined, "admin-acoes");
+    acoes.append(criarBotao("✏️ Renomear", async () => {
+      const novo = prompt("Novo nome do sistema:", sistema.nome)?.trim();
+      if (!novo || novo === sistema.nome) return;
+      if (sistemasConhecidos().some(n => chaveSistema(n) === chaveSistema(novo))) {
+        mensagem("sistemas-mensagem", "Esse nome já existe."); return;
+      }
+      try {
+        await exigirAdministrador();
+        const {error} = await supabaseClient.from("sistemas_rpg")
+          .update({nome: novo}).eq("id", sistema.id);
+        if (error) throw error;
+        // Mesas antigas mantêm o nome histórico até serem editadas individualmente.
+        await carregarSistemasRpg();
+        mensagem("sistemas-mensagem", "Sistema renomeado. Mesas antigas não foram alteradas.");
+      } catch (e) { mensagem("sistemas-mensagem", "Erro: " + e.message); }
+    }));
+    item.append(acoes); lista.append(item);
+  }
+  if (!sistemasRpg.length) lista.append(criarElemento("p", "Nenhum sistema adicionado ao catálogo ainda."));
+}
+async function carregarSistemasRpg() {
+  const {data, error} = await supabaseClient.from("sistemas_rpg")
+    .select("id,nome").order("nome");
+  catalogoSistemasDisponivel = !error;
+  sistemasRpg = error ? [] : (data || []);
+  mensagem("sistemas-mensagem", error
+    ? "Catálogo indisponível. Execute o SQL fornecido no Supabase para habilitar novos sistemas. Os sistemas já usados continuam disponíveis."
+    : "");
+  campo("sistemas-salvar").disabled = !catalogoSistemasDisponivel;
+  renderizarSistemas();
+  atualizarSeletorSistemas();
+}
+campo("sistemas-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const nome = valor("sistemas-nome");
+  if (!nome) return;
+  if (sistemasConhecidos().some(n => chaveSistema(n) === chaveSistema(nome))) {
+    mensagem("sistemas-mensagem", "Esse sistema já está na lista. Evite nomes duplicados."); return;
+  }
+  try {
+    await exigirAdministrador();
+    const {error} = await supabaseClient.from("sistemas_rpg").insert([{nome}]);
+    if (error) throw error;
+    campo("sistemas-nome").value = "";
+    await carregarSistemasRpg();
+    mensagem("sistemas-mensagem", "Sistema adicionado com sucesso.");
+  } catch (erro) { mensagem("sistemas-mensagem", "Erro: " + erro.message); }
+});
+
+// ==========================================
 // CARREGAR CAMPANHAS
 // ==========================================
 
@@ -424,6 +510,7 @@ async function carregarCampanhas() {
   if (error) throw error;
 
   campanhas = data || [];
+  await carregarSistemasRpg();
 
   preencherSeletoresCampanhas();
   renderizarCampanhas();
@@ -583,6 +670,7 @@ function dadosFormularioCampanha() {
     detalhes: {
       ...detalhesAtuais,
 
+      tipo_aventura: valor("campanha-tipo-aventura"),
       papel: valor("campanha-papel"),
       exibir_personagem: campo("campanha-exibir-personagem").checked,
 
@@ -692,9 +780,12 @@ function editarCampanha(id) {
   campo("campanha-status").value =
     campanha.status || "em_andamento";
 
-  // Papel na campanha
+  // Classificação e papel (sem presumir tipo para registros antigos).
+  campo("campanha-tipo-aventura").value =
+    campanha.detalhes?.tipo_aventura || "";
   campo("campanha-papel").value =
-    campanha.detalhes?.papel || "";
+    ["jogadora", "narradora"].includes(campanha.detalhes?.papel)
+      ? campanha.detalhes.papel : "";
 
   // Campanhas antigas seguem mostrando personagem quando jogadora/ambos,
   // até que você escolha explicitamente no novo controle.
@@ -731,8 +822,7 @@ function editarCampanha(id) {
   const universo =
     campanha.detalhes?.universo || {};
 
-  campo("campanha-universo-sistema").value =
-    universo.sistema || "";
+  atualizarSeletorSistemas(universo.sistema || "");
 
   campo("campanha-universo-lore").value =
     universo.lore || "";
@@ -764,6 +854,7 @@ function editarCampanha(id) {
 function cancelarEdicaoCampanha() {
   campanhaEmEdicao = null;
   campo("campanha-form").reset();
+  atualizarSeletorSistemas("");
   atualizarSecaoPersonagem();
   atualizarSecaoNarradora();
 
