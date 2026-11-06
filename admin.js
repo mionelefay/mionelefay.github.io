@@ -504,16 +504,70 @@ function renderizarTipoOpcao(tipo) {
     lista.append(criarCartaoOpcao(nome,quantidade,()=>renomearOpcao(tipo,nome)));
   }
 }
+const CAMPOS_PADRAO_SISTEMA = [
+  ['sistema_url','campanha-universo-sistema-url','padrao-sistema-url'],
+  ['materiais_url','campanha-universo-materiais-url','padrao-materiais-url'],
+  ['materiais_descricao','campanha-universo-materiais-descricao','padrao-materiais-descricao']
+];
+function registroSistema(nome) {
+  return sistemasRpg.find(s=>chaveSistema(s.nome)===chaveSistema(nome));
+}
+function atualizarListaPadroes() {
+  const sel=campo('padrao-sistema'), atual=sel.value;
+  sel.replaceChildren(new Option('Selecione um sistema',''));
+  for(const nome of sistemasConhecidos()) sel.add(new Option(nome,nome));
+  sel.value=nomesTipo('sistemas').some(n=>n===atual)?atual:'';
+  mostrarPadraoSistema();
+}
+function mostrarPadraoSistema() {
+  const registro=registroSistema(campo('padrao-sistema').value);
+  const padrao=registro?.configuracao || {};
+  for(const [chave,,id] of CAMPOS_PADRAO_SISTEMA) campo(id).value=padrao[chave] || '';
+}
+function aplicarPadraoSistema() {
+  const registro=registroSistema(campo('campanha-universo-sistema').value);
+  const padrao=registro?.configuracao || {};
+  for(const [chave,id] of CAMPOS_PADRAO_SISTEMA) {
+    const input=campo(id);
+    if(!input.value.trim() && padrao[chave]) input.value=padrao[chave];
+  }
+}
+campo('padrao-sistema').addEventListener('change',mostrarPadraoSistema);
+campo('campanha-universo-sistema').addEventListener('change',aplicarPadraoSistema);
+campo('padrao-salvar').addEventListener('click',async()=>{
+  const nome=campo('padrao-sistema').value;
+  if(!nome) { mensagem('padrao-mensagem','Selecione um sistema.'); return; }
+  const botao=campo('padrao-salvar'); botao.disabled=true;
+  try {
+    await exigirAdministrador();
+    const configuracao={};
+    for(const [chave,,id] of CAMPOS_PADRAO_SISTEMA) configuracao[chave]=campo(id).value.trim();
+    let registro=registroSistema(nome);
+    let resposta;
+    if(registro) resposta=await supabaseClient.from('sistemas_rpg').update({configuracao}).eq('id',registro.id);
+    else resposta=await supabaseClient.from('sistemas_rpg').insert([{nome,configuracao}]);
+    if(resposta.error) throw resposta.error;
+    await carregarSistemasRpg();
+    campo('padrao-sistema').value=nome;
+    mostrarPadraoSistema();
+    mensagem('padrao-mensagem','Informações padrão salvas. Serão sugeridas nas próximas campanhas.');
+  } catch(err) { mensagem('padrao-mensagem','Erro ao salvar: '+err.message+' (confira se executou o TXT de configuração do Supabase).'); }
+  finally { botao.disabled=false; }
+});
 function renderizarSistemas() { renderizarTipoOpcao('sistemas'); }
 function renderizarTodasOpcoes() {
   for (const tipo of Object.keys(TIPOS_OPCOES)) renderizarTipoOpcao(tipo);
-  atualizarSeletorSistemas(); atualizarSugestoesOpcoes();
+  atualizarSeletorSistemas(); atualizarSugestoesOpcoes(); atualizarListaPadroes();
 }
 async function carregarSistemasRpg() {
   const [s,o] = await Promise.all([
-    supabaseClient.from('sistemas_rpg').select('id,nome').order('nome'),
+    supabaseClient.from('sistemas_rpg').select('id,nome,configuracao').order('nome'),
     supabaseClient.from('opcoes_campanhas').select('id,tipo,nome').order('nome')
   ]);
+  if(s.error && /configuracao|column|schema cache/i.test(s.error.message || '')) {
+    const anterior=await supabaseClient.from('sistemas_rpg').select('id,nome').order('nome');
+    if(!anterior.error) { s.data=anterior.data; s.error=null; }
+  }
   catalogoSistemasDisponivel = !s.error; catalogoOpcoesDisponivel = !o.error;
   sistemasRpg = s.error ? [] : (s.data || []);
   opcoesCadastradas = o.error ? [] : (o.data || []);
