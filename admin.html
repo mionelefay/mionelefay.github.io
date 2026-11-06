@@ -123,6 +123,46 @@
     .opcoes-form label{flex:1 1 260px;display:flex;flex-direction:column;gap:7px}
     .opcoes-form input{width:100%;box-sizing:border-box;padding:12px;border-radius:9px;border:1px solid #8665a4;background:#180f28;color:#fff;font:inherit}
     .opcoes-form button,.opcao-acao{background:#a66de0;color:#170d24;border:0;border-radius:9px;padding:11px 15px;font:inherit;font-weight:650;cursor:pointer}
+
+    /* Formulário de links e materiais padrão por sistema */
+    .opcoes-predefinicoes{
+      margin:24px 0;
+      padding:clamp(18px,3vw,28px);
+      border:1px solid #7956a0;
+      border-radius:16px;
+      background:linear-gradient(145deg,#2b1b41,#211631);
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+    .opcoes-predefinicoes h4{margin:0;color:#eed0ff;font-size:1.12rem}
+    .opcoes-predefinicoes .admin-ajuda{margin:0;line-height:1.65;color:#dcc5ee}
+    .opcoes-predefinicoes label{display:flex;flex-direction:column;gap:8px;font-weight:600;color:#f6edff}
+    .opcoes-predefinicoes input,
+    .opcoes-predefinicoes select,
+    .opcoes-predefinicoes textarea{
+      display:block;width:100%;min-width:0;box-sizing:border-box;
+      padding:13px 14px;border:1px solid #8766aa;border-radius:10px;
+      background:#130c22;color:#fff;font:inherit;font-weight:400;
+      line-height:1.5;transition:border-color .15s,box-shadow .15s;
+    }
+    .opcoes-predefinicoes textarea{min-height:130px;resize:vertical}
+    .opcoes-predefinicoes input::placeholder,
+    .opcoes-predefinicoes textarea::placeholder{color:#a99bb8}
+    .opcoes-predefinicoes input:focus,
+    .opcoes-predefinicoes select:focus,
+    .opcoes-predefinicoes textarea:focus{
+      outline:none;border-color:#c594f2;box-shadow:0 0 0 3px rgba(197,148,242,.2)
+    }
+    .opcoes-predefinicoes #padrao-salvar{
+      display:block;width:100%;padding:14px 18px;border:0;border-radius:10px;
+      background:#a66de0;color:#190d28;font:inherit;font-weight:700;
+      cursor:pointer;transition:filter .15s;
+    }
+    .opcoes-predefinicoes #padrao-salvar:hover{filter:brightness(1.1)}
+    .opcoes-predefinicoes #padrao-salvar:focus-visible{outline:3px solid #e8c7ff;outline-offset:3px}
+    .opcoes-predefinicoes #padrao-mensagem:empty{display:none}
+    .opcoes-predefinicoes #padrao-mensagem{margin:0}
     .opcoes-lista{display:grid;gap:10px;margin-top:18px}
     .opcao-item{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;border:1px solid #674585;background:#180f28;padding:15px 17px;border-radius:11px}
     .opcao-item-info{display:flex;flex-direction:column;gap:5px;min-width:0;overflow-wrap:anywhere}
@@ -1077,7 +1117,7 @@
               <button id="sistemas-salvar" type="submit">➕ Adicionar sistema</button>
             </form>
             <p id="sistemas-mensagem" class="mensagem-formulario" role="status"></p>
-            <div class="opcoes-predefinicoes" style="margin:20px 0;padding:18px;border:1px solid #68458a;border-radius:12px;display:grid;gap:12px">
+            <div class="opcoes-predefinicoes">
               <h4 style="margin:0">🔗 Links e materiais padrão por sistema</h4>
               <p class="admin-ajuda">Escolha um sistema e salve os textos que deseja reutilizar. Ao selecionar esse sistema em uma nova campanha, os campos vazios serão preenchidos automaticamente. Os dados das campanhas já cadastradas não serão modificados.</p>
               <label for="padrao-sistema">Sistema de RPG
