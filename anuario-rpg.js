@@ -32,7 +32,7 @@
   function sistema(c){return String(c?.detalhes?.universo?.sistema||'').trim();}
   function hojeISO(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
   function situacao(e){return normalize(e.situacao||'programada');}
-  function rpg(e){return ['rpg-proprio','rpg-externo'].includes(e.categoria);}
+  function rpg(e){return ['rpg-proprio','rpg-externo','rpg-offline'].includes(e.categoria);}
   function eventoValido(e){return rpg(e)&&e.data&&e.data<=hojeISO()&&!['cancelada','adiada'].includes(situacao(e));}
   async function all(client,table,cols,order){let items=[];for(let page=0;page<40;page++){
     let q=client.from(table).select(cols).range(page*1000,page*1000+999);
@@ -56,7 +56,7 @@
     const oneShots=mesas.filter(m=>tipo(m.campanha)==='one-shot');
     const indefinidas=mesas.filter(m=>!tipo(m.campanha));
     const meses=Array(12).fill(0);sessoes.forEach(e=>{const i=Number(e.data.slice(5,7))-1;if(i>=0&&i<12)meses[i]++;});
-    const canal=(m)=>m.eventos.some(e=>e.categoria==='rpg-proprio')?'proprio':'externo';
+    const canal=(m)=>m.eventos.some(e=>e.categoria==='rpg-proprio')?'proprio':m.eventos.some(e=>e.categoria==='rpg-externo')?'externo':'offline';
     const sistemas=new Map();for(const m of mesas){const nome=sistema(m.campanha);if(!nome)continue;
       const key=normalize(nome);if(!sistemas.has(key))sistemas.set(key,{nome,campanhas:0,oneShots:0,sessoes:0,semTipo:0});
       const v=sistemas.get(key);if(tipo(m.campanha)==='campanha')v.campanhas++;else if(tipo(m.campanha)==='one-shot')v.oneShots++;else v.semTipo++;
@@ -73,29 +73,28 @@
     const control=el('div',undefined,'ar-controls');const label=el('label','Ano: ');const select=el('select');select.setAttribute('aria-label','Ano do anuário');
     for(const a of anosOrdenados){const o=el('option',a);o.value=a;o.selected=a===ano;select.append(o);}label.append(select);control.append(label);root.append(control);
     select.addEventListener('change',()=>montar(root,campanhas,eventos,Number(select.value),admin,client));
-    cards(root,[['Mesas de RPG diferentes',d.mesas.length],['Campanhas classificadas',d.campanhasAtivas.length],['One-shots classificados',d.oneShots.length],['Sessões registradas',d.sessoes.length],['Sistemas diferentes',d.sistemas.length]]);
-    const papels=['jogadora','narradora','ambos'];
+    cards(root,[['Mesas de RPG diferentes',d.mesas.length],['Campanhas classificadas',d.campanhasAtivas.length],['One-shots classificados',d.oneShots.length],['Sessões registradas',d.sessoes.length],['Sistemas diferentes',d.sistemas.length],['Mesas sem tipo',d.indefinidas.length]]);
     const c=d.campanhasAtivas, os=d.oneShots;
-    const count=(ms,canal,role)=>ms.filter(m=>(!canal||d.canal(m)===canal)&&(!role||papel(m.campanha)===role||(role==='jogadora'&&papel(m.campanha)==='ambos')||(role==='narradora'&&papel(m.campanha)==='ambos'))).length;
+    const count=(ms,canal,role)=>ms.filter(m=>(!canal||d.canal(m)===canal)&&(!role||papel(m.campanha)===role)).length;
     const part=section(root,'Minha participação');
-    cards(part,[['Campanhas como jogadora no meu canal',count(c,'proprio','jogadora')],['Campanhas como narradora no meu canal',count(c,'proprio','narradora')],['Campanhas como jogadora em outros canais',count(c,'externo','jogadora')],['Campanhas como narradora em outros canais',count(c,'externo','narradora')],['One-shots como jogadora',count(os,null,'jogadora')],['One-shots como narradora',count(os,null,'narradora')]]);
+    cards(part,[['Campanhas como jogadora no meu canal',count(c,'proprio','jogadora')],['Campanhas como narradora no meu canal',count(c,'proprio','narradora')],['Campanhas como jogadora em outros canais',count(c,'externo','jogadora')],['Campanhas como narradora em outros canais',count(c,'externo','narradora')],['Campanhas offline como jogadora',count(c,'offline','jogadora')],['Campanhas offline como narradora',count(c,'offline','narradora')],['One-shots como jogadora',count(os,null,'jogadora')],['One-shots como narradora',count(os,null,'narradora')]]);
     const can=section(root,'Onde as aventuras aconteceram');
-    cards(can,[['Campanhas no meu canal',count(c,'proprio')],['Campanhas em outros canais',count(c,'externo')],['One-shots no meu canal',count(os,'proprio')],['One-shots em outros canais',count(os,'externo')],['Sessões no meu canal',d.sessoes.filter(e=>e.categoria==='rpg-proprio').length],['Sessões em outros canais',d.sessoes.filter(e=>e.categoria==='rpg-externo').length]]);
+    cards(can,[['Campanhas no meu canal',count(c,'proprio')],['Campanhas em outros canais',count(c,'externo')],['One-shots no meu canal',count(os,'proprio')],['One-shots em outros canais',count(os,'externo')],['Campanhas offline',count(c,'offline')],['One-shots offline',count(os,'offline')],['Sessões offline',d.sessoes.filter(e=>e.categoria==='rpg-offline').length],['Sessões no meu canal',d.sessoes.filter(e=>e.categoria==='rpg-proprio').length],['Sessões em outros canais',d.sessoes.filter(e=>e.categoria==='rpg-externo').length]]);
     const sys=section(root,'Sistemas explorados');
     lista(sys,d.sistemas,(item,s)=>{item.append(el('strong',s.nome),el('small',`${s.campanhas} campanha(s) • ${s.oneShots} one-shot(s) • ${s.sessoes} sessão(ões)${s.semTipo?' • '+s.semTipo+' mesa(s) sem tipo':''}`));});
     const month=section(root,'Sessões registradas por mês');const bars=el('div',undefined,'ar-months');const max=Math.max(1,...d.meses);
     d.meses.forEach((v,i)=>{const col=el('div',undefined,'ar-month');const bar=el('div',undefined,'ar-bar');bar.style.height=`${Math.max(3,Math.round(85*v/max))}px`;bar.title=`${MESES[i]}: ${v} sessões`;col.append(bar,el('span',MESES[i]),el('div',v));bars.append(col);});month.append(bars);
     const mesasSec=section(root,'Mesas do ano');
     lista(mesasSec,d.mesas.sort((a,b)=>a.campanha.titulo.localeCompare(b.campanha.titulo,'pt-BR')),(item,m)=>{
-      const cp=m.campanha;const nome=cp.titulo||'Sem título';item.append(el('strong',nome),el('small',`${tipo(cp)==='one-shot'?'One-shot':tipo(cp)==='campanha'?'Campanha':'Tipo não informado'} • ${sistema(cp)||'Sistema não informado'} • ${m.eventos.length} sessão(ões) • ${d.canal(m)==='proprio'?'Meu canal':'Outros canais'} • ${papel(cp)||'Papel não informado'}`));
+      const cp=m.campanha;const nome=cp.titulo||'Sem título';item.append(el('strong',nome),el('small',`${tipo(cp)==='one-shot'?'One-shot':tipo(cp)==='campanha'?'Campanha':'Tipo não informado'} • ${sistema(cp)||'Sistema não informado'} • ${m.eventos.length} sessão(ões) • ${d.canal(m)==='proprio'?'Meu canal':d.canal(m)==='offline'?'Offline':'Outros canais'} • ${papel(cp)||'Papel não informado'}`));
     });
     root.append(el('p','Uma mesa aparece em cada ano em que teve ao menos uma sessão válida até a data atual. Cada mesa conta uma vez por ano, mesmo com várias sessões. Eventos cancelados e adiados não entram; remarcações entram na nova data. Sessões passadas são registros da agenda, não confirmação independente de realização.','ar-note'));
     if(!admin)return;
     const pend=section(root,'Conferência administrativa de classificações');
-    const incomplete=d.mesas.filter(m=>!tipo(m.campanha)||!sistema(m.campanha)||!['jogadora','narradora','ambos'].includes(papel(m.campanha)));
+    const incomplete=d.mesas.filter(m=>!tipo(m.campanha)||!sistema(m.campanha)||!['jogadora','narradora'].includes(papel(m.campanha)));
     pend.append(el('p',`${incomplete.length} mesa(s) com dados faltantes. Classifique o tipo abaixo; sistema e papel são editados no cadastro da campanha.`));
     lista(pend,incomplete,(item,m)=>{
-      const cp=m.campanha;item.append(el('strong',cp.titulo||'Sem título'),el('small',[!tipo(cp)?'tipo não informado':null,!sistema(cp)?'sistema não informado':null,!['jogadora','narradora','ambos'].includes(papel(cp))?'papel não informado':null].filter(Boolean).join(' • ')));
+      const cp=m.campanha;item.append(el('strong',cp.titulo||'Sem título'),el('small',[!tipo(cp)?'tipo não informado':null,!sistema(cp)?'sistema não informado':null,!['jogadora','narradora'].includes(papel(cp))?'papel não informado':null].filter(Boolean).join(' • ')));
       if(tipo(cp))return;
       const line=el('div',undefined,'ar-edit');const sel=el('select');sel.setAttribute('aria-label',`Tipo de ${cp.titulo}`);
       [['','Selecione o tipo'],['campanha','Campanha'],['one-shot','One-shot']].forEach(([v,t])=>{const o=el('option',t);o.value=v;sel.append(o);});
