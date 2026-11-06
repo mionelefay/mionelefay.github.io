@@ -1349,3 +1349,11 @@ input[type="checkbox"] {
     vertical-align: middle;
     margin-right: 8px;
 }
+/* Compartilhamento dentro da janela de detalhes */
+.modal-compartilhar { margin-top: 12px; }
+.modal-compartilhar[hidden], .compartilhar-opcoes[hidden] { display:none !important; }
+.botao-compartilhar { width:100%; border:1px solid #c59bfa; }
+.compartilhar-opcoes { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin-top:10px; }
+.compartilhar-opcoes button { padding:11px 8px; background:#352047; border:1px solid #8755a8; border-radius:9px; color:#fff; }
+.compartilhar-opcoes button:hover { background:#53316d; }
+@media(max-width:500px) { .compartilhar-opcoes { grid-template-columns:1fr; } }
