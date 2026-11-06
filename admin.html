@@ -115,6 +115,21 @@
       color: #e8c7ff;
     }
 
+
+    .opcoes-abas{display:flex;gap:9px;flex-wrap:wrap;margin:20px 0 24px}
+    .opcoes-abas button{border:1px solid #9166bb;border-radius:9px;padding:11px 17px;background:#170e29;color:#f8f0ff;cursor:pointer;font:inherit}
+    .opcoes-abas button.opcoes-ativo{background:#aa70e0;color:#160b24;font-weight:700}
+    .opcoes-form{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin:18px 0}
+    .opcoes-form label{flex:1 1 260px;display:flex;flex-direction:column;gap:7px}
+    .opcoes-form input{width:100%;box-sizing:border-box;padding:12px;border-radius:9px;border:1px solid #8665a4;background:#180f28;color:#fff;font:inherit}
+    .opcoes-form button,.opcao-acao{background:#a66de0;color:#170d24;border:0;border-radius:9px;padding:11px 15px;font:inherit;font-weight:650;cursor:pointer}
+    .opcoes-lista{display:grid;gap:10px;margin-top:18px}
+    .opcao-item{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;border:1px solid #674585;background:#180f28;padding:15px 17px;border-radius:11px}
+    .opcao-item-info{display:flex;flex-direction:column;gap:5px;min-width:0;overflow-wrap:anywhere}
+    .opcao-item-info strong{color:#fff;font-size:1rem}
+    .opcao-item-info small{color:#c9b3dd;font-size:.85rem}
+    .opcao-vazio{opacity:.8;padding:14px}
+
     .admin-abas {
       display: flex;
       flex-wrap: wrap;
@@ -499,6 +514,8 @@
             🗂️ Gerenciar
           </button>
 
+          <button type="button" data-aba="aba-opcoes" aria-controls="aba-opcoes">⚙️ Gerenciar opções de campanhas</button>
+
           <button type="button" data-aba="aba-anuario" aria-controls="aba-anuario">📊 Anuário RPG</button>
 
         </nav>
@@ -825,8 +842,9 @@
 
               <input
                 type="text"
-                id="campanha-narrador"
+                id="campanha-narrador" list="opcoes-narradores-sugestoes" autocomplete="off"
               >
+              <datalist id="opcoes-narradores-sugestoes"></datalist>
             </label>
 
             <label for="campanha-canal">
@@ -834,8 +852,9 @@
 
               <input
                 type="text"
-                id="campanha-canal"
+                id="campanha-canal" list="opcoes-canais-sugestoes" autocomplete="off"
               >
+              <datalist id="opcoes-canais-sugestoes"></datalist>
             </label>
 
             <label for="campanha-sinopse">
@@ -1030,19 +1049,6 @@
             aria-live="polite"
           ></p>
 
-           <hr class="admin-divisor">
-           <h3>📚 Gerenciar sistemas de RPG</h3>
-           <p class="admin-ajuda">Adicione ou renomeie sistemas. A lista é compartilhada entre dispositivos após configurar a tabela no Supabase. Sistemas já usados em mesas antigas aparecem para seleção.</p>
-           <form id="sistemas-form" class="admin-form">
-             <label for="sistemas-nome">Nome do sistema
-               <input id="sistemas-nome" type="text" maxlength="120" required placeholder="Ex.: Tormenta 20">
-             </label>
-             <button id="sistemas-salvar" type="submit">➕ Adicionar sistema</button>
-           </form>
-           <p id="sistemas-mensagem" class="mensagem-formulario" role="status"></p>
-           <div id="sistemas-lista" class="admin-lista"></div>
-           <hr class="admin-divisor">
-
           <h3>Campanhas cadastradas</h3>
 
           <div
@@ -1053,6 +1059,44 @@
             <p>Nenhuma campanha carregada.</p>
           </div>
 
+        </section>
+
+        <!-- OPÇÕES DE CAMPANHAS -->
+        <section id="aba-opcoes" class="admin-secao" hidden>
+          <h3>⚙️ Gerenciar opções de campanhas</h3>
+          <p class="admin-ajuda">Organize sistemas, narradores e canais. Nomes já usados nas campanhas aparecem automaticamente. Ao unificar, as campanhas vinculadas são atualizadas após confirmação.</p>
+          <div class="opcoes-abas" role="group" aria-label="Tipo de opção">
+            <button type="button" class="opcoes-ativo" data-opcao="sistemas">🎲 Sistemas</button>
+            <button type="button" data-opcao="narradores">🎙️ Narradores</button>
+            <button type="button" data-opcao="canais">📺 Canais</button>
+          </div>
+          <div id="opcoes-sistemas">
+            <h4>Sistemas de RPG</h4>
+            <form id="sistemas-form" class="opcoes-form">
+              <label for="sistemas-nome">Nome do sistema<input id="sistemas-nome" type="text" maxlength="120" required placeholder="Ex.: Tormenta 20"></label>
+              <button id="sistemas-salvar" type="submit">➕ Adicionar sistema</button>
+            </form>
+            <p id="sistemas-mensagem" class="mensagem-formulario" role="status"></p>
+            <div id="sistemas-lista" class="opcoes-lista"></div>
+          </div>
+          <div id="opcoes-narradores" hidden>
+            <h4>Narradores</h4>
+            <form id="narradores-form" class="opcoes-form">
+              <label for="narradores-nome">Nome do narrador<input id="narradores-nome" type="text" maxlength="120" required placeholder="Ex.: Oblitay"></label>
+              <button id="narradores-salvar" type="submit">➕ Adicionar narrador</button>
+            </form>
+            <p id="narradores-mensagem" class="mensagem-formulario" role="status"></p>
+            <div id="narradores-lista" class="opcoes-lista"></div>
+          </div>
+          <div id="opcoes-canais" hidden>
+            <h4>Canais</h4>
+            <form id="canais-form" class="opcoes-form">
+              <label for="canais-nome">Nome do canal<input id="canais-nome" type="text" maxlength="120" required placeholder="Ex.: Mione Le Fay"></label>
+              <button id="canais-salvar" type="submit">➕ Adicionar canal</button>
+            </form>
+            <p id="canais-mensagem" class="mensagem-formulario" role="status"></p>
+            <div id="canais-lista" class="opcoes-lista"></div>
+          </div>
         </section>
 
         <!-- AGENDAMENTO RECORRENTE -->
