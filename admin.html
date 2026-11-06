@@ -778,6 +778,14 @@
                 </option>
               </select>
             </label>
+             <label for="campanha-tipo-aventura">
+               Tipo de mesa
+               <select id="campanha-tipo-aventura" required>
+                 <option value="">Selecione o tipo</option>
+                 <option value="campanha">Campanha</option>
+                 <option value="one-shot">One-shot</option>
+               </select>
+             </label>
             <label for="campanha-papel">
   Meu papel na campanha
 
@@ -785,7 +793,6 @@
     <option value="">Selecione seu papel</option>
     <option value="narradora">🎲 Narradora</option>
     <option value="jogadora">🧙 Jogadora</option>
-    <option value="ambos">✨ Narradora e jogadora</option>
   </select>
 </label>
 
@@ -958,11 +965,9 @@
 
     <label for="campanha-universo-sistema">
       Sistema de RPG utilizado
-      <input
-        type="text"
-        id="campanha-universo-sistema"
-        placeholder="Ex.: Sistema próprio, Tormenta 20..."
-      >
+      <select id="campanha-universo-sistema">
+        <option value="">Selecione um sistema</option>
+      </select>
     </label>
 
     <label for="campanha-universo-lore">
@@ -1025,7 +1030,18 @@
             aria-live="polite"
           ></p>
 
-          <hr class="admin-divisor">
+           <hr class="admin-divisor">
+           <h3>📚 Gerenciar sistemas de RPG</h3>
+           <p class="admin-ajuda">Adicione ou renomeie sistemas. A lista é compartilhada entre dispositivos após configurar a tabela no Supabase. Sistemas já usados em mesas antigas aparecem para seleção.</p>
+           <form id="sistemas-form" class="admin-form">
+             <label for="sistemas-nome">Nome do sistema
+               <input id="sistemas-nome" type="text" maxlength="120" required placeholder="Ex.: Tormenta 20">
+             </label>
+             <button id="sistemas-salvar" type="submit">➕ Adicionar sistema</button>
+           </form>
+           <p id="sistemas-mensagem" class="mensagem-formulario" role="status"></p>
+           <div id="sistemas-lista" class="admin-lista"></div>
+           <hr class="admin-divisor">
 
           <h3>Campanhas cadastradas</h3>
 
