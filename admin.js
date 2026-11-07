@@ -409,202 +409,6 @@ campo("login-form").addEventListener(
 );
 
 // ==========================================
-// OPÇÕES DE CAMPANHAS: SISTEMAS, NARRADORES E CANAIS
-// ==========================================
-let sistemasRpg = [];
-let opcoesCadastradas = [];
-let catalogoSistemasDisponivel = false;
-let catalogoOpcoesDisponivel = false;
-const TIPOS_OPCOES = {
-  sistemas: {campo: 'detalhes.universo.sistema', tabela: 'sistemas_rpg', tipo: 'sistema'},
-  narradores: {campo: 'narrador', tabela: 'opcoes_campanhas', tipo: 'narrador'},
-  canais: {campo: 'canal', tabela: 'opcoes_campanhas', tipo: 'canal'}
-};
-function chaveSistema(nome) { return String(nome || '').trim().toLocaleLowerCase('pt-BR'); }
-function valorOpcao(c, tipo) {
-  if (tipo === 'sistemas') return String(c.detalhes?.universo?.sistema || '').trim();
-  return String(c[tipo === 'narradores' ? 'narrador' : 'canal'] || '').trim();
-}
-function catalogoTipo(tipo) {
-  return tipo === 'sistemas' ? sistemasRpg : opcoesCadastradas.filter(o => o.tipo === TIPOS_OPCOES[tipo].tipo);
-}
-function nomesTipo(tipo) {
-  const mapa = new Map();
-  for (const o of catalogoTipo(tipo)) if (o.nome) mapa.set(chaveSistema(o.nome),o.nome);
-  for (const c of campanhas) {
-    const nome = valorOpcao(c,tipo);
-    if (nome && !mapa.has(chaveSistema(nome))) mapa.set(chaveSistema(nome),nome);
-  }
-  return [...mapa.values()].sort((a,b)=>a.localeCompare(b,'pt-BR'));
-}
-function sistemasConhecidos() { return nomesTipo('sistemas'); }
-function atualizarSeletorSistemas(selecionado = null) {
-  const seletor = campo('campanha-universo-sistema');
-  const atual = selecionado === null ? seletor.value : selecionado;
-  seletor.replaceChildren(new Option('Selecione um sistema',''));
-  for (const nome of sistemasConhecidos()) seletor.add(new Option(nome,nome));
-  if (atual && ![...seletor.options].some(o=>o.value===atual)) seletor.add(new Option(atual+' (histórico)',atual));
-  seletor.value = atual || '';
-}
-function atualizarSugestoesOpcoes() {
-  for (const tipo of ['narradores','canais']) {
-    const datalist = campo(`opcoes-${tipo}-sugestoes`);
-    datalist.replaceChildren();
-    for (const nome of nomesTipo(tipo)) datalist.append(new Option(nome,nome));
-  }
-}
-function criarCartaoOpcao(nome, quantidade, acao) {
-  const item = criarElemento('div',undefined,'opcao-item');
-  const info = criarElemento('div',undefined,'opcao-item-info');
-  info.append(criarElemento('strong',nome),criarElemento('small',`${quantidade} campanha(s) vinculada(s)`));
-  const botao = criarElemento('button','✏️ Renomear / unificar','opcao-acao');
-  botao.type = 'button'; botao.addEventListener('click',acao);
-  item.append(info,botao); return item;
-}
-async function renomearOpcao(tipo,nome) {
-  const novo = prompt(`Novo nome para “${nome}” (pode ser um nome já existente):`,nome)?.trim();
-  if (!novo || chaveSistema(novo) === chaveSistema(nome)) return;
-  const afetadas = campanhas.filter(c=>chaveSistema(valorOpcao(c,tipo))===chaveSistema(nome));
-  const catalogo = catalogoTipo(tipo).find(o=>chaveSistema(o.nome)===chaveSistema(nome));
-  const existente = catalogoTipo(tipo).find(o=>chaveSistema(o.nome)===chaveSistema(novo));
-  if (!confirm(`Alterar “${nome}” para “${novo}” em ${afetadas.length} campanha(s)?${catalogo?' O cadastro do catálogo também será ajustado.':''} Os demais dados serão preservados.`)) return;
-  try {
-    await exigirAdministrador();
-    let atualizadas = 0;
-    for (const c of afetadas) {
-      let alteracao;
-      if (tipo === 'sistemas') {
-        const detalhes = {...(c.detalhes || {})};
-        detalhes.universo = {...(detalhes.universo || {}),sistema:novo};
-        alteracao = {detalhes};
-      } else alteracao = {[tipo === 'narradores' ? 'narrador' : 'canal']:novo};
-      const {error} = await supabaseClient.from('campanhas').update(alteracao).eq('id',c.id);
-      if (error) throw new Error(`${atualizadas} campanha(s) alterada(s); falha em “${c.titulo}”: ${error.message}`);
-      Object.assign(c,alteracao); atualizadas++;
-    }
-    if (catalogo) {
-      const tabela = TIPOS_OPCOES[tipo].tabela;
-      const query = supabaseClient.from(tabela);
-      const {error} = existente ? await query.delete().eq('id',catalogo.id) : await query.update({nome:novo}).eq('id',catalogo.id);
-      if (error) throw error;
-    }
-    await carregarSistemasRpg();
-    renderizarCampanhas();
-    mensagem(`${tipo}-mensagem`,`${atualizadas} campanha(s) atualizada(s): “${nome}” → “${novo}”.`);
-  } catch(e) {
-    mensagem(`${tipo}-mensagem`,'Erro: '+e.message+'. Se algumas campanhas foram alteradas, recarregue a página para conferir.');
-  }
-}
-function renderizarTipoOpcao(tipo) {
-  const lista = campo(`${tipo}-lista`); lista.replaceChildren();
-  const nomes = nomesTipo(tipo);
-  if (!nomes.length) { lista.append(criarElemento('p','Nenhum nome cadastrado ou utilizado em campanhas.','opcao-vazio'));return; }
-  for (const nome of nomes) {
-    const quantidade = campanhas.filter(c=>chaveSistema(valorOpcao(c,tipo))===chaveSistema(nome)).length;
-    lista.append(criarCartaoOpcao(nome,quantidade,()=>renomearOpcao(tipo,nome)));
-  }
-}
-const CAMPOS_PADRAO_SISTEMA = [
-  ['sistema_url','campanha-universo-sistema-url','padrao-sistema-url'],
-  ['materiais_url','campanha-universo-materiais-url','padrao-materiais-url'],
-  ['materiais_descricao','campanha-universo-materiais-descricao','padrao-materiais-descricao']
-];
-function registroSistema(nome) {
-  return sistemasRpg.find(s=>chaveSistema(s.nome)===chaveSistema(nome));
-}
-function atualizarListaPadroes() {
-  const sel=campo('padrao-sistema'), atual=sel.value;
-  sel.replaceChildren(new Option('Selecione um sistema',''));
-  for(const nome of sistemasConhecidos()) sel.add(new Option(nome,nome));
-  sel.value=nomesTipo('sistemas').some(n=>n===atual)?atual:'';
-  mostrarPadraoSistema();
-}
-function mostrarPadraoSistema() {
-  const registro=registroSistema(campo('padrao-sistema').value);
-  const padrao=registro?.configuracao || {};
-  for(const [chave,,id] of CAMPOS_PADRAO_SISTEMA) campo(id).value=padrao[chave] || '';
-}
-function aplicarPadraoSistema() {
-  const registro=registroSistema(campo('campanha-universo-sistema').value);
-  const padrao=registro?.configuracao || {};
-  for(const [chave,id] of CAMPOS_PADRAO_SISTEMA) {
-    const input=campo(id);
-    if(!input.value.trim() && padrao[chave]) input.value=padrao[chave];
-  }
-}
-campo('padrao-sistema').addEventListener('change',mostrarPadraoSistema);
-campo('campanha-universo-sistema').addEventListener('change',aplicarPadraoSistema);
-campo('padrao-salvar').addEventListener('click',async()=>{
-  const nome=campo('padrao-sistema').value;
-  if(!nome) { mensagem('padrao-mensagem','Selecione um sistema.'); return; }
-  const botao=campo('padrao-salvar'); botao.disabled=true;
-  try {
-    await exigirAdministrador();
-    const configuracao={};
-    for(const [chave,,id] of CAMPOS_PADRAO_SISTEMA) configuracao[chave]=campo(id).value.trim();
-    let registro=registroSistema(nome);
-    let resposta;
-    if(registro) resposta=await supabaseClient.from('sistemas_rpg').update({configuracao}).eq('id',registro.id);
-    else resposta=await supabaseClient.from('sistemas_rpg').insert([{nome,configuracao}]);
-    if(resposta.error) throw resposta.error;
-    await carregarSistemasRpg();
-    campo('padrao-sistema').value=nome;
-    mostrarPadraoSistema();
-    mensagem('padrao-mensagem','Informações padrão salvas. Serão sugeridas nas próximas campanhas.');
-  } catch(err) { mensagem('padrao-mensagem','Erro ao salvar: '+err.message+' (confira se executou o TXT de configuração do Supabase).'); }
-  finally { botao.disabled=false; }
-});
-function renderizarSistemas() { renderizarTipoOpcao('sistemas'); }
-function renderizarTodasOpcoes() {
-  for (const tipo of Object.keys(TIPOS_OPCOES)) renderizarTipoOpcao(tipo);
-  atualizarSeletorSistemas(); atualizarSugestoesOpcoes(); atualizarListaPadroes();
-}
-async function carregarSistemasRpg() {
-  const [s,o] = await Promise.all([
-    supabaseClient.from('sistemas_rpg').select('id,nome,configuracao').order('nome'),
-    supabaseClient.from('opcoes_campanhas').select('id,tipo,nome').order('nome')
-  ]);
-  if(s.error && /configuracao|column|schema cache/i.test(s.error.message || '')) {
-    const anterior=await supabaseClient.from('sistemas_rpg').select('id,nome').order('nome');
-    if(!anterior.error) { s.data=anterior.data; s.error=null; }
-  }
-  catalogoSistemasDisponivel = !s.error; catalogoOpcoesDisponivel = !o.error;
-  sistemasRpg = s.error ? [] : (s.data || []);
-  opcoesCadastradas = o.error ? [] : (o.data || []);
-  campo('sistemas-salvar').disabled = !catalogoSistemasDisponivel;
-  for (const tipo of ['narradores','canais']) campo(`${tipo}-salvar`).disabled = !catalogoOpcoesDisponivel;
-  if (s.error) mensagem('sistemas-mensagem','Catálogo de sistemas indisponível: '+s.error.message);
-  if (o.error) for (const tipo of ['narradores','canais']) mensagem(`${tipo}-mensagem`,'Para adicionar nomes, execute o arquivo TXT de configuração no SQL Editor do Supabase. Os nomes históricos continuam visíveis.');
-  renderizarTodasOpcoes();
-}
-for (const tipo of Object.keys(TIPOS_OPCOES)) {
-  campo(`${tipo}-form`).addEventListener('submit',async e=>{
-    e.preventDefault(); const nome = valor(`${tipo}-nome`);
-    if (!nome) return;
-    if (nomesTipo(tipo).some(n=>chaveSistema(n)===chaveSistema(nome))) {
-      mensagem(`${tipo}-mensagem`,'Esse nome já está disponível. Evite duplicações.');return;
-    }
-    try {
-      await exigirAdministrador();
-      const tabela = TIPOS_OPCOES[tipo].tabela;
-      const registro = tipo==='sistemas' ? {nome} : {tipo:TIPOS_OPCOES[tipo].tipo,nome};
-      const {error} = await supabaseClient.from(tabela).insert([registro]);
-      if (error) throw error;
-      campo(`${tipo}-nome`).value='';
-      await carregarSistemasRpg();
-      mensagem(`${tipo}-mensagem`,'Nome adicionado com sucesso.');
-    } catch(err) { mensagem(`${tipo}-mensagem`,'Erro: '+err.message); }
-  });
-}
-document.querySelectorAll('.opcoes-abas button[data-opcao]').forEach(botao=>{
-  botao.addEventListener('click',()=>{
-    const tipo = botao.dataset.opcao;
-    for (const nome of Object.keys(TIPOS_OPCOES)) campo(`opcoes-${nome}`).hidden = nome!==tipo;
-    document.querySelectorAll('.opcoes-abas button[data-opcao]').forEach(b=>b.classList.toggle('opcoes-ativo',b===botao));
-  });
-});
-
-// ==========================================
 // CARREGAR CAMPANHAS
 // ==========================================
 
@@ -620,7 +424,6 @@ async function carregarCampanhas() {
   if (error) throw error;
 
   campanhas = data || [];
-  await carregarSistemasRpg();
 
   preencherSeletoresCampanhas();
   renderizarCampanhas();
@@ -780,7 +583,6 @@ function dadosFormularioCampanha() {
     detalhes: {
       ...detalhesAtuais,
 
-      tipo_aventura: valor("campanha-tipo-aventura"),
       papel: valor("campanha-papel"),
       exibir_personagem: campo("campanha-exibir-personagem").checked,
 
@@ -890,12 +692,9 @@ function editarCampanha(id) {
   campo("campanha-status").value =
     campanha.status || "em_andamento";
 
-  // Classificação e papel (sem presumir tipo para registros antigos).
-  campo("campanha-tipo-aventura").value =
-    campanha.detalhes?.tipo_aventura || "";
+  // Papel na campanha
   campo("campanha-papel").value =
-    ["jogadora", "narradora"].includes(campanha.detalhes?.papel)
-      ? campanha.detalhes.papel : "";
+    campanha.detalhes?.papel || "";
 
   // Campanhas antigas seguem mostrando personagem quando jogadora/ambos,
   // até que você escolha explicitamente no novo controle.
@@ -932,7 +731,8 @@ function editarCampanha(id) {
   const universo =
     campanha.detalhes?.universo || {};
 
-  atualizarSeletorSistemas(universo.sistema || "");
+  campo("campanha-universo-sistema").value =
+    universo.sistema || "";
 
   campo("campanha-universo-lore").value =
     universo.lore || "";
@@ -964,7 +764,6 @@ function editarCampanha(id) {
 function cancelarEdicaoCampanha() {
   campanhaEmEdicao = null;
   campo("campanha-form").reset();
-  atualizarSeletorSistemas("");
   atualizarSecaoPersonagem();
   atualizarSecaoNarradora();
 
@@ -1087,6 +886,10 @@ function dadosFormularioEvento() {
   }
 
   const hora = valor("evento-hora");
+  const horaFim = valor("evento-hora-fim");
+  if (horaFim && horaFim <= hora) {
+    throw new Error("O término deve ser posterior ao início, no mesmo dia.");
+  }
   const linkInformado = valor("evento-link");
 
   const dados = {
@@ -1094,6 +897,7 @@ function dadosFormularioEvento() {
     categoria: valor("evento-categoria"),
     data: valor("evento-data"),
     hora,
+    hora_fim: horaFim || null,
     turno:
       valor("evento-turno") || obterTurno(hora),
     bloqueia_turno:
@@ -1234,6 +1038,9 @@ function editarEvento(id) {
 
   campo("evento-hora").value =
     formatarHora(evento.hora);
+
+  campo("evento-hora-fim").value =
+    formatarHora(evento.hora_fim);
 
   campo("evento-turno").value =
     evento.turno || "";
@@ -1742,6 +1549,10 @@ campo("recorrencia-form").addEventListener(
 
       const hora =
         valor("recorrencia-hora");
+      const horaFim = valor("recorrencia-hora-fim");
+      if (horaFim && horaFim <= hora) {
+        throw new Error("O término deve ser posterior ao início, no mesmo dia.");
+      }
 
       const turno =
         valor("recorrencia-turno") ||
@@ -1757,6 +1568,7 @@ campo("recorrencia-form").addEventListener(
           categoria: campanha.categoria,
           data,
           hora,
+          hora_fim: horaFim || null,
           turno,
           bloqueia_turno:
             campo(
