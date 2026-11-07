@@ -6,12 +6,16 @@
   let registros = [];
   let editando = null;
   let carregando = false;
-  const nomes = {ferias:'🏖️ Férias',feriado:'📅 Feriado',folga:'🌿 Folga',recesso:'🏠 Recesso',outro:'✨ Outro'};
+  const nomes = {ferias:'🏖️ Férias',feriado:'📅 Feriado',folga:'🌿 Folga',recesso:'🏠 Recesso',viagem_trabalho:'✈️ Viagem de trabalho',viagem_pessoal:'🧳 Viagem pessoal',outro:'✨ Outro'};
   const turnos = {manha:'Manhã',tarde:'Tarde',noite:'Noite'};
   const msg = texto => {el('excecao-mensagem').textContent = texto;};
+  const viagem = tipo => ['viagem_trabalho','viagem_pessoal'].includes(tipo);
+  function atualizarTipo(){ const v=viagem(el('excecao-tipo').value);el('excecao-destino-campo').hidden=!v;el('excecao-destino').required=v; }
+  el('excecao-tipo').addEventListener('change', atualizarTipo);
+  for(const turno of ['manha','tarde']){const c=el('excecao-'+turno);c.checked=true;c.disabled=true;}
   function limpar() {
     editando = null;
-    el('excecao-form').reset();
+    el('excecao-form').reset();el('excecao-noite').checked=false;atualizarTipo();
     el('excecao-cancelar').hidden = true;
     el('excecao-salvar').textContent = '💾 Salvar exceção';
   }
@@ -24,6 +28,7 @@
       const item=document.createElement('article');item.className='admin-item';
       const titulo=document.createElement('h4');titulo.textContent=`${nomes[r.tipo]||r.tipo} · ${dataBR(r.data_inicio)} a ${dataBR(r.data_fim)}`;
       item.append(titulo);
+      if(r.destino){const destino=document.createElement('p');destino.textContent='📍 Destino: '+r.destino;item.append(destino);}
       if(r.descricao){const d=document.createElement('p');d.textContent=r.descricao;item.append(d);}
       const t=document.createElement('p');t.textContent='Turnos liberados: '+(r.turnos||[]).map(x=>turnos[x]||x).join(', ');item.append(t);
       const a=document.createElement('div');a.className='admin-acoes';
@@ -36,14 +41,14 @@
     carregando=true;
     try{
       if(!(await verificarAdministrador()))return;
-      const {data,error}=await db.from('excecoes_disponibilidade').select('id,tipo,descricao,data_inicio,data_fim,turnos').order('data_inicio',{ascending:false});
+      const {data,error}=await db.from('excecoes_disponibilidade').select('id,tipo,descricao,destino,data_inicio,data_fim,turnos').order('data_inicio',{ascending:false});
       if(error)throw error;
       registros=data||[];renderizar();msg('');
     }catch(e){console.error('Exceções:',e);msg('⚠️ Não foi possível carregar as exceções. Verifique se o SQL foi executado no Supabase e se as políticas RLS estão ativas. '+e.message);}
     finally{carregando=false;}
   }
   function editar(r){
-    editando=r.id;el('excecao-tipo').value=r.tipo;el('excecao-descricao').value=r.descricao||'';
+    editando=r.id;el('excecao-tipo').value=r.tipo;atualizarTipo();el('excecao-destino').value=r.destino||'';el('excecao-descricao').value=r.descricao||'';
     el('excecao-inicio').value=r.data_inicio;el('excecao-fim').value=r.data_fim;
     for(const t of Object.keys(turnos))el('excecao-'+t).checked=(r.turnos||[]).includes(t);
     el('excecao-cancelar').hidden=false;el('excecao-salvar').textContent='💾 Atualizar exceção';
@@ -60,13 +65,14 @@
   el('excecao-form').addEventListener('submit',async e=>{
     e.preventDefault();
     const inicio=el('excecao-inicio').value,fim=el('excecao-fim').value;
-    const selecionados=Object.keys(turnos).filter(t=>el('excecao-'+t).checked);
+    const selecionados=['manha','tarde',...(el('excecao-noite').checked?['noite']:[])];
     if(!inicio||!fim||fim<inicio){msg('Confira as datas: a data final deve ser igual ou posterior à inicial.');return;}
+    if(viagem(el('excecao-tipo').value)&&!el('excecao-destino').value.trim()){msg('Informe o destino da viagem.');return;}
     if(!selecionados.length){msg('Selecione pelo menos um turno.');return;}
     const bot=el('excecao-salvar');bot.disabled=true;msg('Salvando...');
     try{
       if(!(await verificarAdministrador()))throw Error('Acesso não autorizado.');
-      const dados={tipo:el('excecao-tipo').value,descricao:el('excecao-descricao').value.trim(),data_inicio:inicio,data_fim:fim,turnos:selecionados};
+      const dados={tipo:el('excecao-tipo').value,destino:viagem(el('excecao-tipo').value)?el('excecao-destino').value.trim():null,descricao:el('excecao-descricao').value.trim(),data_inicio:inicio,data_fim:fim,turnos:selecionados};
       const q=db.from('excecoes_disponibilidade');
       const {error}=editando!==null?await q.update(dados).eq('id',editando):await q.insert([dados]);
       if(error)throw error;
@@ -74,6 +80,7 @@
     }catch(err){console.error(err);msg('Não foi possível salvar: '+err.message);}
     finally{bot.disabled=false;}
   });
+  atualizarTipo();
   // Carrega quando o painel se torna visível, inclusive em sessões já autenticadas.
   const observer=new MutationObserver(()=>{if(!el('area-admin').hidden)carregar();});
   observer.observe(el('area-admin'),{attributes:true,attributeFilter:['hidden']});
