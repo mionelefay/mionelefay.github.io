@@ -303,14 +303,20 @@ function disponibilidadePadrao(
 
 // Uma exceção libera apenas os turnos escolhidos no período.
 // Não substitui compromissos publicados que ocupem o turno.
-function turnoLiberadoPorExcecao(dataTexto, turnoId) {
-  return excecoesDisponibilidade.some(excecao =>
+function obterExcecaoDoTurno(dataTexto, turnoId) {
+  return excecoesDisponibilidade.find(excecao =>
     dataTexto >= excecao.data_inicio &&
     dataTexto <= excecao.data_fim &&
     Array.isArray(excecao.turnos) &&
     excecao.turnos.includes(turnoId)
-  );
+  ) || null;
 }
+
+function turnoLiberadoPorExcecao(dataTexto, turnoId) {
+  return !!obterExcecaoDoTurno(dataTexto, turnoId);
+}
+
+const nomesExcecoes = {ferias:"🏖️ Férias",feriado:"📅 Feriado",folga:"🌿 Folga",recesso:"🏠 Recesso",viagem_trabalho:"✈️ Viagem de trabalho",viagem_pessoal:"🧳 Viagem pessoal",outro:"✨ Outro"};
 
 // ==========================================
 // EVENTOS DE UM TURNO
@@ -429,7 +435,8 @@ function criarPostit(evento) {
 
 function criarPostitDisponibilidade(
   situacao,
-  parcial = false
+  parcial = false,
+  excecao = null
 ) {
   const classe =
     situacao === "livre"
@@ -448,7 +455,7 @@ function criarPostitDisponibilidade(
   } else {
     elemento.textContent =
       situacao === "livre"
-        ? "🟢 Livre"
+        ? (excecao ? (nomesExcecoes[excecao.tipo] || "🟢 Livre") : "🟢 Livre")
         : "🔴 Ocupado";
   }
 
@@ -503,6 +510,7 @@ function criarTurno(
     turno.id,
     eventosDoDia
   );
+  const excecaoAtiva = situacao === "livre" ? obterExcecaoDoTurno(dataTexto, turno.id) : null;
 
   // ========================================
   // FILTROS DE DISPONIBILIDADE
@@ -514,7 +522,7 @@ function criarTurno(
   ) {
     if (situacao === filtro) {
       lista.append(
-        criarPostitDisponibilidade(situacao)
+        criarPostitDisponibilidade(situacao, false, excecaoAtiva)
       );
     }
 
@@ -542,7 +550,7 @@ function criarTurno(
 
   if (compromissos.length === 0) {
     lista.append(
-      criarPostitDisponibilidade(situacao)
+      criarPostitDisponibilidade(situacao, false, excecaoAtiva)
     );
 
   } else if (
@@ -553,7 +561,8 @@ function criarTurno(
     lista.append(
       criarPostitDisponibilidade(
         "livre",
-        true
+        !excecaoAtiva,
+        excecaoAtiva
       )
     );
 
@@ -567,7 +576,7 @@ function criarTurno(
     // a situação atual do turno.
 
     lista.append(
-      criarPostitDisponibilidade("livre")
+      criarPostitDisponibilidade("livre", false, excecaoAtiva)
     );
   }
 
@@ -1200,7 +1209,7 @@ async function carregarAgenda() {
     // Busca pública apenas exceções; a RLS limita a leitura.
     const respostaExcecoes = await supabaseClient
       .from("excecoes_disponibilidade")
-      .select("data_inicio,data_fim,turnos");
+      .select("tipo,descricao,destino,data_inicio,data_fim,turnos");
 
     if (respostaExcecoes.error) {
       console.error("Erro ao carregar exceções:", respostaExcecoes.error.message);
