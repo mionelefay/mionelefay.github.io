@@ -264,7 +264,7 @@
       elemento(
         "span",
         "",
-        hora || "Sem horário"
+        hora ? hora + (evento.hora_fim ? "–" + String(evento.hora_fim).slice(0, 5) : "") : "Sem horário"
       )
     );
 
