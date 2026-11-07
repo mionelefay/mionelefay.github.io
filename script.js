@@ -322,23 +322,33 @@ const nomesExcecoes = {ferias:"🏖️ Férias",feriado:"📅 Feriado",folga:"�
 // EVENTOS DE UM TURNO
 // ==========================================
 
-function eventosNoTurno(
-  eventosDoDia,
-  turnoId
-) {
-  return eventosDoDia
-    .filter(evento => {
-      const turnoEvento =
-        evento.turno ||
-        obterTurno(evento.hora);
+// Um compromisso pode atravessar mais de um turno sem
+// impedir o cadastro de outros compromissos simultâneos.
+// O limite final é exclusivo: 10h–18h não ocupa a noite.
+function eventoOcupaTurno(evento, turnoId) {
+  const inicio = formatarHora(evento.hora);
+  const fim = formatarHora(evento.hora_fim);
+  if (!fim || !inicio || fim <= inicio) {
+    return (evento.turno || obterTurno(evento.hora)) === turnoId;
+  }
+  const limites = {
+    manha: ["06:00", "12:00"],
+    tarde: ["12:00", "18:00"],
+    noite: ["18:00", "24:00"]
+  };
+  const intervalo = limites[turnoId];
+  if (!intervalo) return false;
+  if (turnoId === "noite") {
+    return (inicio < "24:00" && fim > "18:00") ||
+      (inicio < "06:00" && fim > "00:00");
+  }
+  return inicio < intervalo[1] && fim > intervalo[0];
+}
 
-      return turnoEvento === turnoId;
-    })
-    .sort((a, b) => {
-      return formatarHora(a.hora).localeCompare(
-        formatarHora(b.hora)
-      );
-    });
+function eventosNoTurno(eventosDoDia, turnoId) {
+  return eventosDoDia
+    .filter(evento => eventoOcupaTurno(evento, turnoId))
+    .sort((a, b) => formatarHora(a.hora).localeCompare(formatarHora(b.hora)));
 }
 
 // ==========================================
@@ -411,7 +421,8 @@ function criarPostit(evento) {
 
   const horario = criarElemento(
     "small",
-    formatarHora(evento.hora)
+    formatarHora(evento.hora) +
+      (evento.hora_fim ? "–" + formatarHora(evento.hora_fim) : "")
   );
 
   const nome = criarElemento(
@@ -800,7 +811,8 @@ function abrirEvento(evento) {
     "📅 " +
     formatarData(evento.data) +
     " às " +
-    formatarHora(evento.hora);
+    formatarHora(evento.hora) +
+    (evento.hora_fim ? " às " + formatarHora(evento.hora_fim) : "");
 
   sinopse.textContent =
     evento.sinopse || "";
@@ -1174,7 +1186,7 @@ async function carregarAgenda() {
       supabaseClient
         .from("eventos")
         .select(
-          "id, titulo, categoria, data, hora, canal, " +
+          "id, titulo, categoria, data, hora, hora_fim, canal, " +
           "sinopse, imagem, link, narrador, turno, " +
           "bloqueia_turno, campanha_id, campanha_snapshot, " +
           "situacao, motivo_alteracao, evento_original_id, " +
