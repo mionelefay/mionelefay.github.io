@@ -114,11 +114,19 @@ function criarLinkGoogleAgenda(evento) {
     hora
   );
 
-  const fim = formatarDataGoogleAgenda(
-    evento.data,
-    hora,
-    GOOGLE_AGENDA_DURACAO_MINUTOS
-  );
+  const horaFim = evento.hora_fim
+    ? String(evento.hora_fim).slice(0, 5)
+    : null;
+
+  const fim = horaFim &&
+    /^([01]\d|2[0-3]):[0-5]\d$/.test(horaFim) &&
+    horaFim > hora
+    ? formatarDataGoogleAgenda(evento.data, horaFim)
+    : formatarDataGoogleAgenda(
+        evento.data,
+        hora,
+        GOOGLE_AGENDA_DURACAO_MINUTOS
+      );
 
   const titulo =
     evento.titulo || "Compromisso Mione Le Fay";
